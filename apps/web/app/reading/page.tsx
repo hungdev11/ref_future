@@ -105,12 +105,24 @@ export default function ComprehensiveReadingPage() {
         }),
       }).then((r) => r.json());
 
+      // Extract Tarot dynamic name & orientation
+      const drawnCard = tarotRes.facts?.positions?.[0];
+      const cardName = drawnCard?.card?.name ?? 'The Fool';
+      const cardOrientation = drawnCard?.isReversed ? 'Ngược (Reversed)' : 'Xuôi (Upright)';
+
       // 5. Aggregate Dot-Notated Facts
       const aggregatedFacts: Record<string, any> = {
+        fullName,
+        userName: fullName,
+        birthDate,
+        birthTime: isTimeUnknown ? 'Chưa xác định' : birthTime,
+        genderText: gender === 'FEMALE' ? 'Nữ' : 'Nam',
         ...(astroRes.dotNotatedFacts ?? {}),
         ...(numRes.dotNotatedFacts ?? {}),
         ...(tuviRes?.dotNotatedFacts ?? {}),
         ...(tarotRes?.dotNotatedFacts ?? {}),
+        'tarot.spread.position_1.card_name': cardName,
+        'tarot.spread.position_1.orientation': cardOrientation,
       };
 
       setCalcFacts({
