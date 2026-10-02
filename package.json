@@ -1,0 +1,22 @@
+{
+  "name": "mystic-deterministic-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Deterministic, auditable, explainable mystical analysis platform without generative AI",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run --workspaces build",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "^22.8.1",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.4"
+  },
+  "dependencies": {
+    "astronomy-engine": "^2.1.19"
+  }
+}

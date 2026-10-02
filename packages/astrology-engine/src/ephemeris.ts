@@ -150,4 +150,3 @@ export function calculateEphemerisPositions(
 
   return result;
 }
-

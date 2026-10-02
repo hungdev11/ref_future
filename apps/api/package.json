@@ -1,0 +1,19 @@
+{
+  "name": "@mystic/api",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev"
+  },
+  "dependencies": {
+    "@mystic/core": "*",
+    "@mystic/rule-engine": "*",
+    "@mystic/template-engine": "*",
+    "@prisma/client": "^5.22.0"
+  },
+  "devDependencies": {
+    "prisma": "^5.22.0",
+    "typescript": "^5.6.3"
+  }
+}

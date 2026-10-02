@@ -338,4 +338,3 @@ export const BASELINE_RULES: RuleDefinition[] = [
     tags: ['cross_system', 'synthesis'],
   },
 ];
-

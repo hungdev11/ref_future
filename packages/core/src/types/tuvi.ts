@@ -103,4 +103,3 @@ export interface TuViFacts {
   amDuongNamNu: string;
   palaces: Record<PalaceName, TuViPalaceData>;
 }
-

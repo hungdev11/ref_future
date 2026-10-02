@@ -242,4 +242,3 @@ describe('Deterministic Rule Resolution & Admin Simulation', () => {
     expect(skipped105?.reason).toContain("Condition failed on field 'moon.sign'");
   });
 });
-

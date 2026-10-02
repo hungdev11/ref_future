@@ -86,4 +86,3 @@ export function classifyNameLetters(normalizedName: string): ClassifiedLetter[] 
 
   return result;
 }
-

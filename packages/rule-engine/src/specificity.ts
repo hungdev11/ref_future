@@ -39,4 +39,3 @@ function scoreLeaf(leaf: LeafCondition): number {
 
   return score;
 }
-

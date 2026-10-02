@@ -74,4 +74,3 @@ export function buildRWSStandardDeck(): TarotCardDef[] {
 
   return deck;
 }
-
