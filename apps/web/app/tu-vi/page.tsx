@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Moon, AlertTriangle, ShieldCheck, Sparkles, User } from 'lucide-react';
+import { Moon, AlertTriangle, ShieldCheck, Sparkles, User, BookOpen } from 'lucide-react';
 
 const BRANCH_VN: Record<string, string> = {
   TY_RAT: 'Tý',
@@ -301,6 +301,79 @@ export default function TuViPage() {
                     </div>
                   );
                 })}
+              </div>
+
+              {/* Luận Giải Bản Mệnh Dành Cho Người Không Chuyên */}
+              <div className="p-6 rounded-2xl bg-surface border border-borderDark space-y-6">
+                <div className="flex items-center justify-between border-b border-borderDark pb-3">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-amber-400" />
+                    <h3 className="text-lg font-bold text-white">Luận Giải Bản Mệnh & Thời Vận Căn Bản</h3>
+                  </div>
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 font-medium">
+                    Trường phái Nam Phái TUVI_METHOD_V1
+                  </span>
+                </div>
+
+                <div className="space-y-4">
+                  {/* Cung Mệnh Analysis */}
+                  <div className="p-5 rounded-xl bg-background/80 border border-borderDark space-y-3">
+                    <div className="flex items-center gap-2 text-amber-300 font-bold text-sm">
+                      <span>👑 Cung Mệnh Tọa Thủ ({BRANCH_VN[result.facts.menhBranch]}): Bản Sắc & Cốt Cách Căn Bản</span>
+                    </div>
+                    <p className="text-sm text-gray-200 leading-relaxed">
+                      Cung Mệnh là gốc rễ của đời người, định hình cốt cách, tư chất và tiềm năng phát triển bẩm sinh. Bản mệnh thuộc {result.facts.amDuongNamNu}, ngự tại cung {BRANCH_VN[result.facts.menhBranch]}, kết hợp với {result.metadata.cucDetail} cho thấy đương số là người có thực tài, nội lực thâm hậu và khát vọng vươn lên rõ nét trong môi trường xã hội.
+                    </p>
+
+                    <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-1">
+                      <span className="font-semibold text-amber-300 block">💡 Tóm Tắt Dành Cho Bạn (Dễ Hiểu):</span>
+                      <p className="text-gray-200 leading-relaxed">
+                        Bạn có khí chất đĩnh đạc, được người xung quanh tin cậy và kính nể. Điểm mạnh lớn nhất là chữ tín, tinh thần trách nhiệm và khả năng định hình đại cuộc mà không bị dao động bởi tiểu tiết.
+                      </p>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-xs space-y-1">
+                      <span className="font-semibold text-indigo-300 block">🔍 Cơ Chế Vận Hành (Ngũ Hành Mệnh - Cục):</span>
+                      <p className="text-gray-300 leading-relaxed">
+                        Theo nguyên lý Tử Vi kinh điển, Cục số tượng trưng cho môi trường xã hội dung dưỡng bản Mệnh. Khi Cục sinh Mệnh hoặc tương hòa, đương số dễ gặp thời cơ thuận lợi, được quý nhân nâng đỡ trong các bước ngoặt sự nghiệp.
+                      </p>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs space-y-1">
+                      <span className="font-semibold text-emerald-300 block">🎯 Lời Khuyên Hành Động Thực Tiễn:</span>
+                      <p className="text-emerald-200/90 leading-relaxed">
+                        Giữ vững tâm đức và tầm nhìn dài hạn; không nên nóng vội gặt hái thành quả tức thời. Tích lũy tri thức chuyên môn sâu và mở rộng vòng kết nối những người cùng chí hướng.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surfaceHover border border-borderDark text-[11px] text-gray-400">
+                      <BookOpen className="w-3.5 h-3.5 text-accentGold shrink-0" />
+                      <span>Nguồn tham chiếu kinh điển: <strong className="text-gray-200">Tử Vi Đẩu Số Toàn Thư (Hi Di Trần Đoàn)</strong> & <strong className="text-gray-200">Tử Vi Giảng Minh (Vân Đằng Thái Thứ Lang)</strong></span>
+                    </div>
+                  </div>
+
+                  {/* Cung Thân Analysis */}
+                  <div className="p-5 rounded-xl bg-background/80 border border-borderDark space-y-3">
+                    <div className="flex items-center gap-2 text-indigo-300 font-bold text-sm">
+                      <span>🌱 Cung Thân Cư ({BRANCH_VN[result.facts.thanBranch]}): Xu Hướng Hậu Vận & Hành Động Trưởng Thành</span>
+                    </div>
+                    <p className="text-sm text-gray-200 leading-relaxed">
+                      Nếu Cung Mệnh chủ về tiền vận (trước 30 tuổi) thì Cung Thân chủ về hậu vận và sự nghiệp thực tế khi đương số bước vào giai đoạn trưởng thành tự lập. Vị trí Thân cư thể hiện nơi đương số dốc trọn tâm huyết và thời gian nhiều nhất của cuộc đời.
+                    </p>
+
+                    <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-1">
+                      <span className="font-semibold text-amber-300 block">💡 Tóm Tắt Dành Cho Bạn:</span>
+                      <p className="text-gray-200 leading-relaxed">
+                        Càng về trung vận và hậu vận, sự nghiệp của bạn càng vững vàng nhờ bề dày kinh nghiệm và khả năng làm chủ số phận tự thân.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surfaceHover border border-borderDark text-[11px] text-gray-400">
+                      <BookOpen className="w-3.5 h-3.5 text-accentGold shrink-0" />
+                      <span>Nguồn tham chiếu kinh điển: <strong className="text-gray-200">Tử Vi Áo Bí (Hà Uyên) - Thiên Luận Mệnh Thân Tương Phối</strong></span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}
