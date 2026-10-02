@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Compass, AlertTriangle, ShieldCheck, ChevronRight, CheckCircle2, Info, RefreshCw } from 'lucide-react';
+import { Compass, AlertTriangle, ShieldCheck, ChevronRight, CheckCircle2, Info, RefreshCw, Sparkles, BookOpen, Moon } from 'lucide-react';
 
 export default function AstrologyPage() {
   const [birthDate, setBirthDate] = useState('1990-07-25');
@@ -322,6 +322,87 @@ export default function AstrologyPage() {
                       ))}
                     </tbody>
                   </table>
+                </div>
+              </div>
+
+              {/* Luận Giải Chi Tiết Bản Đồ Sao Dành Cho Độc Giả */}
+              <div className="p-6 rounded-2xl bg-surface border border-borderDark space-y-6">
+                <div className="flex items-center justify-between border-b border-borderDark pb-3">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-accentGold" />
+                    <h3 className="text-lg font-bold text-white">Luận Giải Chi Tiết Bản Mệnh & Năng Lượng Cốt Lõi</h3>
+                  </div>
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-accentGold/10 border border-accentGold/30 text-accentGold font-medium">
+                    Hệ Thống Tropical Ephemeris
+                  </span>
+                </div>
+
+                <div className="space-y-5">
+                  {/* Sun Sign Analysis */}
+                  <div className="p-5 rounded-xl bg-background/80 border border-borderDark space-y-3">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <div className="flex items-center gap-2 text-amber-300 font-bold text-sm">
+                        <span>☀️ Mặt Trời tại {result.facts.bodies.sun.sign} ({result.facts.bodies.sun.longitude.toFixed(2)}°): Bản Sắc Ý Thức & Ngọn Lửa Khát Vọng</span>
+                      </div>
+                      <span className="text-xs text-gray-400 font-mono">Sun Sign</span>
+                    </div>
+
+                    <p className="text-sm text-gray-200 leading-relaxed">
+                      Mặt Trời là vị tinh tú trung tâm, đại diện cho bản ngã ý thức, ý chí tự chủ và sứ mệnh khẳng định cái tôi chân thực của bạn. Tại vị trí {result.facts.bodies.sun.sign}, nguồn năng lượng của bạn luôn hướng đến việc để lại dấu ấn riêng biệt, khát khao được cống hiến và tỏa sáng theo cách quang minh chính đại nhất.
+                    </p>
+
+                    <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-1">
+                      <span className="font-semibold text-amber-300 block">💡 Ý Nghĩa Thực Tế Cho Bạn (Dễ Hiểu):</span>
+                      <p className="text-gray-200 leading-relaxed">
+                        Bạn có lòng tự trọng cao, tính cách hào sảng, làm việc gì cũng muốn làm đến nơi đến chốn và luôn mong muốn được mọi người xung quanh công nhận bằng năng lực thực chất.
+                      </p>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-xs space-y-1">
+                      <span className="font-semibold text-indigo-300 block">🔍 Cơ Chế Vận Hành (Nguyên Tố & Phẩm Chất):</span>
+                      <p className="text-gray-300 leading-relaxed">
+                        Theo đúc kết của nhà chiêm tinh học kinh điển Robert Hand: Mặt Trời phản ánh nguồn sinh lực tự nhiên. Để năng lượng này phát triển lành mạnh, bạn cần một môi trường làm việc khuyến khích tính sáng tạo và sự tự chủ.
+                      </p>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs space-y-1">
+                      <span className="font-semibold text-emerald-300 block">🎯 Lời Khuyên Hành Động Thực Tiễn:</span>
+                      <p className="text-emerald-200/90 leading-relaxed">
+                        Học cách lắng nghe ý kiến đóng góp từ người khác với tâm thế khiêm nhường; sự đồng cảm và bao dung sẽ biến bạn thành một người dẫn đường thực thụ được muôn người kính trọng.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surfaceHover border border-borderDark text-[11px] text-gray-400">
+                      <BookOpen className="w-3.5 h-3.5 text-accentGold shrink-0" />
+                      <span>Nguồn tham chiếu kinh điển: <strong className="text-gray-200">Planets in Signs (Robert Hand)</strong> & <strong className="text-gray-200">The Inner Sky (Steven Forrest)</strong></span>
+                    </div>
+                  </div>
+
+                  {/* Moon Sign Analysis */}
+                  <div className="p-5 rounded-xl bg-background/80 border border-borderDark space-y-3">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <div className="flex items-center gap-2 text-indigo-300 font-bold text-sm">
+                        <span>🌙 Mặt Trăng tại {result.facts.bodies.moon.sign}: Thế Giới Cảm Xúc Ẩn Kín & Nhu Cầu An Toàn Nội Tâm</span>
+                      </div>
+                      <span className="text-xs text-gray-400 font-mono">Moon Sign</span>
+                    </div>
+
+                    <p className="text-sm text-gray-200 leading-relaxed">
+                      Mặt Trăng cai quản tiềm thức, trực giác và cách bạn phản ứng theo bản năng khi gặp áp lực. Dấu hiệu {result.facts.bodies.moon.sign} cho thấy nội tâm bạn là người giàu cảm xúc, có giác quan thứ 6 nhạy bén và cần một không gian bình yên để tái nạp năng lượng sau những xô bồ của cuộc sống.
+                    </p>
+
+                    <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-1">
+                      <span className="font-semibold text-amber-300 block">💡 Ý Nghĩa Thực Tế Cho Bạn:</span>
+                      <p className="text-gray-200 leading-relaxed">
+                        Bạn rất quan tâm đến cảm xúc của những người thân cận. Hãy cho phép bản thân được bộc lộ sự yếu lòng khi cần, đừng gồng mình chịu đựng một mình.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surfaceHover border border-borderDark text-[11px] text-gray-400">
+                      <BookOpen className="w-3.5 h-3.5 text-accentGold shrink-0" />
+                      <span>Nguồn tham chiếu kinh điển: <strong className="text-gray-200">Planets in Signs - Luận Giải Vị Trí Mặt Trăng</strong></span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
