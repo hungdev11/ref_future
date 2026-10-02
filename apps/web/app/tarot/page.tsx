@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { BookOpen, Sparkles, RefreshCw, ShieldCheck, AlertCircle, Compass } from 'lucide-react';
+import { BookOpen, Sparkles, RefreshCw, ShieldCheck, AlertCircle, Sliders } from 'lucide-react';
 
 export default function TarotPage() {
   const [spreadCode, setSpreadCode] = useState('SPREAD_3_PPF');
-  const [seed, setSeed] = useState('mystic_seed_2026');
+  const [seed, setSeed] = useState(() => `seed_${Math.random().toString(36).substring(2, 10)}`);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -16,11 +17,15 @@ export default function TarotPage() {
     setLoading(true);
     setError(null);
 
+    // If user hasn't specified an explicit seed in advanced mode, generate fresh seed
+    const activeSeed = showAdvanced ? seed : `seed_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+    setSeed(activeSeed);
+
     try {
       const res = await fetch('/api/tarot/draw', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ spreadCode, seed }),
+        body: JSON.stringify({ spreadCode, seed: activeSeed }),
       });
 
       const data = await res.json();
@@ -44,11 +49,11 @@ export default function TarotPage() {
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-rose-400 font-semibold text-sm">
           <BookOpen className="w-4 h-4" />
-          <span>Rider-Waite-Smith 78 Cards (Seeded PRNG Mulberry32)</span>
+          <span>Rider-Waite-Smith 78 Cards (Tất Định & Tái Lập Tuyệt Đối)</span>
         </div>
-        <h1 className="text-3xl font-extrabold text-white">Trải Bài Tarot Tất Định & Tái Lập Được</h1>
+        <h1 className="text-3xl font-extrabold text-white">Trải Bài Tarot & Thông Điệp Trực Giác</h1>
         <p className="text-sm text-gray-400 max-w-2xl">
-          Quá trình xáo bài không chọn theo nội dung câu hỏi. Thuật toán Fisher-Yates kết hợp Seed bảo đảm tính khách quan, tái lập chính xác 100% khi tra cứu lịch sử.
+          Rút bài khách quan theo thuật toán Fisher-Yates chuẩn xác. Diễn giải dựa trên biểu tượng học kinh điển Rider-Waite-Smith 1910, mang lại lời khuyên thực tế cho cuộc sống.
         </p>
       </div>
 
@@ -71,35 +76,58 @@ export default function TarotPage() {
               </select>
             </div>
 
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-medium text-gray-300">Khóa Hạt Giống (Seed)</label>
-                <button
-                  type="button"
-                  onClick={handleRandomSeed}
-                  className="text-[11px] text-rose-400 hover:text-rose-300 flex items-center gap-1"
-                >
-                  <RefreshCw className="w-3 h-3" /> Đổi Seed
-                </button>
-              </div>
-              <input
-                type="text"
-                value={seed}
-                onChange={(e) => setSeed(e.target.value)}
-                required
-                className="w-full px-3 py-2 rounded-xl bg-background border border-borderDark text-white font-mono text-sm focus:outline-none focus:border-rose-500"
-              />
-              <span className="text-[10px] text-gray-500 mt-1 block">
-                Cùng 1 Seed sẽ luôn rút ra đúng các lá bài này.
-              </span>
+            {/* Advanced Seed Toggle */}
+            <div className="pt-1">
+              <button
+                type="button"
+                onClick={() => setShowAdvanced(!showAdvanced)}
+                className="text-xs text-gray-400 hover:text-rose-400 flex items-center gap-1.5 transition-colors"
+              >
+                <Sliders className="w-3.5 h-3.5" />
+                <span>{showAdvanced ? 'Ẩn tùy chọn nâng cao' : 'Tùy chọn nâng cao (Seed)'}</span>
+              </button>
             </div>
+
+            {showAdvanced && (
+              <div className="p-3.5 rounded-xl bg-background/80 border border-borderDark space-y-2 animate-fadeIn">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-medium text-gray-300">Khóa Hạt Giống (Seed)</label>
+                  <button
+                    type="button"
+                    onClick={handleRandomSeed}
+                    className="text-[11px] text-rose-400 hover:text-rose-300 flex items-center gap-1"
+                  >
+                    <RefreshCw className="w-3 h-3" /> Đổi Seed
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  value={seed}
+                  onChange={(e) => setSeed(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-background border border-borderDark text-white font-mono text-xs focus:outline-none focus:border-rose-500"
+                />
+                <span className="text-[10px] text-gray-500 block">
+                  Cố định seed để tái lập chính xác lần rút bài này.
+                </span>
+              </div>
+            )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 text-white font-bold hover:opacity-95 transition-opacity disabled:opacity-50 mt-4 shadow-lg shadow-rose-600/20"
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 text-white font-bold hover:opacity-95 transition-opacity disabled:opacity-50 mt-4 shadow-lg shadow-rose-600/20 flex items-center justify-center gap-2"
             >
-              {loading ? 'Đang Xáo Bài...' : 'Rút Bài Tất Định'}
+              {loading ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  Đang Xáo Bài...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4" />
+                  Rút Bài Tarot
+                </>
+              )}
             </button>
           </form>
 
@@ -122,16 +150,29 @@ export default function TarotPage() {
 
           {result && (
             <div className="space-y-6">
-              {/* Seed Trace Banner */}
-              <div className="p-4 rounded-xl bg-background/80 border border-borderDark flex items-center justify-between text-xs">
+              {/* Clean verification banner */}
+              <div className="p-4 rounded-xl bg-surface border border-borderDark flex flex-wrap items-center justify-between gap-3 text-xs">
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-400">Trải bài:</span>{' '}
-                  <span className="font-bold text-white">{result.metadata.spreadName}</span>
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <span className="text-gray-200">
+                    Trải bài: <strong className="text-white">{result.metadata.spreadName}</strong> ({result.facts.draws.length} lá)
+                  </span>
                 </div>
-                <div className="font-mono text-gray-400">
-                  Seed: <span className="text-rose-400 font-bold">{result.facts.seed}</span>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowAdvanced(!showAdvanced)}
+                  className="text-gray-400 hover:text-rose-400 text-[11px] transition-colors underline"
+                >
+                  {showAdvanced ? 'Ẩn thông số Seed' : 'Xem thông số Seed & Audit'}
+                </button>
               </div>
+
+              {showAdvanced && (
+                <div className="p-3.5 rounded-xl bg-background/90 border border-borderDark text-[11px] font-mono text-gray-400 space-y-1">
+                  <div>Thuật toán xáo bài: PRNG Mulberry32 • Fisher-Yates</div>
+                  <div>Khóa hạt giống (Seed): <span className="text-rose-400 font-bold">{result.facts.seed}</span></div>
+                </div>
+              )}
 
               {/* Cards Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -177,9 +218,11 @@ export default function TarotPage() {
                       </div>
                     </div>
 
-                    <div className="pt-3 border-t border-borderDark/40 text-[10px] font-mono text-gray-500">
-                      Code: {draw.card.cardCode}
-                    </div>
+                    {showAdvanced && (
+                      <div className="pt-2 border-t border-borderDark/40 text-[10px] font-mono text-gray-500">
+                        Code: {draw.card.cardCode}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

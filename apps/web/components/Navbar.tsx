@@ -65,13 +65,6 @@ export function Navbar() {
             <FileText className="w-4 h-4 text-accentGold" />
             Báo Cáo Tổng Hợp
           </Link>
-          <Link
-            href="/admin/rules"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-white hover:bg-surfaceHover text-purple-300 transition-colors"
-          >
-            <Cpu className="w-4 h-4 text-purple-400" />
-            Rule Simulator
-          </Link>
         </nav>
 
         <div className="flex items-center gap-3">
