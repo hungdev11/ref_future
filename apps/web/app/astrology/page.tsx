@@ -328,6 +328,42 @@ export default function AstrologyPage() {
           )}
         </div>
       </div>
+
+      {/* Educational Guide for Users */}
+      <section className="p-6 rounded-2xl bg-surface/70 border border-borderDark space-y-4">
+        <h3 className="text-base font-bold text-white flex items-center gap-2">
+          <Info className="w-5 h-5 text-amber-400" />
+          <span>Cẩm Nang Giải Mã Các Thành Tố Trong Lá Số Chiêm Tinh</span>
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-gray-300">
+          <div className="p-4 rounded-xl bg-background/50 border border-borderDark/40 space-y-1.5">
+            <div className="font-bold text-amber-300 text-sm">Mặt Trời, Mặt Trăng & Điểm Mọc</div>
+            <p className="text-gray-400 leading-relaxed">
+              <strong className="text-white">Mặt Trời (Sun):</strong> Đại diện cho bản ngã cốt lõi, mục tiêu lý tưởng và nguồn sinh lực sống.
+              <br />
+              <strong className="text-white">Mặt Trăng (Moon):</strong> Phản ánh nhu cầu tiềm thức, cảm xúc sâu kín và thói quen bản năng.
+              <br />
+              <strong className="text-white">Điểm Mọc (Ascendant):</strong> Chiếc lăng kính qua đó bạn tiếp cận thế giới bên ngoài và ấn tượng đầu tiên bạn để lại cho người khác.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-background/50 border border-borderDark/40 space-y-1.5">
+            <div className="font-bold text-amber-300 text-sm">Hệ Thống 12 Cung Nhà (Houses)</div>
+            <p className="text-gray-400 leading-relaxed">
+              Mỗi cung nhà biểu thị một sân khấu cụ thể trong đời sống: Nhà 1 (Bản thân), Nhà 2 (Tài sản), Nhà 4 (Gia đình), Nhà 7 (Hôn nhân & Đối tác), Nhà 10 (Sự nghiệp & Danh vọng). Vị trí các hành tinh rơi vào nhà nào sẽ dồn năng lượng hoạt động vào lĩnh vực đó.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-background/50 border border-borderDark/40 space-y-1.5">
+            <div className="font-bold text-amber-300 text-sm">Ý Nghĩa Các Góc Chiếu (Aspects)</div>
+            <p className="text-gray-400 leading-relaxed">
+              <strong className="text-white">Góc Hòa Hợp (Trine 120°, Sextile 60°):</strong> Dòng năng lượng trôi chảy thuận lợi, mang lại tài năng tự nhiên dễ phát huy.
+              <br />
+              <strong className="text-white">Góc Thử Thách (Square 90°, Opposition 180°):</strong> Tạo áp lực thúc đẩy sự trưởng thành và bài học rèn giũa ý chí kiên định.
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

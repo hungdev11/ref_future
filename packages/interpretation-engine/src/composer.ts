@@ -60,6 +60,12 @@ export class ReadingResultComposer {
         seenDomainPerInterpretation.add(dedupeKey);
 
         const renderedText = SafeTemplateRenderer.render(block.template, { facts });
+        const renderedAdvice = block.actionableAdvice
+          ? SafeTemplateRenderer.render(block.actionableAdvice, { facts })
+          : undefined;
+        const renderedExplanation = block.explanation
+          ? SafeTemplateRenderer.render(block.explanation, { facts })
+          : undefined;
 
         rawSections.push({
           sectionOrder: 0, // Assigned after sorting
@@ -68,6 +74,10 @@ export class ReadingResultComposer {
           renderedText,
           sourceRuleCode: rule.ruleCode,
           interpretationId: interpId,
+          scope: interp.scope,
+          themes: interp.themes,
+          actionableAdvice: renderedAdvice,
+          explanation: renderedExplanation,
         });
       }
     }

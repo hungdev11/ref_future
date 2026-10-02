@@ -16,6 +16,10 @@ export interface ReadingSectionData {
   renderedText: string;
   sourceRuleCode: string;
   interpretationId: string;
+  scope?: string;
+  themes?: string[];
+  actionableAdvice?: string;
+  explanation?: string;
 }
 
 export interface ConditionEvaluationTrace {
