@@ -66,6 +66,9 @@ export class ReadingResultComposer {
         const renderedExplanation = block.explanation
           ? SafeTemplateRenderer.render(block.explanation, { facts })
           : undefined;
+        const renderedLayman = block.laymanSummary
+          ? SafeTemplateRenderer.render(block.laymanSummary, { facts })
+          : undefined;
 
         rawSections.push({
           sectionOrder: 0, // Assigned after sorting
@@ -78,6 +81,8 @@ export class ReadingResultComposer {
           themes: interp.themes,
           actionableAdvice: renderedAdvice,
           explanation: renderedExplanation,
+          sourceReference: block.sourceReference ?? interp.sourceReference,
+          laymanSummary: renderedLayman,
         });
       }
     }

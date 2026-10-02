@@ -20,6 +20,8 @@ export interface ReadingSectionData {
   themes?: string[];
   actionableAdvice?: string;
   explanation?: string;
+  sourceReference?: string;
+  laymanSummary?: string;
 }
 
 export interface ConditionEvaluationTrace {
