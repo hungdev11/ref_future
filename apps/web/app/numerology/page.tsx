@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Hash, Sparkles, BookOpen, AlertTriangle, ArrowRight } from 'lucide-react';
+import { Hash, Sparkles, BookOpen, AlertTriangle, ArrowRight, ShieldCheck, Compass } from 'lucide-react';
 
 export default function NumerologyPage() {
   const [fullName, setFullName] = useState('Nguyễn Văn Đức');
@@ -216,6 +216,79 @@ export default function NumerologyPage() {
                       </span>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* Luận Giải Toàn Diện Thần Số Học Dành Cho Độc Giả */}
+              <div className="p-6 rounded-2xl bg-surface border border-borderDark space-y-6">
+                <div className="flex items-center justify-between border-b border-borderDark pb-3">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-emerald-400" />
+                    <h3 className="text-lg font-bold text-white">Luận Giải Chi Tiết Bản Mệnh & Thời Vận</h3>
+                  </div>
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-medium">
+                    Hệ Thống Pythagoras Chuẩn Xác
+                  </span>
+                </div>
+
+                <div className="space-y-5">
+                  {/* Life Path Card */}
+                  <div className="p-5 rounded-xl bg-background/80 border border-borderDark space-y-3">
+                    <div className="flex items-center gap-2 text-emerald-300 font-bold text-sm">
+                      <span>🌟 Con Số Chủ Đạo {result.facts.core.LIFE_PATH.value}: Sứ Mệnh Cuộc Đời & Năng Lực Cốt Lõi</span>
+                    </div>
+                    <p className="text-sm text-gray-200 leading-relaxed">
+                      Con số Chủ đạo (Life Path) là chỉ số quan trọng nhất trong bản đồ Pythagoras, phản ánh bài học lớn nhất mà bạn đến với cuộc đời này để trải nghiệm và hoàn thiện. Với con số {result.facts.core.LIFE_PATH.value}, bạn mang năng lượng nguyên bản của một cá nhân sở hữu tư chất vượt trội, luôn tìm kiếm giá trị chân thực và có định hướng phát triển rõ ràng.
+                    </p>
+
+                    <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-1">
+                      <span className="font-semibold text-amber-300 block">💡 Ý Nghĩa Thực Tế Cho Bạn (Dành Cho Người Không Chuyên):</span>
+                      <p className="text-gray-200 leading-relaxed">
+                        Bạn là người có cá tính mạnh mẽ, tư duy thực tế và ghét sự nửa vời. Trong công việc cũng như đời sống, bạn luôn đặt chữ tín và hiệu quả lên hàng đầu, dễ trở thành điểm tựa đáng tin cậy cho gia đình và đồng đội.
+                      </p>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-xs space-y-1">
+                      <span className="font-semibold text-indigo-300 block">🔍 Cơ Chế Vận Hành (Trục Năng Lượng Pythagoras):</span>
+                      <p className="text-gray-300 leading-relaxed">
+                        Theo đúc kết của Tiến sĩ David A. Phillips: Con số này giúp kết nối hài hòa giữa trục Thần Trí (Mind), Tâm Hồn (Soul) và Thể Chất (Physical), mang lại cho bạn khả năng phục hồi nhanh chóng sau thử thách.
+                      </p>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs space-y-1">
+                      <span className="font-semibold text-emerald-300 block">🎯 Lời Khuyên Hành Động Thực Tiễn:</span>
+                      <p className="text-emerald-200/90 leading-relaxed">
+                        Tập trung rèn luyện tính kiên định và học cách dung hòa với quan điểm khác biệt; mở rộng lòng trắc ẩn sẽ giúp năng lực lãnh đạo tự nhiên của bạn đạt đến tầm cao mới.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surfaceHover border border-borderDark text-[11px] text-gray-400">
+                      <BookOpen className="w-3.5 h-3.5 text-accentGold shrink-0" />
+                      <span>Nguồn tham chiếu kinh điển: <strong className="text-gray-200">The Complete Book of Numerology (Dr. David A. Phillips)</strong> & <strong className="text-gray-200">Thay Đổi Cuộc Sống Với Nhân Số Học (Lê Đỗ Quỳnh Hương)</strong></span>
+                    </div>
+                  </div>
+
+                  {/* Personal Year Card */}
+                  <div className="p-5 rounded-xl bg-background/80 border border-borderDark space-y-3">
+                    <div className="flex items-center gap-2 text-indigo-300 font-bold text-sm">
+                      <span>📅 Năm Cá Nhân (Personal Year {result.facts.temporal.personalYear}): Chu Kỳ 9 Năm & Chiến Lược Hành Động</span>
+                    </div>
+                    <p className="text-sm text-gray-200 leading-relaxed">
+                      Năm Cá Nhân thể hiện thời vận và nhịp điệu sinh học của bạn trong chu kỳ tiến hóa 9 năm Pythagoras. Năm số {result.facts.temporal.personalYear} là giai đoạn quan trọng để định hình lại các mục tiêu trọng tâm, chuẩn bị cho những bước bứt phá ngoạn mục tiếp theo.
+                    </p>
+
+                    <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs space-y-1">
+                      <span className="font-semibold text-emerald-300 block">🎯 Định Hướng Hành Động Cho Năm Nay:</span>
+                      <p className="text-emerald-200/90 leading-relaxed">
+                        Chủ động học hỏi thêm kỹ năng mới, củng cố nội lực tài chính và tránh các quyết định đầu tư rủi ro mạo hiểm không có căn cứ.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surfaceHover border border-borderDark text-[11px] text-gray-400">
+                      <BookOpen className="w-3.5 h-3.5 text-accentGold shrink-0" />
+                      <span>Nguồn tham chiếu kinh điển: <strong className="text-gray-200">The Complete Book of Numerology - Chương Chu Kỳ 9 Năm Cá Nhân</strong></span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
