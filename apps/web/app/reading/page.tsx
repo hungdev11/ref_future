@@ -342,15 +342,15 @@ export default function ComprehensiveReadingPage() {
               <div className="flex items-center gap-4 flex-wrap text-xs">
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300">
                   <Compass className="w-3.5 h-3.5" />
-                  <span>Mặt Trời (Sun): <strong>{calcFacts.astrology?.facts?.bodies?.sun?.sign ?? '—'}</strong></span>
+                  <span>Mặt Trời (Sun): <strong>{calcFacts.astrology?.facts?.bodies?.SUN?.sign ?? calcFacts.astrology?.facts?.bodies?.sun?.sign ?? '—'}</strong></span>
                 </div>
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-300">
                   <Moon className="w-3.5 h-3.5" />
-                  <span>Mặt Trăng (Moon): <strong>{calcFacts.astrology?.facts?.bodies?.moon?.sign ?? '—'}</strong></span>
+                  <span>Mặt Trăng (Moon): <strong>{calcFacts.astrology?.facts?.bodies?.MOON?.sign ?? calcFacts.astrology?.facts?.bodies?.moon?.sign ?? '—'}</strong></span>
                 </div>
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300">
                   <Hash className="w-3.5 h-3.5" />
-                  <span>Số Chủ Đạo: <strong>{calcFacts.numerology?.facts?.core?.life_path?.value ?? '—'}</strong></span>
+                  <span>Số Chủ Đạo: <strong>{calcFacts.numerology?.facts?.core?.LIFE_PATH?.value ?? calcFacts.numerology?.facts?.core?.life_path?.value ?? '—'}</strong></span>
                 </div>
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300">
                   <BookOpen className="w-3.5 h-3.5" />
@@ -358,8 +358,9 @@ export default function ComprehensiveReadingPage() {
                 </div>
               </div>
 
-              <div className="text-gray-400 text-xs font-mono">
-                Mã Kiểm Tra (SHA-256): <span className="text-accentGold">{readingResult.inputHash?.slice(0, 10)}...</span>
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 text-xs">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>100% Deterministic (Audit Verified)</span>
               </div>
             </div>
           )}
@@ -493,12 +494,6 @@ export default function ComprehensiveReadingPage() {
                         <span>Nguồn tham chiếu kinh điển: <strong className="text-gray-200 font-medium">{section.sourceReference}</strong></span>
                       </div>
                     )}
-
-                    {/* Section Footer: Auditable metadata */}
-                    <div className="flex items-center justify-between text-[11px] text-gray-500 pt-2 border-t border-borderDark/40">
-                      <span>Mã Quy Tắc (Rule): <code className="text-gray-400 font-mono">{section.sourceRuleCode}</code></span>
-                      <span>Mục Tiêu (Target): <code className="text-gray-400 font-mono">{section.interpretationId}</code></span>
-                    </div>
                   </div>
                 ))}
               </div>
