@@ -19,7 +19,6 @@ import {
   ArrowRight,
   Info,
 } from 'lucide-react';
-import { getTarotCardImageUrl } from '../../lib/tarot-images';
 
 export default function ComprehensiveReadingPage() {
   const [fullName, setFullName] = useState('Nguyễn Gia Huy');
@@ -39,6 +38,7 @@ export default function ComprehensiveReadingPage() {
   // Inspector modal state
   const [selectedSection, setSelectedSection] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeSectionModal, setActiveSectionModal] = useState<any>(null);
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,12 +95,14 @@ export default function ComprehensiveReadingPage() {
         );
       }
 
-      // 4. Run Tarot Draw (Daily Guidance 1 card with authentic CSPRNG randomness)
+      // 4. Run Tarot Draw (Daily Guidance 1 card with deterministic seed)
+      const tarotSeed = `seed_${fullName}_${birthDate}`;
       const tarotRes = await fetch('/api/tarot/draw', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           spreadCode: 'SPREAD_1_CARD',
+          seed: tarotSeed,
         }),
       }).then((r) => r.json());
 
@@ -405,46 +407,6 @@ export default function ComprehensiveReadingPage() {
             </div>
           </div>
 
-          {/* Tarot Guidance Spotlight Card with High-Res Image */}
-          {calcFacts?.tarot?.facts?.positions?.[0] && (
-            <div className="p-6 rounded-2xl bg-surface border border-rose-500/30 flex flex-col sm:flex-row items-center gap-6 shadow-lg shadow-rose-950/20">
-              <div className="relative w-28 shrink-0 aspect-[2/3.4] rounded-xl overflow-hidden shadow-2xl border-2 border-accentGold/40 bg-background">
-                <img
-                  src={getTarotCardImageUrl(calcFacts.tarot.facts.positions[0].card.code)}
-                  alt={calcFacts.tarot.facts.positions[0].card.name}
-                  className={`w-full h-full object-cover transition-transform duration-500 ${
-                    calcFacts.tarot.facts.positions[0].isReversed ? 'rotate-180' : ''
-                  }`}
-                  loading="lazy"
-                />
-              </div>
-              <div className="space-y-2 flex-1 text-center sm:text-left">
-                <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-500/20 text-rose-300 border border-rose-500/30">
-                    Lá Bài Tarot Chỉ Dẫn Cá Nhân
-                  </span>
-                  <span
-                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                      calcFacts.tarot.facts.positions[0].isReversed
-                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                        : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                    }`}
-                  >
-                    {calcFacts.tarot.facts.positions[0].isReversed ? 'Ngược (Reversed)' : 'Xuôi (Upright)'}
-                  </span>
-                </div>
-                <h3 className="text-xl font-bold text-white">
-                  {calcFacts.tarot.facts.positions[0].card.name}
-                </h3>
-                <p className="text-xs text-gray-300 leading-relaxed">
-                  {calcFacts.tarot.facts.positions[0].isReversed
-                    ? `Năng lượng của ${calcFacts.tarot.facts.positions[0].card.name} đang ở trạng thái cần bạn quay vào nội tâm, rà soát lại các bước đi và cẩn trọng với các quyết định quan trọng.`
-                    : `Năng lượng thuận dòng của ${calcFacts.tarot.facts.positions[0].card.name} khích lệ bạn tiến bước với lòng tin, sự tự chủ và sẵn sàng đón nhận những vận hội mới.`}
-                </p>
-              </div>
-            </div>
-          )}
-
           {/* Rendered Reading Sections */}
           <div className="space-y-6">
             <div className="flex items-center justify-between border-b border-borderDark pb-4">
@@ -463,72 +425,138 @@ export default function ComprehensiveReadingPage() {
                 <p>Không có quy tắc nào khớp với tập dữ liệu hiện tại.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {readingResult.sections.map((section: any) => (
                   <div
                     key={`${section.sectionOrder}-${section.sourceRuleCode}`}
-                    className="p-6 rounded-2xl bg-surface border border-borderDark space-y-5 hover:border-accentGold/40 transition-colors"
+                    onClick={() => setActiveSectionModal(section)}
+                    className="p-5 rounded-2xl bg-surface border border-borderDark space-y-3 hover:border-accentGold/60 transition-all cursor-pointer hover:scale-[1.01] shadow-lg group flex flex-col justify-between"
                   >
-                    {/* Section Top Header */}
-                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-borderDark/60 pb-3">
-                      <div className="flex items-center gap-2.5 flex-wrap">
-                        <span className="px-2.5 py-1 rounded-md bg-accentGold/10 border border-accentGold/30 text-accentGold text-[11px] font-bold uppercase tracking-wider">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between border-b border-borderDark/60 pb-2">
+                        <span className="px-2.5 py-0.5 rounded-md bg-accentGold/10 border border-accentGold/30 text-accentGold text-[11px] font-bold uppercase tracking-wider">
                           {section.domain}
                         </span>
-                        <h3 className="text-base font-bold text-white">{section.title}</h3>
+                        <span className="text-[11px] text-gray-500 font-mono">
+                          Mục #{section.sectionOrder}
+                        </span>
                       </div>
 
-                      {/* "Why this result?" Button */}
-                      <button
-                        onClick={() => openInspector(section)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surfaceHover border border-purple-500/40 text-purple-300 hover:text-white hover:bg-purple-900/40 text-xs font-medium transition-colors"
-                      >
-                        <Search className="w-3.5 h-3.5 text-purple-400" />
-                        Tại sao có kết quả này?
-                      </button>
+                      <h3 className="text-base font-bold text-white group-hover:text-accentGold transition-colors">
+                        {section.title}
+                      </h3>
+
+                      <p className="text-xs text-gray-300 leading-relaxed line-clamp-2">
+                        {section.laymanSummary ?? section.renderedText}
+                      </p>
                     </div>
 
-                    {/* Main Personalized Text */}
-                    <p className="text-sm text-gray-200 leading-relaxed font-normal">
-                      {section.renderedText}
-                    </p>
-
-                    {/* 1. Layman Summary Box (Dành cho người không chuyên) */}
-                    {section.laymanSummary && (
-                      <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-1.5">
-                        <div className="font-semibold text-amber-300 flex items-center gap-1.5">
-                          <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
-                          <span>Ý Nghĩa Thực Tế Cho Bạn (Dành Cho Người Không Chuyên)</span>
-                        </div>
-                        <p className="text-gray-200 leading-relaxed pl-5">{section.laymanSummary}</p>
-                      </div>
-                    )}
-
-                    {/* 2. Mechanism / Explanation Box */}
-                    {section.explanation && (
-                      <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-xs space-y-1.5">
-                        <div className="font-semibold text-indigo-300 flex items-center gap-1.5">
-                          <Compass className="w-4 h-4 text-indigo-400 shrink-0" />
-                          <span>Bản Chất & Cơ Chế Vận Hành</span>
-                        </div>
-                        <p className="text-gray-300 leading-relaxed pl-5">{section.explanation}</p>
-                      </div>
-                    )}
-
-                    {/* 3. Actionable Practical Advice Box */}
-                    {section.actionableAdvice && (
-                      <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs space-y-1.5">
-                        <div className="font-semibold text-emerald-300 flex items-center gap-1.5">
-                          <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                          <span>Gợi Ý Hành Động Thực Tiễn</span>
-                        </div>
-                        <p className="text-emerald-200/95 leading-relaxed pl-5">{section.actionableAdvice}</p>
-                      </div>
-                    )}
+                    <div className="pt-2 border-t border-borderDark/40 flex items-center justify-between">
+                      <span className="text-xs text-accentGold font-semibold flex items-center gap-1">
+                        <Sparkles className="w-3.5 h-3.5" />
+                        Mở Luận Giải Chi Tiết →
+                      </span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openInspector(section);
+                        }}
+                        className="text-[11px] text-gray-400 hover:text-purple-300 flex items-center gap-1"
+                      >
+                        <Search className="w-3 h-3" /> Audit
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* POPUP / MODAL: SECTION DETAILED INTERPRETATION */}
+      {activeSectionModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/85 backdrop-blur-md animate-fadeIn">
+          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-surface border-2 border-accentGold/50 shadow-2xl p-6 md:p-8 space-y-6">
+            <div className="flex items-center justify-between border-b border-borderDark pb-4">
+              <div className="flex items-center gap-3">
+                <span className="px-2.5 py-1 rounded-lg bg-accentGold/10 border border-accentGold/30 text-accentGold text-xs font-bold uppercase">
+                  {activeSectionModal.domain}
+                </span>
+                <h2 className="text-lg md:text-xl font-extrabold text-white">
+                  {activeSectionModal.title}
+                </h2>
+              </div>
+              <button
+                onClick={() => setActiveSectionModal(null)}
+                className="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-surfaceHover transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="space-y-5">
+              {/* Full Personalized Text */}
+              <p className="text-sm text-gray-200 leading-relaxed">
+                {activeSectionModal.renderedText}
+              </p>
+
+              {/* Layman Summary */}
+              {activeSectionModal.laymanSummary && (
+                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-1.5">
+                  <div className="font-semibold text-amber-300 flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
+                    <span>Ý Nghĩa Thực Tế Cho Bạn (Dành Cho Người Không Chuyên)</span>
+                  </div>
+                  <p className="text-gray-200 leading-relaxed pl-5">{activeSectionModal.laymanSummary}</p>
+                </div>
+              )}
+
+              {/* Mechanism */}
+              {activeSectionModal.explanation && (
+                <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-xs space-y-1.5">
+                  <div className="font-semibold text-indigo-300 flex items-center gap-1.5">
+                    <Compass className="w-4 h-4 text-indigo-400 shrink-0" />
+                    <span>Bản Chất & Cơ Chế Vận Hành</span>
+                  </div>
+                  <p className="text-gray-300 leading-relaxed pl-5">{activeSectionModal.explanation}</p>
+                </div>
+              )}
+
+              {/* Actionable Advice */}
+              {activeSectionModal.actionableAdvice && (
+                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs space-y-1.5">
+                  <div className="font-semibold text-emerald-300 flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>Gợi Ý Hành Động Thực Tiễn</span>
+                  </div>
+                  <p className="text-emerald-100 leading-relaxed pl-5">{activeSectionModal.actionableAdvice}</p>
+                </div>
+              )}
+
+              <div className="pt-2 flex items-center justify-between border-t border-borderDark/60">
+                <button
+                  type="button"
+                  onClick={() => {
+                    openInspector(activeSectionModal);
+                    setActiveSectionModal(null);
+                  }}
+                  className="text-xs text-purple-400 hover:text-purple-300 flex items-center gap-1"
+                >
+                  <Search className="w-3.5 h-3.5" />
+                  Xem Điều Kiện Logic (Audit Trace)
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveSectionModal(null)}
+                  className="px-6 py-2.5 rounded-xl bg-accentGold text-background font-bold text-xs hover:opacity-90"
+                >
+                  Đã Hiểu & Đóng Lại
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -570,12 +598,6 @@ export default function ComprehensiveReadingPage() {
                   <span className="text-gray-400">Lĩnh Vực (Domain):</span>
                   <span className="font-semibold text-white uppercase">{selectedSection.domain}</span>
                 </div>
-                {selectedSection.sourceReference && (
-                  <div className="flex items-center justify-between border-t border-borderDark/40 pt-2">
-                    <span className="text-gray-400">Nguồn Tham Chiếu:</span>
-                    <span className="text-accentGold font-medium text-right max-w-[300px] truncate">{selectedSection.sourceReference}</span>
-                  </div>
-                )}
               </div>
 
               {/* Matched Trace info if found */}

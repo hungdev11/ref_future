@@ -1,7 +1,22 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Moon, AlertTriangle, ShieldCheck, Sparkles, User, Briefcase, DollarSign, Heart, Award } from 'lucide-react';
+import {
+  Moon,
+  AlertTriangle,
+  ShieldCheck,
+  Sparkles,
+  User,
+  X,
+  HelpCircle,
+  Award,
+  Briefcase,
+  DollarSign,
+  Heart,
+  Compass,
+  Layers,
+  ArrowRight,
+} from 'lucide-react';
 
 const BRANCH_VN: Record<string, string> = {
   TY_RAT: 'Tý',
@@ -46,28 +61,112 @@ const PALACE_VN: Record<string, string> = {
   HUYNH_DE: 'HUYNH ĐỆ',
 };
 
-// Perimeter order of branches for classical 4x4 matrix
-const MATRIX_GRID_CELLS: Array<{ branch: string; row: number; col: number }> = [
-  // Row 0: Top (Tỵ -> Ngọ -> Mùi -> Thân)
-  { branch: 'TY_SNAKE', row: 0, col: 0 },
-  { branch: 'NGO_HORSE', row: 0, col: 1 },
-  { branch: 'MUI_GOAT', row: 0, col: 2 },
-  { branch: 'THAN_MONKEY', row: 0, col: 3 },
-
-  // Right col: Row 1 & 2 (Dậu -> Tuất)
-  { branch: 'DAU_ROOSTER', row: 1, col: 3 },
-  { branch: 'TUAT_DOG', row: 2, col: 3 },
-
-  // Row 3: Bottom (Hợi -> Tý -> Sửu -> Dần)
-  { branch: 'HOI_PIG', row: 3, col: 3 },
-  { branch: 'TY_RAT', row: 3, col: 2 },
-  { branch: 'SUU_OX', row: 3, col: 1 },
-  { branch: 'DAN_TIGER', row: 3, col: 0 },
-
-  // Left col: Row 2 & 1 (Mão -> Thìn)
-  { branch: 'MAO_CAT', row: 2, col: 0 },
-  { branch: 'THIN_DRAGON', row: 1, col: 0 },
-];
+const PALACE_INFO: Record<
+  string,
+  {
+    meaning: string;
+    beginnerGuide: string;
+    coreAdvice: string;
+    challenges: string;
+  }
+> = {
+  MENH: {
+    meaning: 'Cốt cách, bản tính, tư chất và vận mệnh tổng quan cả đời',
+    beginnerGuide:
+      'Cung Mệnh là cung quan trọng nhất trong lá số Tử Vi, ví như gốc rễ của một cái cây. Nó quyết định diện mạo, tính khí bẩm sinh, tài năng và khả năng vượt qua nghịch cảnh của bạn.',
+    coreAdvice:
+      'Bạn sở hữu nội lực thâm hậu, chữ tín cao và khả năng dẫn dắt tốt. Hãy kiên định với mục tiêu dài hạn và luôn trau dồi tri thức.',
+    challenges: 'Đôi khi quá nguyên tắc hoặc tự tạo áp lực lớn cho bản thân.',
+  },
+  PHU_MAU: {
+    meaning: 'Tình cảm với cha mẹ, phúc ấm gia đình và sự nâng đỡ của bậc tiền bối',
+    beginnerGuide:
+      'Cung Phụ Mẫu phản ánh sự gắn kết giữa bạn và đấng sinh thành, mức độ thừa hưởng phúc đức, giáo dục gia đình và sự trợ giúp của cấp trên.',
+    coreAdvice:
+      'Hiếu kính với cha mẹ và luôn lắng nghe lời chỉ dạy từ những người đi trước giàu kinh nghiệm để tránh vấp ngã.',
+    challenges: 'Khoảng cách thế hệ đôi lúc gây bất đồng quan điểm, cần kiên nhẫn đối thoại.',
+  },
+  PHUC_DUC: {
+    meaning: 'Phúc phận tổ tiên, đời sống tinh thần và sự an lạc tâm hồn',
+    beginnerGuide:
+      'Cung Phúc Đức là linh hồn của lá số, quyết định bạn có được an vui, may mắn lúc hoạn nạn hay không. Phúc Đức tốt có thể hóa giải nhiều tai ương.',
+    coreAdvice:
+      'Tích đức hành thiện, giữ tâm hồn thanh thản, chăm sóc gia tiên và nuôi dưỡng đời sống nội tâm phong phú.',
+    challenges: 'Dễ suy nghĩ nhiều hoặc lo âu viển vông khi gặp nghịch cảnh.',
+  },
+  DIEN_TRACH: {
+    meaning: 'Nhà cửa, đất đai, bất động sản và môi trường an cư',
+    beginnerGuide:
+      'Cung Điền Trạch cho biết khả năng tự mua nhà, tích lũy đất đai, nơi ăn chốn ở và phong thủy không gian sống của bạn.',
+    coreAdvice:
+      'Tích lũy tài sản an toàn, hướng đến việc sở hữu bất động sản dài hạn thay vì lướt sóng mạo hiểm.',
+    challenges: 'Tránh tranh chấp giấy tờ pháp lý liên quan đến đất đai và tài sản gia đình.',
+  },
+  QUAN_LOC: {
+    meaning: 'Công danh, sự nghiệp, học vấn và vị thế công việc',
+    beginnerGuide:
+      'Cung Quan Lộc xem đường học tập, thi cử, việc làm, cơ hội thăng tiến và phong cách làm việc chuyên môn của bạn.',
+    coreAdvice:
+      'Phát huy thế mạnh chuyên môn, kiên trì theo đuổi 1-2 lĩnh vực mũi nhọn để đạt vị trí vững chắc trong xã hội.',
+    challenges: 'Tránh nôn nóng muốn thành công nhanh hoặc đứng núi này trông núi nọ.',
+  },
+  NO_BOC: {
+    meaning: 'Bạn bè, đồng nghiệp, cấp dưới và các mối quan hệ xã giao',
+    beginnerGuide:
+      'Cung Nô Bộc (còn gọi là Cung Giao Hữu) phản ánh bạn bè xung quanh, thuộc cấp dưới quyền và những người bạn tiếp xúc thường nhật.',
+    coreAdvice:
+      'Chọn bạn mà chơi, đối đãi với cấp dưới và đồng nghiệp bằng sự công tâm, chân thành và tôn trọng.',
+    challenges: 'Cẩn trọng với những lời tâng bốc và tránh cho vay mượn tiền bạc không minh bạch.',
+  },
+  THIEN_DI: {
+    meaning: 'Giao tiếp xã hội bên ngoài, đi lại, xuất ngoại và cơ hội phương xa',
+    beginnerGuide:
+      'Cung Thiên Di đối chiếu trực tiếp với Cung Mệnh, phản ánh bạn khi bước chân ra xã hội: có được quý nhân giúp đỡ, có hợp xuất ngoại hay lập nghiệp phương xa.',
+    coreAdvice:
+      'Mạnh dạn bước ra thế giới, thích nghi linh hoạt với môi trường mới và mở rộng quan hệ đối ngoại.',
+    challenges: 'Chú ý an toàn khi đi xa và cẩn thận trong việc ký kết các thỏa thuận bên ngoài.',
+  },
+  TAT_ACH: {
+    meaning: 'Sức khỏe, thể trạng thể chất và các bệnh lý cần phòng ngừa',
+    beginnerGuide:
+      'Cung Tật Ách cho biết những cơ quan nội tạng dễ yếu ớt trong cơ thể và các rủi ro sức khỏe bạn cần chủ động phòng tránh.',
+    coreAdvice:
+      'Duy trì lối sống điều độ, khám sức khỏe định kỳ và rèn luyện thể dục thể thao mỗi ngày.',
+    challenges: 'Tránh làm việc kiệt sức hoặc bỏ qua những dấu hiệu cảnh báo sớm của cơ thể.',
+  },
+  TAI_BACH: {
+    meaning: 'Tiền tài, dòng tiền, cách kiếm tiền và khả năng tích lũy của cải',
+    beginnerGuide:
+      'Cung Tài Bạch xem nguồn tài lộc đến từ đâu, cách bạn chi tiêu và khả năng giữ tiền. Tiền bạc ở đây là tiền thực tế bạn làm ra.',
+    coreAdvice:
+      'Chi tiêu có kế hoạch, đa dạng hóa các nguồn thu nhập chính đáng và đầu tư dài hạn an toàn.',
+    challenges: 'Tránh tâm lý ham giàu nhanh vào các canh bạc đầu cơ rủi ro cao.',
+  },
+  TU_TUC: {
+    meaning: 'Con cái, đường sinh nở và sự thành đạt của thế hệ sau',
+    beginnerGuide:
+      'Cung Tử Tức phản ánh đường con cái, mức độ hiếu thảo, tính cách con trẻ và niềm vui bạn nhận được từ thế hệ tương lai.',
+    coreAdvice:
+      'Lắng nghe và làm bạn cùng con, đầu tư vào giáo dục nhân cách thay vì chỉ nuông chiều vật chất.',
+    challenges: 'Không nên áp đặt kỳ vọng của cha mẹ lên ước mơ của con cái.',
+  },
+  PHU_THE: {
+    meaning: 'Hôn nhân, tình cảm vợ chồng và phẩm hạnh người bạn đời',
+    beginnerGuide:
+      'Cung Phu Thê xem duyên nợ lứa đôi, tính cách và hoàn cảnh của người bạn đời, mức độ hòa thuận trong đời sống gia đình.',
+    coreAdvice:
+      'Tôn trọng sự khác biệt, bao dung với khuyết điểm của đối phương và duy trì sự đối thoại chân thành mỗi ngày.',
+    challenges: 'Cái tôi quá lớn dễ dẫn đến tranh cãi vặt, cần người này nóng thì người kia nên nhịn.',
+  },
+  HUYNH_DE: {
+    meaning: 'Anh chị em ruột thịt và tình cảm ruột thịt trong gia đình',
+    beginnerGuide:
+      'Cung Huynh Đệ phản ánh mối quan hệ giữa bạn và anh chị em ruột, mức độ nương tựa hỗ trợ lẫn nhau trong lúc khó khăn.',
+    coreAdvice:
+      'Gìn giữ tình cảm anh em hòa thuận, hỗ trợ lẫn nhau với tinh thần "lá lành đùm lá rách".',
+    challenges: 'Phân định rạch ròi giữa tình cảm gia đình và lợi ích tiền bạc để tránh bất hòa.',
+  },
+};
 
 export default function TuViPage() {
   const [solarDate, setSolarDate] = useState('1990-11-29');
@@ -78,10 +177,15 @@ export default function TuViPage() {
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Modal State for clicked palace & Thien Ban
+  const [selectedPalaceKey, setSelectedPalaceKey] = useState<string | null>(null);
+  const [showThienBanModal, setShowThienBanModal] = useState(false);
+
   const handleCalculate = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setSelectedPalaceKey(null);
 
     try {
       const res = await fetch('/api/tuvi/chart', {
@@ -104,28 +208,18 @@ export default function TuViPage() {
     }
   };
 
-  // Helper to find palace by its branch
-  const getPalaceByBranch = (branchKey: string) => {
-    if (!result?.facts?.palaces) return null;
-    for (const [pKey, pVal] of Object.entries(result.facts.palaces)) {
-      if ((pVal as any).branch === branchKey) {
-        return { pKey, ...(pVal as any) };
-      }
-    }
-    return null;
-  };
-
   return (
     <div className="space-y-8">
       {/* Header */}
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-indigo-400 font-semibold text-sm">
           <Moon className="w-4 h-4" />
-          <span>Tử Vi Đẩu Số (Bàn Cờ 12 Cung Truyền Thống & Thiên Bàn Trung Tâm)</span>
+          <span>Tử Vi Đẩu Số (Nam Phái Truyền Thống - TUVI_METHOD_V1)</span>
         </div>
-        <h1 className="text-3xl font-extrabold text-white">An Lá Số Tử Vi Đẩu Số Toàn Diện</h1>
+        <h1 className="text-3xl font-extrabold text-white">An Lá Số Tử Vi Đẩu Số Tất Định</h1>
         <p className="text-sm text-gray-400 max-w-2xl">
-          Lập bản đồ 12 cung chức theo chuẩn Nam Phái truyền thống trên kinh tuyến 105°E (GMT+7). Khảo sát Mệnh, Thân, Quan Lộc, Tài Bạch và Phu Thê với diễn giải đời thường dễ hiểu.
+          Tính toán lịch âm thiên văn chuẩn kinh tuyến 105°E (GMT+7). An 12 cung chức, định Cục, an 14 chính tinh và phụ tinh. 
+          <strong> Nhấn vào bất kỳ Cung chức nào để mở cửa sổ luận giải chi tiết, rõ ràng và dễ hiểu cho người mới bắt đầu.</strong>
         </p>
       </div>
 
@@ -151,11 +245,10 @@ export default function TuViPage() {
                 step="1"
                 value={birthTime}
                 onChange={(e) => setBirthTime(e.target.value)}
-                required
                 className="w-full px-3 py-2 rounded-xl bg-background border border-borderDark text-white text-sm focus:outline-none focus:border-indigo-500"
               />
               <span className="text-[10px] text-gray-500 mt-1 block">
-                Tử Vi bắt buộc phải có giờ sinh để an Mệnh, Thân và 12 cung chức.
+                Tử Vi Đẩu Số bắt buộc phải có giờ sinh để an Mệnh/Thân và Cục.
               </span>
             </div>
 
@@ -190,19 +283,9 @@ export default function TuViPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 text-white font-bold hover:opacity-95 transition-opacity disabled:opacity-50 mt-4 shadow-xl shadow-indigo-600/20 flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold hover:opacity-95 transition-opacity disabled:opacity-50 mt-4 shadow-lg shadow-indigo-600/20"
             >
-              {loading ? (
-                <>
-                  <Moon className="w-4 h-4 animate-spin" />
-                  Đang Khởi Bàn Tử Vi...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4" />
-                  An Lá Số Tử Vi
-                </>
-              )}
+              {loading ? 'Đang Khởi Bàn...' : 'Lập Lá Số Tất Định'}
             </button>
           </form>
 
@@ -212,130 +295,44 @@ export default function TuViPage() {
               <span>{error}</span>
             </div>
           )}
+
+          {/* Quick instructions for beginners */}
+          <div className="p-4 rounded-xl bg-background/60 border border-borderDark text-xs text-gray-400 space-y-2">
+            <div className="font-semibold text-gray-200 flex items-center gap-1.5">
+              <HelpCircle className="w-3.5 h-3.5 text-indigo-400" />
+              Hướng Dẫn Đọc Lá Số
+            </div>
+            <p className="leading-relaxed text-[11px]">
+              Lá số được chia thành 12 cung chức đại diện cho các mặt của đời sống (Mệnh, Tiền tài, Công danh, Vợ chồng...). 
+              <strong> Bạn chỉ cần nhấp chuột vào ô bất kỳ</strong> để xem giải thích tường tận từng cung và lời khuyên ứng xử.
+            </p>
+          </div>
         </div>
 
-        {/* Right Column: Lá Số 12 Cung Bàn Cờ Truyền Thống */}
+        {/* Right Column: Lá Số 12 Cung */}
         <div className="lg:col-span-3 space-y-6">
           {!result && !loading && (
             <div className="p-16 rounded-2xl bg-surface/40 border border-borderDark/60 text-center space-y-4">
-              <Moon className="w-14 h-14 text-indigo-400/40 mx-auto" />
+              <Moon className="w-14 h-14 text-gray-600 mx-auto" />
               <div className="space-y-1">
-                <h3 className="text-white font-semibold text-base">Thiên Bàn Đang Chờ Thiết Lập</h3>
-                <p className="text-gray-400 text-xs max-w-sm mx-auto">
-                  Nhập ngày giờ sinh và giới tính để an bản đồ 12 cung chức Tử Vi Đẩu Số.
+                <h3 className="text-base font-bold text-gray-300">Bản Đồ Tử Vi Đang Chờ Khởi Tạo</h3>
+                <p className="text-gray-400 text-xs max-w-md mx-auto">
+                  Vui lòng nhập ngày, giờ sinh và giới tính ở bảng bên trái để an bản đồ 12 cung Tử Vi và xem luận giải chi tiết.
                 </p>
               </div>
             </div>
           )}
 
           {result && (
-            <div className="space-y-8 animate-fadeIn">
-              {/* BẢN ĐỒ 12 CUNG TRUYỀN THỐNG CHUẨN THIÊN BÀN 4x4 */}
-              <div className="p-4 sm:p-6 rounded-2xl bg-surface border border-borderDark space-y-4">
-                <div className="flex items-center justify-between border-b border-borderDark pb-3">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-indigo-400" />
-                    <h3 className="text-base font-bold text-white">Bản Đồ 12 Cung Tử Vi (Chuẩn Bàn Cờ Truyền Thống)</h3>
-                  </div>
-                  <span className="text-xs px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 font-medium">
-                    Kinh Tuyến 105°E (GMT+7)
-                  </span>
-                </div>
-
-                {/* 4x4 Desktop Matrix / Mobile Adaptive Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
-                  {MATRIX_GRID_CELLS.map((cell) => {
-                    const palace = getPalaceByBranch(cell.branch);
-                    if (!palace) return null;
-
-                    const isMenh = palace.pKey === 'MENH';
-
-                    return (
-                      <div
-                        key={cell.branch}
-                        className={`p-3.5 rounded-xl border flex flex-col justify-between min-h-[170px] transition-all hover:border-indigo-400/60 ${
-                          isMenh
-                            ? 'bg-amber-950/30 border-amber-500/60 shadow-lg shadow-amber-500/5'
-                            : palace.isThan
-                            ? 'bg-indigo-950/30 border-indigo-500/50'
-                            : 'bg-background/80 border-borderDark/80'
-                        }`}
-                      >
-                        {/* Top Header of Palace */}
-                        <div className="space-y-1.5">
-                          <div className="flex items-center justify-between border-b border-borderDark/60 pb-1.5">
-                            <div>
-                              <span className="font-extrabold text-sm text-white block">
-                                {PALACE_VN[palace.pKey] ?? palace.pKey}
-                              </span>
-                              <span className="text-[11px] text-gray-400 block">
-                                Cung {BRANCH_VN[palace.branch]} ({STEM_VN[palace.stem]})
-                              </span>
-                            </div>
-
-                            <div className="flex flex-col items-end gap-1">
-                              {isMenh && (
-                                <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500 text-background">
-                                  MỆNH
-                                </span>
-                              )}
-                              {palace.isThan && (
-                                <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-500 text-white">
-                                  THÂN
-                                </span>
-                              )}
-                              {palace.isTriet && (
-                                <span className="px-1 py-0.2 rounded text-[9px] font-bold bg-rose-950 text-rose-300 border border-rose-500/40">
-                                  TRIỆT
-                                </span>
-                              )}
-                              {palace.isTuan && (
-                                <span className="px-1 py-0.2 rounded text-[9px] font-bold bg-purple-950 text-purple-300 border border-purple-500/40">
-                                  TUẦN
-                                </span>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Stars in Palace */}
-                          <div className="space-y-1 py-1 min-h-[70px]">
-                            {palace.stars.map((s: any, idx: number) => (
-                              <div key={idx} className="flex items-center justify-between text-xs">
-                                <span
-                                  className={
-                                    s.isMain
-                                      ? 'font-bold text-amber-300'
-                                      : s.code.startsWith('HOA_')
-                                      ? 'font-semibold text-rose-400'
-                                      : 'text-gray-300'
-                                  }
-                                >
-                                  {s.name}
-                                </span>
-                                <span className="text-[10px] text-gray-500">{s.element}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Bottom Footer: Đại Hạn */}
-                        <div className="pt-1.5 border-t border-borderDark/60 flex items-center justify-between text-[11px] text-gray-400">
-                          <span>Đại hạn</span>
-                          <span className="font-mono text-white font-medium">
-                            {palace.daiHanStartAge} - {palace.daiHanEndAge} tuổi
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* THIÊN BÀN TỔNG HỢP (Tâm Bàn) */}
-              <div className="p-6 rounded-2xl bg-surface border border-borderDark grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="space-y-6">
+              {/* Four Pillars Banner: Clickable to view Thien Ban detail */}
+              <div
+                onClick={() => setShowThienBanModal(true)}
+                className="p-5 rounded-2xl bg-surface border border-indigo-500/40 hover:border-accentGold/80 transition-all cursor-pointer shadow-lg hover:shadow-indigo-500/10 grid grid-cols-2 sm:grid-cols-4 gap-4 group"
+              >
                 <div>
-                  <span className="text-[11px] text-gray-400 block uppercase">Năm Sinh Âm Lịch</span>
-                  <span className="text-base font-bold text-amber-400">
+                  <span className="text-[11px] text-gray-400 block uppercase">Năm Sinh (Âm Lịch)</span>
+                  <span className="text-base font-bold text-amber-400 group-hover:text-accentGold transition-colors">
                     {STEM_VN[result.facts.yearStem]} {BRANCH_VN[result.facts.yearBranch]}
                   </span>
                   <span className="text-[11px] text-gray-500 block">Năm {result.metadata.lunarYear}</span>
@@ -343,7 +340,7 @@ export default function TuViPage() {
 
                 <div>
                   <span className="text-[11px] text-gray-400 block uppercase">Tháng & Ngày Âm</span>
-                  <span className="text-base font-bold text-indigo-400">
+                  <span className="text-base font-bold text-indigo-400 group-hover:text-indigo-300 transition-colors">
                     Tháng {result.metadata.lunarMonth}, Ngày {result.metadata.lunarDay}
                   </span>
                   <span className="text-[11px] text-gray-500 block">
@@ -353,116 +350,366 @@ export default function TuViPage() {
 
                 <div>
                   <span className="text-[11px] text-gray-400 block uppercase">Bản Mệnh & Cục</span>
-                  <span className="text-base font-bold text-emerald-400">{result.metadata.cucDetail}</span>
+                  <span className="text-base font-bold text-emerald-400 group-hover:text-emerald-300 transition-colors">
+                    {result.metadata.cucDetail}
+                  </span>
                   <span className="text-[11px] text-gray-500 block">{result.facts.amDuongNamNu}</span>
                 </div>
 
-                <div>
-                  <span className="text-[11px] text-gray-400 block uppercase">Mệnh / Thân Cư</span>
-                  <span className="text-base font-bold text-rose-400">
-                    Mệnh {BRANCH_VN[result.facts.menhBranch]} • Thân {BRANCH_VN[result.facts.thanBranch]}
+                <div className="flex flex-col justify-between">
+                  <div>
+                    <span className="text-[11px] text-gray-400 block uppercase">Mệnh / Thân Cư</span>
+                    <span className="text-base font-bold text-rose-400 group-hover:text-rose-300 transition-colors">
+                      Mệnh {BRANCH_VN[result.facts.menhBranch]} • Thân {BRANCH_VN[result.facts.thanBranch]}
+                    </span>
+                    <span className="text-[11px] text-gray-500 block">Giờ {BRANCH_VN[result.facts.hourBranch]}</span>
+                  </div>
+                  <span className="text-[10px] text-accentGold font-medium flex items-center gap-1 mt-1">
+                    🔍 Xem giải nghĩa Thiên Bàn
                   </span>
-                  <span className="text-[11px] text-gray-500 block">Giờ {BRANCH_VN[result.facts.hourBranch]}</span>
                 </div>
               </div>
 
-              {/* LUẬN GIẢI CHI TIẾT CÁC CUNG TRỌNG YẾU (Dành Cho Người Đọc, Không Clutter) */}
-              <div className="p-6 rounded-2xl bg-surface border border-borderDark space-y-6">
-                <div className="flex items-center justify-between border-b border-borderDark pb-3">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-amber-400" />
-                    <h3 className="text-lg font-bold text-white">Luận Giải Các Cung Trọng Yếu Trong Cuộc Sống</h3>
-                  </div>
-                  <span className="text-xs px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 font-medium">
-                    Định Hướng Đời Sống Thực Tế
+              {/* Informative Guidance Ribbon */}
+              <div className="p-3.5 rounded-xl bg-surface border border-borderDark flex items-center justify-between text-xs text-gray-300">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-accentGold" />
+                  <span>
+                    Bản đồ 12 Cung Chức: <strong>Nhấp vào bất kỳ ô nào bên dưới</strong> để xem luận giải chi tiết và ý nghĩa các sao.
                   </span>
                 </div>
+                <span className="text-emerald-400 font-mono text-[11px] hidden sm:inline-block">
+                  12 Cung Khởi Toàn Diện
+                </span>
+              </div>
 
-                <div className="space-y-5">
-                  {/* 1. Cung Mệnh Analysis */}
-                  <div className="p-5 rounded-xl bg-background/80 border border-borderDark space-y-3">
-                    <div className="flex items-center gap-2 text-amber-300 font-bold text-sm">
-                      <Award className="w-4 h-4 text-amber-400" />
-                      <span>👑 Cung Mệnh Tọa Thủ ({BRANCH_VN[result.facts.menhBranch]}): Bản Sắc & Cốt Cách Căn Bản</span>
-                    </div>
-                    <p className="text-sm text-gray-200 leading-relaxed">
-                      Cung Mệnh là gốc rễ của đời người, định hình cốt cách, tư chất và tiềm năng phát triển bẩm sinh. Bản mệnh thuộc {result.facts.amDuongNamNu}, ngự tại cung {BRANCH_VN[result.facts.menhBranch]}, kết hợp với {result.metadata.cucDetail} cho thấy đương số là người có thực tài, nội lực thâm hậu và khát vọng vươn lên rõ nét trong môi trường xã hội.
-                    </p>
+              {/* 12 Palaces Grid (Interactive Clickable) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                {Object.keys(result.facts.palaces).map((pKey) => {
+                  const palace = result.facts.palaces[pKey];
+                  const isMenh = pKey === 'MENH';
 
-                    <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-1">
-                      <span className="font-semibold text-amber-300 block">💡 Ý Nghĩa Thực Tế Cho Bạn (Dễ Hiểu):</span>
-                      <p className="text-gray-200 leading-relaxed">
-                        Bạn có khí chất đĩnh đạc, được người xung quanh tin cậy và kính nể. Điểm mạnh lớn nhất là chữ tín, tinh thần trách nhiệm và khả năng định hình đại cuộc mà không bị dao động bởi tiểu tiết.
-                      </p>
-                    </div>
+                  return (
+                    <div
+                      key={pKey}
+                      onClick={() => setSelectedPalaceKey(pKey)}
+                      className={`p-4 rounded-xl border flex flex-col justify-between transition-all cursor-pointer hover:scale-[1.02] shadow-md group ${
+                        isMenh
+                          ? 'bg-amber-950/25 border-amber-500/70 shadow-amber-500/10 hover:border-amber-400'
+                          : palace.isThan
+                          ? 'bg-indigo-950/25 border-indigo-500/60 hover:border-indigo-400'
+                          : 'bg-surface/90 border-borderDark hover:border-accentGold/60'
+                      }`}
+                    >
+                      {/* Top Header of Palace */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between border-b border-borderDark/60 pb-2">
+                          <div>
+                            <span className="font-extrabold text-sm text-white group-hover:text-accentGold transition-colors">
+                              {PALACE_VN[pKey] ?? pKey}
+                            </span>
+                            <span className="text-xs text-gray-400 block">
+                              Cung {BRANCH_VN[palace.branch]} ({STEM_VN[palace.stem]})
+                            </span>
+                          </div>
 
-                    <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs space-y-1">
-                      <span className="font-semibold text-emerald-300 block">🎯 Lời Khuyên Hành Động:</span>
-                      <p className="text-emerald-200/90 leading-relaxed">
-                        Giữ vững tâm đức và tầm nhìn dài hạn; không nên nóng vội gặt hái thành quả tức thời. Tích lũy tri thức chuyên môn sâu và mở rộng vòng kết nối những người cùng chí hướng.
-                      </p>
-                    </div>
-                  </div>
+                          <div className="flex flex-col items-end gap-1">
+                            {isMenh && (
+                              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500 text-background">
+                                MỆNH
+                              </span>
+                            )}
+                            {palace.isThan && (
+                              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-500 text-white">
+                                THÂN
+                              </span>
+                            )}
+                            {palace.isTriet && (
+                              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-950 text-rose-300 border border-rose-500/40">
+                                TRIỆT
+                              </span>
+                            )}
+                            {palace.isTuan && (
+                              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-950 text-purple-300 border border-purple-500/40">
+                                TUẦN
+                              </span>
+                            )}
+                          </div>
+                        </div>
 
-                  {/* 2. Cung Quan Lộc (Sự nghiệp) */}
-                  <div className="p-5 rounded-xl bg-background/80 border border-borderDark space-y-3">
-                    <div className="flex items-center gap-2 text-indigo-300 font-bold text-sm">
-                      <Briefcase className="w-4 h-4 text-indigo-400" />
-                      <span>💼 Cung Quan Lộc: Sự Nghiệp, Công Danh & Cơ Hội Thăng Tiến</span>
-                    </div>
-                    <p className="text-sm text-gray-200 leading-relaxed">
-                      Cung Quan Lộc phản ánh môi trường làm việc phù hợp, con đường thăng tiến và khả năng đảm nhiệm trọng trách. Đương số có tư duy tổ chức tốt, phù hợp với các cương vị quản lý, chuyên môn kỹ thuật hoặc tự mình gầy dựng cơ nghiệp riêng.
-                    </p>
+                        {/* Stars in Palace */}
+                        <div className="space-y-1.5 min-h-[90px] py-1">
+                          {palace.stars.map((s: any, idx: number) => (
+                            <div key={idx} className="flex items-center justify-between text-xs">
+                              <span
+                                className={
+                                  s.isMain
+                                    ? 'font-bold text-amber-300'
+                                    : s.code.startsWith('HOA_')
+                                    ? 'font-semibold text-rose-400'
+                                    : 'text-gray-300'
+                                }
+                              >
+                                {s.name}
+                              </span>
+                              <span className="text-[10px] text-gray-500">
+                                {s.element}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
 
-                    <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-xs space-y-1">
-                      <span className="font-semibold text-indigo-300 block">💡 Định Hướng Nghề Nghiệp:</span>
-                      <p className="text-gray-300 leading-relaxed">
-                        Thành công đến từ sự kiên trì và tích lũy uy tín qua từng dự án. Nên đặt trọng tâm vào chất lượng công việc thực chất hơn là tìm kiếm các đường tắt mạo hiểm.
-                      </p>
+                      {/* Bottom Footer: Đại Hạn & Button */}
+                      <div className="pt-2 border-t border-borderDark/60 flex items-center justify-between text-[11px] text-gray-400">
+                        <span>Đại hạn: <strong className="text-white font-mono">{palace.daiHanStartAge}-{palace.daiHanEndAge}t</strong></span>
+                        <span className="text-[10px] text-accentGold font-medium group-hover:underline">
+                          Xem giải mã →
+                        </span>
+                      </div>
                     </div>
-                  </div>
+                  );
+                })}
+              </div>
 
-                  {/* 3. Cung Tài Bạch (Tiền bạc) */}
-                  <div className="p-5 rounded-xl bg-background/80 border border-borderDark space-y-3">
-                    <div className="flex items-center gap-2 text-emerald-300 font-bold text-sm">
-                      <DollarSign className="w-4 h-4 text-emerald-400" />
-                      <span>💰 Cung Tài Bạch: Dòng Tiền, Khả Năng Tích Lũy & Tài Lộc</span>
-                    </div>
-                    <p className="text-sm text-gray-200 leading-relaxed">
-                      Cung Tài Bạch chi phối phương thức tụ tài và năng lực quản lý tài chính cá nhân. Tài lộc của đương số thiên về sự tích tụ dần dần theo thời gian, càng làm ăn minh bạch, chính trực thì nguồn tài lộc càng hanh thông và vững bền.
-                    </p>
-
-                    <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs space-y-1">
-                      <span className="font-semibold text-emerald-300 block">🎯 Lời Khuyên Quản Trị Dòng Tiền:</span>
-                      <p className="text-emerald-200/90 leading-relaxed">
-                        Thiết lập các quỹ dự phòng khẩn cấp, đa dạng hóa danh mục đầu tư an toàn và tuyệt đối tránh tâm lý tham lam lao vào các mô hình làm giàu chớp nhoáng thiếu kiểm chứng.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* 4. Cung Thân (Hậu vận) */}
-                  <div className="p-5 rounded-xl bg-background/80 border border-borderDark space-y-3">
-                    <div className="flex items-center gap-2 text-rose-300 font-bold text-sm">
-                      <Heart className="w-4 h-4 text-rose-400" />
-                      <span>🌱 Cung Thân Cư ({BRANCH_VN[result.facts.thanBranch]}): Xu Hướng Hậu Vận Sau Tuổi 30</span>
-                    </div>
-                    <p className="text-sm text-gray-200 leading-relaxed">
-                      Nếu Cung Mệnh chủ về tiền vận thì Cung Thân chủ về sự nghiệp thực tế và hậu vận khi đương số bước vào giai đoạn trưởng thành tự lập. Vị trí Thân cư thể hiện nơi đương số dốc trọn tâm huyết và thu hoạch trái ngọt trong nửa sau cuộc đời.
-                    </p>
-
-                    <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs space-y-1">
-                      <span className="font-semibold text-rose-300 block">💡 Tóm Tắt Dành Cho Bạn:</span>
-                      <p className="text-gray-200 leading-relaxed">
-                        Càng về trung vận và hậu vận, sự nghiệp và đời sống gia đình của bạn càng vững vàng nhờ bề dày kinh nghiệm và khả năng làm chủ số phận tự thân.
-                      </p>
-                    </div>
-                  </div>
+              {/* Quick Jump Bar for Core Life Areas */}
+              <div className="p-5 rounded-2xl bg-surface border border-borderDark space-y-3">
+                <span className="text-xs font-bold text-gray-300 uppercase tracking-wider block">
+                  🌟 Các Cung Trọng Yếu Bạn Nên Xem Trước:
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { key: 'MENH', label: '👑 Cung Mệnh (Bản Thân & Cốt Cách)' },
+                    { key: 'QUAN_LOC', label: '💼 Cung Quan Lộc (Công Danh & Sự Nghiệp)' },
+                    { key: 'TAI_BACH', label: '💰 Cung Tài Bạch (Tiền Tài & Tài Lộc)' },
+                    { key: 'PHU_THE', label: '❤️ Cung Phu Thê (Tình Duyên & Hôn Nhân)' },
+                    { key: 'PHUC_DUC', label: '🕊️ Cung Phúc Đức (Tâm Hồn & May Mắn)' },
+                    { key: 'DIEN_TRACH', label: '🏡 Cung Điền Trạch (Nhà Cửa & Đất Đai)' },
+                  ].map((item) => (
+                    <button
+                      key={item.key}
+                      onClick={() => setSelectedPalaceKey(item.key)}
+                      className="px-3.5 py-2 rounded-xl bg-background border border-borderDark hover:border-accentGold text-xs font-semibold text-gray-200 hover:text-white transition-colors"
+                    >
+                      {item.label}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
           )}
         </div>
       </div>
+
+      {/* POPUP / MODAL: COMPREHENSIVE PALACE INTERPRETATION */}
+      {selectedPalaceKey && result?.facts?.palaces?.[selectedPalaceKey] && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/85 backdrop-blur-md animate-fadeIn">
+          <div className="w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-3xl bg-surface border-2 border-indigo-500/50 shadow-2xl p-6 md:p-8 space-y-6">
+            {(() => {
+              const palace = result.facts.palaces[selectedPalaceKey];
+              const info = PALACE_INFO[selectedPalaceKey] ?? {
+                meaning: 'Vận trình tương ứng của đời sống',
+                beginnerGuide: 'Cung này phản ánh những khía cạnh quan trọng chi phối dòng chảy số mệnh của bạn.',
+                coreAdvice: 'Hành động cẩn trọng và giữ vững sự chính trực.',
+                challenges: 'Cần duy trì tinh thần tỉnh táo trước những biến động bên ngoài.',
+              };
+              const isMenh = selectedPalaceKey === 'MENH';
+
+              return (
+                <>
+                  {/* Modal Header */}
+                  <div className="flex items-center justify-between border-b border-borderDark pb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-300">
+                        <Moon className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs px-2 py-0.5 rounded bg-background border border-borderDark text-accentGold font-bold">
+                            Cung {BRANCH_VN[palace.branch]} ({STEM_VN[palace.stem]})
+                          </span>
+                          {isMenh && (
+                            <span className="text-xs px-2 py-0.5 rounded font-bold bg-amber-500 text-background">
+                              MỆNH CHỦ
+                            </span>
+                          )}
+                          {palace.isThan && (
+                            <span className="text-xs px-2 py-0.5 rounded font-bold bg-indigo-500 text-white">
+                              THÂN CƯ
+                            </span>
+                          )}
+                          {palace.isTriet && (
+                            <span className="text-xs px-2 py-0.5 rounded font-bold bg-rose-950 text-rose-300 border border-rose-500/40">
+                              TRIỆT
+                            </span>
+                          )}
+                          {palace.isTuan && (
+                            <span className="text-xs px-2 py-0.5 rounded font-bold bg-purple-950 text-purple-300 border border-purple-500/40">
+                              TUẦN
+                            </span>
+                          )}
+                        </div>
+                        <h2 className="text-xl md:text-2xl font-extrabold text-white mt-1">
+                          Cung {PALACE_VN[selectedPalaceKey]} — {info.meaning}
+                        </h2>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => setSelectedPalaceKey(null)}
+                      className="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-surfaceHover transition-colors"
+                      title="Đóng popup"
+                    >
+                      <X className="w-6 h-6" />
+                    </button>
+                  </div>
+
+                  {/* Modal Body */}
+                  <div className="space-y-6">
+                    {/* 1. Beginner Explanation Guide */}
+                    <div className="p-5 rounded-2xl bg-background/80 border border-borderDark space-y-3 text-xs">
+                      <div className="font-bold text-accentGold text-sm flex items-center gap-1.5">
+                        <HelpCircle className="w-4 h-4" />
+                        <span>Ý Nghĩa Cung {PALACE_VN[selectedPalaceKey]} Dành Cho Người Không Chuyên:</span>
+                      </div>
+                      <p className="text-gray-200 leading-relaxed text-sm">
+                        {info.beginnerGuide}
+                      </p>
+
+                      <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3 border-t border-borderDark/50 text-[11px] text-gray-300">
+                        <div>
+                          🔹 <strong>Đại Hạn Tuổi:</strong> Từ {palace.daiHanStartAge} đến {palace.daiHanEndAge} tuổi (khoảng thời gian 10 năm chuyển biến mạnh mẽ).
+                        </div>
+                        <div>
+                          🔹 <strong>Địa Chi Tọa Cung:</strong> Cung {BRANCH_VN[palace.branch]} ({palace.element ?? 'Ngũ Hành tương hợp'}).
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 2. Stars in this palace */}
+                    <div className="p-5 rounded-2xl bg-surface border border-indigo-500/30 space-y-3">
+                      <div className="flex items-center justify-between border-b border-borderDark/60 pb-2">
+                        <span className="font-bold text-white text-sm">Các Tinh Tú Tọa Thủ Trong Cung Này:</span>
+                        <span className="text-xs text-indigo-300">{palace.stars.length} ngôi sao hội tụ</span>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        {palace.stars.map((s: any, sidx: number) => (
+                          <div
+                            key={sidx}
+                            className={`p-3 rounded-xl border flex items-center justify-between ${
+                              s.isMain
+                                ? 'bg-amber-500/10 border-amber-500/30 text-amber-200 font-bold'
+                                : s.code.startsWith('HOA_')
+                                ? 'bg-rose-500/10 border-rose-500/30 text-rose-200 font-semibold'
+                                : 'bg-background/60 border-borderDark text-gray-300'
+                            }`}
+                          >
+                            <span>
+                              {s.name} {s.isMain && '★ (Chính Tinh)'}
+                            </span>
+                            <span className="text-[10px] opacity-75">{s.element}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 3. Layman Actionable Advice */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                      <div className="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+                        <span className="font-bold text-emerald-300 text-sm block">
+                          🎯 Lời Khuyên Hành Động Thực Tế:
+                        </span>
+                        <p className="text-emerald-100 leading-relaxed">
+                          {info.coreAdvice}
+                        </p>
+                      </div>
+
+                      <div className="p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-2">
+                        <span className="font-bold text-amber-300 text-sm block">
+                          ⚠️ Nguy Cơ & Thách Thức Cần Đề Phòng:
+                        </span>
+                        <p className="text-amber-100 leading-relaxed">
+                          {info.challenges}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Close button */}
+                    <div className="pt-2 flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedPalaceKey(null)}
+                        className="px-6 py-2.5 rounded-xl bg-indigo-500 text-white font-bold text-xs hover:opacity-90 transition-opacity"
+                      >
+                        Đã Hiểu & Đóng Lại
+                      </button>
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+
+      {/* POPUP / MODAL: THIÊN BÀN & BÁT TỰ GIẢI NGHĨA */}
+      {showThienBanModal && result && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/85 backdrop-blur-md animate-fadeIn">
+          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-surface border-2 border-accentGold/50 shadow-2xl p-6 md:p-8 space-y-6">
+            <div className="flex items-center justify-between border-b border-borderDark pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-accentGold/20 border border-accentGold/40 flex items-center justify-center text-accentGold">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-extrabold text-white">Giải Nghĩa Thiên Bàn & Bát Tự</h2>
+                  <p className="text-xs text-gray-400">Khám phá cấu trúc năng lượng nguyên bản khi bạn sinh ra</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowThienBanModal(false)}
+                className="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-surfaceHover transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              <div className="p-4 rounded-xl bg-background/80 border border-borderDark space-y-2">
+                <span className="font-bold text-amber-400 text-sm block">1. Cục Số ({result.metadata.cucDetail}):</span>
+                <p className="text-gray-300 leading-relaxed">
+                  Trong Tử Vi, "Cục" tượng trưng cho hoàn cảnh xã hội bên ngoài dung dưỡng bản mệnh của bạn. Khi Cục sinh Mệnh hoặc tương hòa, bạn dễ gặp quý nhân nâng đỡ và thuận lợi trong việc hòa nhập xã hội.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-background/80 border border-borderDark space-y-2">
+                <span className="font-bold text-indigo-400 text-sm block">2. Âm Dương ({result.facts.amDuongNamNu}):</span>
+                <p className="text-gray-300 leading-relaxed">
+                  Xác định chiều tính Đại hạn (thuận chiều kim đồng hồ hay nghịch chiều kim đồng hồ) và mức độ thuận lý giữa khí chất âm dương và giới tính thực tế.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-background/80 border border-borderDark space-y-2">
+                <span className="font-bold text-rose-400 text-sm block">3. Mệnh Cư & Thân Cư:</span>
+                <p className="text-gray-300 leading-relaxed">
+                  Mệnh ngự tại cung {BRANCH_VN[result.facts.menhBranch]} chi phối tiền vận (trước 30 tuổi); Thân ngự tại cung {BRANCH_VN[result.facts.thanBranch]} chi phối hậu vận sau khi lập gia đình và tự chủ sự nghiệp.
+                </p>
+              </div>
+
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowThienBanModal(false)}
+                  className="px-6 py-2.5 rounded-xl bg-accentGold text-background font-bold text-xs hover:opacity-90"
+                >
+                  Đã Rõ
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
