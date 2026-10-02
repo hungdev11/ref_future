@@ -19,7 +19,7 @@ import {
   ArrowRight,
   Info,
 } from 'lucide-react';
-import { getTarotCardImageUrl } from '../tarot/page';
+import { getTarotCardImageUrl } from '../../lib/tarot-images';
 
 export default function ComprehensiveReadingPage() {
   const [fullName, setFullName] = useState('Nguyễn Gia Huy');
