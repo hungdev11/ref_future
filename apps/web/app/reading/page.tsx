@@ -19,6 +19,7 @@ import {
   ArrowRight,
   Info,
 } from 'lucide-react';
+import { getTarotCardImageUrl } from '../tarot/page';
 
 export default function ComprehensiveReadingPage() {
   const [fullName, setFullName] = useState('Nguyễn Gia Huy');
@@ -94,14 +95,12 @@ export default function ComprehensiveReadingPage() {
         );
       }
 
-      // 4. Run Tarot Draw (Daily Guidance 1 card with deterministic seed)
-      const tarotSeed = `seed_${fullName}_${birthDate}`;
+      // 4. Run Tarot Draw (Daily Guidance 1 card with authentic CSPRNG randomness)
       const tarotRes = await fetch('/api/tarot/draw', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           spreadCode: 'SPREAD_1_CARD',
-          seed: tarotSeed,
         }),
       }).then((r) => r.json());
 
@@ -406,6 +405,46 @@ export default function ComprehensiveReadingPage() {
             </div>
           </div>
 
+          {/* Tarot Guidance Spotlight Card with High-Res Image */}
+          {calcFacts?.tarot?.facts?.positions?.[0] && (
+            <div className="p-6 rounded-2xl bg-surface border border-rose-500/30 flex flex-col sm:flex-row items-center gap-6 shadow-lg shadow-rose-950/20">
+              <div className="relative w-28 shrink-0 aspect-[2/3.4] rounded-xl overflow-hidden shadow-2xl border-2 border-accentGold/40 bg-background">
+                <img
+                  src={getTarotCardImageUrl(calcFacts.tarot.facts.positions[0].card.code)}
+                  alt={calcFacts.tarot.facts.positions[0].card.name}
+                  className={`w-full h-full object-cover transition-transform duration-500 ${
+                    calcFacts.tarot.facts.positions[0].isReversed ? 'rotate-180' : ''
+                  }`}
+                  loading="lazy"
+                />
+              </div>
+              <div className="space-y-2 flex-1 text-center sm:text-left">
+                <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                    Lá Bài Tarot Chỉ Dẫn Cá Nhân
+                  </span>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                      calcFacts.tarot.facts.positions[0].isReversed
+                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                        : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                    }`}
+                  >
+                    {calcFacts.tarot.facts.positions[0].isReversed ? 'Ngược (Reversed)' : 'Xuôi (Upright)'}
+                  </span>
+                </div>
+                <h3 className="text-xl font-bold text-white">
+                  {calcFacts.tarot.facts.positions[0].card.name}
+                </h3>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  {calcFacts.tarot.facts.positions[0].isReversed
+                    ? `Năng lượng của ${calcFacts.tarot.facts.positions[0].card.name} đang ở trạng thái cần bạn quay vào nội tâm, rà soát lại các bước đi và cẩn trọng với các quyết định quan trọng.`
+                    : `Năng lượng thuận dòng của ${calcFacts.tarot.facts.positions[0].card.name} khích lệ bạn tiến bước với lòng tin, sự tự chủ và sẵn sàng đón nhận những vận hội mới.`}
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Rendered Reading Sections */}
           <div className="space-y-6">
             <div className="flex items-center justify-between border-b border-borderDark pb-4">
@@ -486,14 +525,6 @@ export default function ComprehensiveReadingPage() {
                         <p className="text-emerald-200/95 leading-relaxed pl-5">{section.actionableAdvice}</p>
                       </div>
                     )}
-
-                    {/* 4. Authoritative Classical Source Reference */}
-                    {section.sourceReference && (
-                      <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-background/70 border border-borderDark text-[11px] text-gray-400">
-                        <BookOpen className="w-3.5 h-3.5 text-accentGold shrink-0" />
-                        <span>Nguồn tham chiếu kinh điển: <strong className="text-gray-200 font-medium">{section.sourceReference}</strong></span>
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
@@ -539,6 +570,12 @@ export default function ComprehensiveReadingPage() {
                   <span className="text-gray-400">Lĩnh Vực (Domain):</span>
                   <span className="font-semibold text-white uppercase">{selectedSection.domain}</span>
                 </div>
+                {selectedSection.sourceReference && (
+                  <div className="flex items-center justify-between border-t border-borderDark/40 pt-2">
+                    <span className="text-gray-400">Nguồn Tham Chiếu:</span>
+                    <span className="text-accentGold font-medium text-right max-w-[300px] truncate">{selectedSection.sourceReference}</span>
+                  </div>
+                )}
               </div>
 
               {/* Matched Trace info if found */}

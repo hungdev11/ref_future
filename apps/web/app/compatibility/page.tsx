@@ -453,11 +453,6 @@ export default function CompatibilityPage() {
                 {analysis.elementAnalysis.advice}
               </p>
             </div>
-
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surfaceHover border border-borderDark text-[11px] text-gray-400">
-              <BookOpen className="w-3.5 h-3.5 text-accentGold shrink-0" />
-              <span>Nguồn tham chiếu kinh điển: <strong className="text-gray-200">Love Signs (Linda Goodman)</strong> & <strong className="text-gray-200">Relating: An Astrological Guide to Living with Others (Liz Greene)</strong></span>
-            </div>
           </div>
 
           {/* 2. Numerology Synergy Breakdown */}
@@ -483,11 +478,6 @@ export default function CompatibilityPage() {
               <p className="text-emerald-200/90 leading-relaxed">
                 {analysis.numAnalysis.advice}
               </p>
-            </div>
-
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surfaceHover border border-borderDark text-[11px] text-gray-400">
-              <BookOpen className="w-3.5 h-3.5 text-accentGold shrink-0" />
-              <span>Nguồn tham chiếu kinh điển: <strong className="text-gray-200">The Complete Book of Numerology (Dr. David A. Phillips)</strong></span>
             </div>
           </div>
 
