@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { BookOpen, Sparkles, RefreshCw, ShieldCheck, AlertCircle } from 'lucide-react';
+import { BookOpen, Sparkles, RefreshCw, ShieldCheck, AlertCircle, Compass } from 'lucide-react';
 
 export default function TarotPage() {
   const [spreadCode, setSpreadCode] = useState('SPREAD_3_PPF');
@@ -182,6 +182,73 @@ export default function TarotPage() {
                     </div>
                   </div>
                 ))}
+              </div>
+
+              {/* Luận Giải Toàn Diện Tarot Dành Cho Độc Giả */}
+              <div className="p-6 rounded-2xl bg-surface border border-borderDark space-y-6">
+                <div className="flex items-center justify-between border-b border-borderDark pb-3">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-rose-400" />
+                    <h3 className="text-lg font-bold text-white">Luận Giải Chi Tiết Từng Lá Bài & Thông Điệp</h3>
+                  </div>
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-300 font-medium">
+                    Chuẩn Rider-Waite-Smith 1910
+                  </span>
+                </div>
+
+                <div className="space-y-5">
+                  {result.facts.draws.map((draw: any) => (
+                    <div
+                      key={draw.positionIndex}
+                      className="p-5 rounded-xl bg-background/80 border border-borderDark space-y-3"
+                    >
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <div className="flex items-center gap-2 text-rose-300 font-bold text-sm">
+                          <span>
+                            {draw.positionIndex}. {draw.positionName}: Lá {draw.card.name} ({draw.isReversed ? 'Ngược - Reversed' : 'Xuôi - Upright'})
+                          </span>
+                        </div>
+                        <span className="text-xs px-2 py-0.5 rounded bg-surface border border-borderDark text-gray-300 font-mono">
+                          {draw.card.arcana}
+                        </span>
+                      </div>
+
+                      <p className="text-sm text-gray-200 leading-relaxed">
+                        Tại vị trí {draw.positionName}, lá bài {draw.card.name} xuất hiện dưới chiều {draw.isReversed ? 'ngược' : 'xuôi'}. {draw.isReversed ? draw.card.reversedMeaning : draw.card.uprightMeaning}
+                      </p>
+
+                      <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-1">
+                        <span className="font-semibold text-amber-300 block">💡 Ý Nghĩa Thực Tế Cho Bạn (Dễ Hiểu):</span>
+                        <p className="text-gray-200 leading-relaxed">
+                          {draw.isReversed
+                            ? `Bạn đang cảm thấy có sự ngập ngừng, trì hoãn hoặc cần cẩn trọng xem xét lại các rào cản tâm lý bên trong trước khi đưa ra hành động lớn.`
+                            : `Năng lượng đang rất thuận lợi để bạn tiến lên phía trước. Hãy tin tưởng vào bước đi của mình và chủ động nắm bắt cơ hội.`}
+                        </p>
+                      </div>
+
+                      <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-xs space-y-1">
+                        <span className="font-semibold text-indigo-300 block">🔍 Biểu Tượng Học & Chiều Sâu Tâm Thức:</span>
+                        <p className="text-gray-300 leading-relaxed">
+                          Theo nguyên tác của Arthur Edward Waite (1910): Hình tượng lá bài phản ánh những quy luật tâm lý vô thức. Chiều {draw.isReversed ? 'ngược' : 'xuôi'} nhắc nhở về sự cân bằng giữa nội lực bên trong và hoàn cảnh bên ngoài.
+                        </p>
+                      </div>
+
+                      <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs space-y-1">
+                        <span className="font-semibold text-emerald-300 block">🎯 Lời Khuyên Hành Động Thực Tiễn:</span>
+                        <p className="text-emerald-200/90 leading-relaxed">
+                          {draw.isReversed
+                            ? 'Dành thời gian chiêm nghiệm lại bản thân, giải phóng những nghi ngờ vô cớ và chuẩn bị chu đáo trước khi cam kết mới.'
+                            : 'Hành động với tâm thế tự tin, quang minh chính đại; duy trì sự nhất quán giữa lời nói và việc làm.'}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surfaceHover border border-borderDark text-[11px] text-gray-400">
+                        <BookOpen className="w-3.5 h-3.5 text-accentGold shrink-0" />
+                        <span>Nguồn tham chiếu kinh điển: <strong className="text-gray-200">The Pictorial Key to the Tarot (Arthur Edward Waite, 1910)</strong> & <strong className="text-gray-200">Seventy-Eight Degrees of Wisdom (Rachel Pollack)</strong></span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
