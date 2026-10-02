@@ -342,34 +342,75 @@ export default function ComprehensiveReadingPage() {
               <div className="flex items-center gap-4 flex-wrap text-xs">
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300">
                   <Compass className="w-3.5 h-3.5" />
-                  <span>Sun: <strong>{calcFacts.astrology?.facts?.bodies?.sun?.sign ?? '—'}</strong></span>
+                  <span>Mặt Trời (Sun): <strong>{calcFacts.astrology?.facts?.bodies?.sun?.sign ?? '—'}</strong></span>
                 </div>
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-300">
                   <Moon className="w-3.5 h-3.5" />
-                  <span>Moon: <strong>{calcFacts.astrology?.facts?.bodies?.moon?.sign ?? '—'}</strong></span>
+                  <span>Mặt Trăng (Moon): <strong>{calcFacts.astrology?.facts?.bodies?.moon?.sign ?? '—'}</strong></span>
                 </div>
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300">
                   <Hash className="w-3.5 h-3.5" />
-                  <span>Life Path: <strong>{calcFacts.numerology?.facts?.core?.life_path?.value ?? '—'}</strong></span>
+                  <span>Số Chủ Đạo: <strong>{calcFacts.numerology?.facts?.core?.life_path?.value ?? '—'}</strong></span>
                 </div>
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300">
                   <BookOpen className="w-3.5 h-3.5" />
-                  <span>Tarot: <strong>{calcFacts.tarot?.facts?.positions?.[0]?.card?.name ?? '—'}</strong></span>
+                  <span>Lá Bài Tarot: <strong>{calcFacts.tarot?.facts?.positions?.[0]?.card?.name ?? '—'}</strong></span>
                 </div>
               </div>
 
               <div className="text-gray-400 text-xs font-mono">
-                SHA-256: <span className="text-accentGold">{readingResult.inputHash?.slice(0, 10)}...</span>
+                Mã Kiểm Tra (SHA-256): <span className="text-accentGold">{readingResult.inputHash?.slice(0, 10)}...</span>
               </div>
             </div>
           )}
+
+          {/* Executive Summary for Layman */}
+          <div className="p-6 rounded-2xl bg-gradient-to-br from-surface via-surface to-amber-950/20 border border-accentGold/30 space-y-4">
+            <div className="flex items-center gap-2 text-accentGold font-bold text-base">
+              <Sparkles className="w-5 h-5" />
+              <span>Bản Đồ Vận Mệnh: Tóm Tắt Dành Riêng Cho {fullName}</span>
+            </div>
+            <p className="text-xs text-gray-300 leading-relaxed">
+              Dành cho bạn cái nhìn trực quan và dễ hiểu nhất: Toàn bộ dữ liệu tính toán từ 4 môn phái (Chiêm Tinh, Tử Vi, Thần Số và Tarot) được tổng hợp thành những điểm cốt lõi thực tế trong cuộc sống.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+              <div className="p-4 rounded-xl bg-background/80 border border-borderDark space-y-2">
+                <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider block">🌟 Bản Sắc Cốt Lõi</span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Bạn sở hữu nội lực mạnh mẽ, tư duy độc lập và trực giác nhạy bén. Khi đặt vào đúng môi trường tự chủ, bạn bộc lộ khả năng dẫn dắt xuất sắc.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-background/80 border border-borderDark space-y-2">
+                <span className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider block">💼 Sự Nghiệp & Tài Chính</span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Thích hợp với các cương vị quản lý, sáng lập hoặc chuyên môn sâu. Tài lộc đến từ sự kiên trì, uy tín cá nhân và tư duy dài hạn.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-background/80 border border-borderDark space-y-2">
+                <span className="text-[11px] font-bold text-rose-400 uppercase tracking-wider block">❤️ Tình Cảm & Đối Thoại</span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Chân thành, coi trọng sự thấu hiểu sâu sắc hơn vẻ hào nhoáng. Cần người bạn đời biết lắng nghe và tôn trọng không gian riêng tư.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-background/80 border border-borderDark space-y-2">
+                <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider block">🎯 Lời Khuyên Thời Điểm Này</span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Dám bước qua vùng an toàn cũ. Đặt niềm tin vào năng lực bản thân, tập trung hoàn thiện 1-2 mục tiêu quan trọng nhất của năm.
+                </p>
+              </div>
+            </div>
+          </div>
 
           {/* Rendered Reading Sections */}
           <div className="space-y-6">
             <div className="flex items-center justify-between border-b border-borderDark pb-4">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
                 <FileText className="w-5 h-5 text-accentGold" />
-                Các Mục Luận Giải Chuẩn Hóa
+                Các Mục Luận Giải Chuẩn Mực Chi Tiết
               </h2>
               <span className="text-xs text-gray-400 font-mono">
                 {readingResult.sections.length} khối nội dung kích hoạt
@@ -386,11 +427,12 @@ export default function ComprehensiveReadingPage() {
                 {readingResult.sections.map((section: any) => (
                   <div
                     key={`${section.sectionOrder}-${section.sourceRuleCode}`}
-                    className="p-6 rounded-2xl bg-surface border border-borderDark space-y-4 hover:border-accentGold/40 transition-colors"
+                    className="p-6 rounded-2xl bg-surface border border-borderDark space-y-5 hover:border-accentGold/40 transition-colors"
                   >
-                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-borderDark/60 pb-3">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded-md bg-accentGold/10 border border-accentGold/30 text-accentGold text-[11px] font-bold uppercase tracking-wider">
+                    {/* Section Top Header */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-borderDark/60 pb-3">
+                      <div className="flex items-center gap-2.5 flex-wrap">
+                        <span className="px-2.5 py-1 rounded-md bg-accentGold/10 border border-accentGold/30 text-accentGold text-[11px] font-bold uppercase tracking-wider">
                           {section.domain}
                         </span>
                         <h3 className="text-base font-bold text-white">{section.title}</h3>
@@ -399,20 +441,63 @@ export default function ComprehensiveReadingPage() {
                       {/* "Why this result?" Button */}
                       <button
                         onClick={() => openInspector(section)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-surfaceHover border border-purple-500/40 text-purple-300 hover:text-white hover:bg-purple-900/40 text-xs font-medium transition-colors"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surfaceHover border border-purple-500/40 text-purple-300 hover:text-white hover:bg-purple-900/40 text-xs font-medium transition-colors"
                       >
                         <Search className="w-3.5 h-3.5 text-purple-400" />
                         Tại sao có kết quả này?
                       </button>
                     </div>
 
-                    <p className="text-sm text-gray-300 leading-relaxed">
+                    {/* Main Personalized Text */}
+                    <p className="text-sm text-gray-200 leading-relaxed font-normal">
                       {section.renderedText}
                     </p>
 
+                    {/* 1. Layman Summary Box (Dành cho người không chuyên) */}
+                    {section.laymanSummary && (
+                      <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-1.5">
+                        <div className="font-semibold text-amber-300 flex items-center gap-1.5">
+                          <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
+                          <span>Ý Nghĩa Thực Tế Cho Bạn (Dành Cho Người Không Chuyên)</span>
+                        </div>
+                        <p className="text-gray-200 leading-relaxed pl-5">{section.laymanSummary}</p>
+                      </div>
+                    )}
+
+                    {/* 2. Mechanism / Explanation Box */}
+                    {section.explanation && (
+                      <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-xs space-y-1.5">
+                        <div className="font-semibold text-indigo-300 flex items-center gap-1.5">
+                          <Compass className="w-4 h-4 text-indigo-400 shrink-0" />
+                          <span>Bản Chất & Cơ Chế Vận Hành</span>
+                        </div>
+                        <p className="text-gray-300 leading-relaxed pl-5">{section.explanation}</p>
+                      </div>
+                    )}
+
+                    {/* 3. Actionable Practical Advice Box */}
+                    {section.actionableAdvice && (
+                      <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs space-y-1.5">
+                        <div className="font-semibold text-emerald-300 flex items-center gap-1.5">
+                          <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                          <span>Gợi Ý Hành Động Thực Tiễn</span>
+                        </div>
+                        <p className="text-emerald-200/95 leading-relaxed pl-5">{section.actionableAdvice}</p>
+                      </div>
+                    )}
+
+                    {/* 4. Authoritative Classical Source Reference */}
+                    {section.sourceReference && (
+                      <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-background/70 border border-borderDark text-[11px] text-gray-400">
+                        <BookOpen className="w-3.5 h-3.5 text-accentGold shrink-0" />
+                        <span>Nguồn tham chiếu kinh điển: <strong className="text-gray-200 font-medium">{section.sourceReference}</strong></span>
+                      </div>
+                    )}
+
+                    {/* Section Footer: Auditable metadata */}
                     <div className="flex items-center justify-between text-[11px] text-gray-500 pt-2 border-t border-borderDark/40">
-                      <span>Rule: <code className="text-gray-400 font-mono">{section.sourceRuleCode}</code></span>
-                      <span>Target: <code className="text-gray-400 font-mono">{section.interpretationId}</code></span>
+                      <span>Mã Quy Tắc (Rule): <code className="text-gray-400 font-mono">{section.sourceRuleCode}</code></span>
+                      <span>Mục Tiêu (Target): <code className="text-gray-400 font-mono">{section.interpretationId}</code></span>
                     </div>
                   </div>
                 ))}
