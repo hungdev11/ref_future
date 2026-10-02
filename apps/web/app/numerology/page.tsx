@@ -262,6 +262,141 @@ const PERSONAL_YEAR_INTERPRETATIONS: Record<
   },
 };
 
+const PINNACLE_VALUE_INTERPRETATIONS: Record<
+  number,
+  {
+    title: string;
+    theme: string;
+    beginnerGuide: string;
+    layman: string;
+    strengths: string;
+    challenges: string;
+    advice: string;
+  }
+> = {
+  1: {
+    title: 'Thời Kỳ Tự Lập, Khởi Nghiệp & Dẫn Đầu',
+    theme: 'Độc lập, khởi xướng, làm chủ cá nhân',
+    beginnerGuide:
+      'Trong Thần Số Học, Đỉnh Cao mang năng lượng số 1 là giai đoạn vũ trụ thôi thúc bạn bước ra vùng an toàn để tự đứng trên đôi chân của mình. Bạn sẽ có cơ hội trở thành người tiên phong, lập nghiệp hoặc nắm giữ vai trò dẫn dắt.',
+    layman:
+      'Đây là thời điểm bạn cần quyết đoán, dám nghĩ dám làm và không ỷ lại vào người khác. Bạn sẽ có xu hướng muốn tự lập, mở doanh nghiệp riêng hoặc chuyển hướng công việc để tự chủ hoàn toàn.',
+    strengths: 'Ý chí sắt đá, cơ hội đột phá sự nghiệp, khả năng tự quyết và thu hút các dự án mới.',
+    challenges: 'Dễ cảm thấy cô đơn trên hành trình, xu hướng độc đoán hoặc nóng vội khi người khác không theo kịp tiến độ của mình.',
+    advice: 'Hãy can đảm nắm bắt cơ hội làm chủ; rèn luyện thêm sự điềm tĩnh và học cách lắng nghe cộng sự để đi được đường dài.',
+  },
+  2: {
+    title: 'Thời Kỳ Hợp Tác, Ngoại Giao & Phát Triển Trực Giác',
+    theme: 'Gắn kết, thấu cảm, quan hệ đối tác',
+    beginnerGuide:
+      'Đỉnh Cao số 2 là giai đoạn rèn giũa kỹ năng ngoại giao, hợp tác và thấu hiểu con người. Thay vì đơn độc tiến lên như số 1, giai đoạn này thành công của bạn đến từ việc biết bắt tay với đúng người.',
+    layman:
+      'Bạn sẽ thấy các mối quan hệ tình cảm, bạn bè và đối tác đóng vai trò then chốt. Trực giác của bạn trong giai đoạn này cực kỳ nhạy bén, giúp bạn nhìn thấu tâm lý người khác.',
+    strengths: 'Khéo léo, dĩ hòa vi quý, trực giác nhạy bén, xây dựng được các liên minh bền vững.',
+    challenges: 'Dễ nhạy cảm quá mức, hay do dự, sợ làm mất lòng người khác dẫn đến đánh mất cơ hội của mình.',
+    advice: 'Chọn bạn mà chơi, chọn đối tác uy tín để hợp tác; tin tưởng vào trực giác và giữ vững ranh giới cảm xúc của bản thân.',
+  },
+  3: {
+    title: 'Thời Kỳ Bùng Nổ Sáng Tạo, Giao Tiếp & Mở Rộng Danh Tiếng',
+    theme: 'Sáng tạo, tỏa sáng, hoạt ngôn, danh tiếng',
+    beginnerGuide:
+      'Đỉnh Cao số 3 mở ra một chu kỳ rực rỡ về tư duy sáng tạo, ngôn từ và khả năng xuất hiện trước công chúng. Đây là lúc những ý tưởng độc đáo của bạn được đón nhận nồng nhiệt.',
+    layman:
+      'Bạn sẽ có nhiều cơ hội xuất hiện, thuyết trình, viết lách, kinh doanh dựa trên truyền thông hoặc các hoạt động kết nối xã hội. Năng lượng tích cực của bạn thu hút rất nhiều người.',
+    strengths: 'Hoạt ngôn, ý tưởng phong phú, sức hút xã hội lớn, khả năng truyền cảm hứng tuyệt vời.',
+    challenges: 'Dễ lan man, phân tán sức lực vào nhiều thú vui ngắn hạn hoặc thiếu kiên nhẫn khi gặp việc đòi hỏi tính lặp lại.',
+    advice: 'Tập trung vào 1-2 dự án cốt lõi có giá trị thực chất; biến sức hút ngôn từ thành các sản phẩm cụ thể.',
+  },
+  4: {
+    title: 'Thời Kỳ Xây Dựng Nền Móng, Tích Lũy Bền Vững & Kỷ Luật Thép',
+    theme: 'Thực tế, tích lũy, cơ sở vật chất, bền vững',
+    beginnerGuide:
+      'Đỉnh Cao số 4 đòi hỏi sự chăm chỉ, kỷ luật và tính thực tế cao độ. Đây là thời kỳ bạn đặt những viên gạch nền móng kiên cố nhất cho sự an cư lập nghiệp và tích lũy tài sản trọn đời.',
+    layman:
+      'Không có thành công nào đến qua đêm trong giai đoạn này, nhưng mọi công sức bạn bỏ ra đều tích lũy thành tài sản hữu hình (nhà cửa, bất động sản, chứng chỉ, hệ thống kinh doanh vững bền).',
+    strengths: 'Sự tập trung cao độ, khả năng quản trị tài chính xuất sắc, uy tín vững chắc trong mắt mọi người.',
+    challenges: 'Dễ bị áp lực công việc đè nặng, suy nghĩ cứng nhắc hoặc quên chăm sóc sức khỏe thể chất.',
+    advice: 'Kiên nhẫn theo đuổi lộ trình; xây dựng quy trình rõ ràng và nhớ dành thời gian nghỉ ngơi để tái tạo sức lao động.',
+  },
+  5: {
+    title: 'Thời Kỳ Đột Phá Tự Do, Du Lịch & Thay Đổi Vận Trình',
+    theme: 'Đổi mới, bứt phá, trải nghiệm, mở rộng chân trời',
+    beginnerGuide:
+      'Đỉnh Cao số 5 mang đến những luồng gió mới, phá vỡ mọi sự trì trệ cũ. Đây là giai đoạn bạn được giải phóng khỏi những ràng buộc ngột ngạt để trải nghiệm cuộc sống đa chiều.',
+    layman:
+      'Bạn sẽ có nhiều chuyến đi xa, chuyển việc, đổi môi trường sống hoặc tiếp cận những lĩnh vực hoàn toàn mới mẻ. Khả năng thích ứng của bạn đạt mức tối đa.',
+    strengths: 'Tư duy cởi mở, khả năng nắm bắt xu hướng nhanh nhẹn, năng động và giàu sức sống.',
+    challenges: 'Dễ bốc đồng, nhanh chán nản, khó duy trì cam kết lâu dài nếu không kiểm soát tốt cảm xúc tự do.',
+    advice: 'Đón nhận sự thay đổi với tâm thế chủ động, nhưng hãy đặt ra những nguyên tắc tài chính an toàn để không bị chông chênh.',
+  },
+  6: {
+    title: 'Thời Kỳ Vun Đắp Tổ Ấm, Tình Thương & Trách Nhiệm Xã Hội',
+    theme: 'Gia đình, nuôi dưỡng, cống hiến, thẩm mỹ',
+    beginnerGuide:
+      'Đỉnh Cao số 6 gắn liền với tình yêu thương, hôn nhân, con cái và việc xây dựng tổ ấm bình yên. Đây cũng là thời điểm mắt thẩm mỹ và năng lực chăm sóc cộng đồng của bạn phát triển rực rỡ.',
+    layman:
+      'Các sự kiện trọng đại về gia đình, nhà cửa, kết hôn hoặc sinh con thường diễn ra trong giai đoạn này. Bạn tìm thấy niềm vui lớn nhất khi chăm lo cho những người mình yêu thương.',
+    strengths: 'Lòng trắc ẩn bao dung, trách nhiệm cao, năng khiếu nghệ thuật - trang trí, sự gắn kết gia đình bền chặt.',
+    challenges: 'Hay lo lắng thái quá cho người khác, ôm đồm việc của cả nhà dẫn đến kiệt sức hoặc kỳ vọng quá cao vào người thân.',
+    advice: 'Yêu thương đi cùng sự tôn trọng quyền tự do của người khác; chăm sóc bản thân trước để có đủ năng lượng chăm sóc người thân.',
+  },
+  7: {
+    title: 'Thời Kỳ Trưởng Thành Tâm Trí, Chiêm Nghiệm & Khai Mở Trí Tuệ',
+    theme: 'Học vấn, nghiên cứu, chiều sâu tâm linh, thanh lọc',
+    beginnerGuide:
+      'Đỉnh Cao số 7 là giai đoạn vũ trụ đưa bạn vào trường học chiêm nghiệm sâu sắc. Bạn sẽ thôi thúc tìm kiếm bản chất cuộc sống, học hỏi tri thức chuyên sâu hoặc bước vào hành trình tu tập, chữa lành.',
+    layman:
+      'Thay vì mải mê tìm kiếm danh lợi bên ngoài, bạn muốn quay về bên trong, nâng cao trình độ học vấn, nghiên cứu triết học hoặc rèn luyện tâm tính. Nhiều bài học nhân sinh quý giá sẽ được đúc kết.',
+    strengths: 'Khả năng tập trung nghiên cứu phi thường, trí tuệ sâu sắc, giác quan thứ sáu phát triển.',
+    challenges: 'Có thể trải qua những mất mát hoặc hiểu lầm thử thách để bạn buông bỏ chấp niệm; xu hướng cô lập bản thân.',
+    advice: 'Dành thời gian đọc sách, học hỏi chuyên môn sâu và thiền định; chia sẻ sự thông thái của mình để giúp đỡ những người cùng cảnh ngộ.',
+  },
+  8: {
+    title: 'Thời Kỳ Đỉnh Cao Tài Chính, Quyền Lực & Độc Lập Kinh Tế',
+    theme: 'Thịnh vượng, điều hành, thành tựu vật chất, bản lĩnh',
+    beginnerGuide:
+      'Đỉnh Cao số 8 là một trong những đỉnh thành tựu vật chất rực rỡ nhất trong Thần Số Học. Nếu ở các giai đoạn trước bạn đã nỗ lực đúng đắn, đây là lúc bạn gặt hái quả ngọt về tiền bạc và địa vị.',
+    layman:
+      'Năng lực quản lý kinh doanh, đầu tư và điều hành tổ chức của bạn thăng hoa. Bạn có cơ hội đạt được sự độc lập tài chính và mở rộng tầm ảnh hưởng xã hội.',
+    strengths: 'Tư duy tài chính nhạy bén, bản lĩnh thương trường, quyết đoán và năng lực quản lý nguồn lực lớn.',
+    challenges: 'Cám dỗ của lòng tham vật chất, dễ trở nên độc đoán, lạnh lùng hoặc xem nhẹ các giá trị tình cảm.',
+    advice: 'Dùng tài chính và quyền lực để tạo ra giá trị bền vững cho xã hội; sống công bằng, minh bạch và giữ trọn chữ tín.',
+  },
+  9: {
+    title: 'Thời Kỳ Đại Thành Tựu, Nhân Đạo & Phụng Sự Xã Hội',
+    theme: 'Lý tưởng nhân văn, cống hiến, uy tín lớn, đại thành',
+    beginnerGuide:
+      'Đỉnh Cao số 9 đại diện cho sự viên mãn về mặt tinh thần và tầm nhìn vĩ mô. Bạn sẽ hướng đến các hoạt động giáo dục, y tế, văn hóa nghệ thuật hoặc phụng sự cộng đồng trên quy mô rộng lớn.',
+    layman:
+      'Đây là giai đoạn bạn được xã hội tôn trọng và ghi nhận. Bạn thấy hạnh phúc nhất khi những việc mình làm mang lại lợi ích cho nhiều người chứ không chỉ riêng bản thân.',
+    strengths: 'Uy tín xã hội cao, trái tim nhân ái rộng mở, sức lôi cuốn quần chúng, sự thông thái bao trùm.',
+    challenges: 'Dễ kỳ vọng quá cao vào sự biết ơn của người đời; cảm xúc thất vọng nếu lý tưởng gặp trở ngại thực tế.',
+    advice: 'Cho đi vô điều kiện với tâm thế thanh thản; kết hợp lòng nhân ái với phương pháp tổ chức thực tế, khoa học.',
+  },
+  11: {
+    title: 'Master Number 11: Đỉnh Cao Khai Sáng & Sứ Mệnh Tinh Thần',
+    theme: 'Trực giác bậc thầy, truyền cảm hứng, ánh sáng tâm thức',
+    beginnerGuide:
+      'Đỉnh Cao Master 11 là một ân phước hiếm có nhưng cũng đi kèm trách nhiệm tinh thần to lớn. Bạn trở thành ngọn hải đăng soi đường, truyền cảm hứng và đánh thức niềm tin cho cộng đồng.',
+    layman:
+      'Trực giác và linh cảm của bạn chính xác đến kỳ lạ. Bạn có thể thành công rực rỡ trong các lĩnh vực tâm lý học, giáo dục tinh thần, nghệ thuật hoặc các phong trào nhân đạo.',
+    strengths: 'Trực giác siêu phàm, năng lực thức tỉnh người khác, tầm ảnh hưởng tâm linh sâu rộng.',
+    challenges: 'Căng thẳng thần kinh cao, nhạy cảm quá mức với năng lượng tiêu cực xung quanh.',
+    advice: 'Duy trì lối sống thiền tịnh, ăn uống thanh sạch; bảo vệ năng lượng tâm trí và giữ vững sự khiêm nhường.',
+  },
+  22: {
+    title: 'Master Number 22: Đỉnh Cao Đại Kiến Tạo & Di Sản Trường Tồn',
+    theme: 'Hiện thực hóa giấc mơ lớn, công trình để đời, lãnh đạo kiệt xuất',
+    beginnerGuide:
+      'Đỉnh Cao Master 22 là đỉnh cao quyền năng nhất của Thần Số Học Pythagoras. Năng lượng này giúp bạn biến những ý tưởng tưởng chừng bất khả thi thành những công trình, tổ chức trường tồn.',
+    layman:
+      'Bạn có tầm nhìn chiến lược vĩ đại kết hợp cùng năng lực thi hành thực tiễn kiệt xuất. Mọi dự án bạn chỉ đạo trong giai đoạn này đều có tầm vóc lớn, để lại dấu ấn sâu đậm cho cộng đồng.',
+    strengths: 'Bản lĩnh kiến tạo phi thường, khả năng huy động nguồn lực khổng lồ, ý chí sắt đá.',
+    challenges: 'Gánh nặng trách nhiệm cực lớn dễ gây kiệt quệ thể chất nếu không biết phân quyền và nghỉ ngơi.',
+    advice: 'Đảm bảo mọi công trình xây dựng đều xuất phát từ mục đích phụng sự nhân sinh; giữ gìn sức khỏe như báu vật lớn nhất.',
+  },
+};
+
 export default function NumerologyPage() {
   const [fullName, setFullName] = useState('Nguyễn Văn An');
   const [birthDate, setBirthDate] = useState('1992-05-15');
@@ -633,42 +768,322 @@ export default function NumerologyPage() {
                 </div>
               </div>
 
-              {/* 4 Pinnacles Timeline (Clickable) */}
+              {/* 4 Pinnacles Pyramid & Mountain Wave Timeline Chart (Interactive SVG + Popup) */}
               {result.facts.pinnacles && (
-                <div className="p-6 rounded-2xl bg-surface border border-borderDark space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                      <Award className="w-4 h-4 text-emerald-400" />
-                      4 Giai Đoạn Đỉnh Cao Cuộc Đời (Pinnacles)
-                    </h3>
-                    <span className="text-[11px] text-emerald-400">Nhấn vào từng đỉnh để xem chi tiết</span>
+                <div className="p-5 md:p-6 rounded-3xl bg-surface border border-emerald-500/40 space-y-6 shadow-xl shadow-emerald-500/5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-borderDark pb-3">
+                    <div className="space-y-0.5">
+                      <h3 className="text-base font-bold text-white flex items-center gap-2">
+                        <Award className="w-5 h-5 text-accentGold" />
+                        <span>Biểu Đồ Sóng Vận Trình 4 Đỉnh Cao Cuộc Đời (Kim Tự Tháp Pythagoras)</span>
+                      </h3>
+                      <p className="text-xs text-gray-400">
+                        Mô phỏng 4 chu kỳ nở rộ thành tựu lớn nhất đời người. Nhấn vào từng đỉnh kim tự tháp để xem bài học & vận hội theo từng độ tuổi.
+                      </p>
+                    </div>
+                    <span className="self-start sm:self-auto text-[11px] px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5 shrink-0">
+                      <Sparkles className="w-3.5 h-3.5 text-accentGold" />
+                      Chạm vào Đỉnh để mở Popup
+                    </span>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {result.facts.pinnacles.map((p: any) => (
-                      <div
-                        key={p.pinnacleNumber}
-                        onClick={() =>
-                          setSelectedItem({
-                            category: `ĐỈNH CAO SỐ ${p.pinnacleNumber}`,
-                            title: `Giai Đoạn Đỉnh Cao ${p.pinnacleNumber}: Mang Năng Lượng Số ${p.value}`,
-                            value: p.value,
-                            beginnerGuide:
-                              'Đỉnh cao đời người là 4 giai đoạn nở rộ thành tựu lớn nhất trong cuộc đời bạn. Mỗi đỉnh cao kéo dài khoảng 9 năm, mang lại những cơ hội và bài học đặc thù.',
-                            details: `Trong độ tuổi từ ${p.startAge} đến ${p.endAge} tuổi, bạn đón nhận tần số rung động của số ${p.value}. Đây là cơ hội để bạn đạt được bước ngoặt lớn về sự nghiệp và tài chính.`,
-                            advice:
-                              'Tận dụng tối đa giai đoạn này để gieo trồng và thu hoạch; kiên trì theo đuổi các mục tiêu dài hạn.',
-                          })
-                        }
-                        className="p-4 rounded-xl bg-background/60 border border-borderDark/60 text-center space-y-1 cursor-pointer hover:border-accentGold hover:scale-[1.02] transition-all"
-                      >
-                        <span className="text-[11px] text-gray-400">Đỉnh {p.pinnacleNumber}</span>
-                        <div className="text-2xl font-bold text-emerald-400">{p.value}</div>
-                        <span className="text-[11px] text-gray-300 block">
-                          {p.startAge} - {p.endAge} tuổi
-                        </span>
-                        <span className="text-[10px] text-accentGold block">Chi tiết →</span>
-                      </div>
-                    ))}
+
+                  {/* SVG Interactive Chart */}
+                  <div className="w-full overflow-x-auto py-2">
+                    <div className="min-w-[680px]">
+                      <svg viewBox="0 0 760 260" className="w-full h-auto select-none overflow-visible">
+                        <defs>
+                          {/* Mountain Area Fill Gradient */}
+                          <linearGradient id="pinnacleAreaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stopColor="#10b981" stopOpacity="0.32" />
+                            <stop offset="50%" stopColor="#059669" stopOpacity="0.12" />
+                            <stop offset="100%" stopColor="#0f172a" stopOpacity="0.0" />
+                          </linearGradient>
+
+                          {/* Ridge Line Gradient */}
+                          <linearGradient id="pinnacleRidgeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#10b981" />
+                            <stop offset="30%" stopColor="#e2b342" />
+                            <stop offset="70%" stopColor="#14b8a6" />
+                            <stop offset="100%" stopColor="#6366f1" />
+                          </linearGradient>
+
+                          {/* Peak Halo Gradients */}
+                          <radialGradient id="peakHalo" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stopColor="#e2b342" stopOpacity="0.5" />
+                            <stop offset="100%" stopColor="#e2b342" stopOpacity="0" />
+                          </radialGradient>
+                        </defs>
+
+                        {/* Background Grid Lines */}
+                        <line x1="30" y1="60" x2="730" y2="60" stroke="#334155" strokeDasharray="3,3" opacity="0.3" />
+                        <line x1="30" y1="130" x2="730" y2="130" stroke="#334155" strokeDasharray="3,3" opacity="0.3" />
+
+                        {/* Mountain Area Fill */}
+                        <path
+                          d="M 30 205 C 70 205, 80 80, 120 80 C 160 80, 240 180, 285 65 C 330 180, 420 60, 465 60 C 510 60, 590 170, 635 75 C 675 75, 700 205, 730 205 L 730 215 L 30 215 Z"
+                          fill="url(#pinnacleAreaGrad)"
+                        />
+
+                        {/* Ridge Crest Line */}
+                        <path
+                          d="M 30 205 C 70 205, 80 80, 120 80 C 160 80, 240 180, 285 65 C 330 180, 420 60, 465 60 C 510 60, 590 170, 635 75 C 675 75, 700 205, 730 205"
+                          fill="none"
+                          stroke="url(#pinnacleRidgeGrad)"
+                          strokeWidth="3.5"
+                          strokeLinecap="round"
+                        />
+
+                        {/* Vertical Drop Lines from Peaks to Baseline */}
+                        {[
+                          { x: 120, y: 80 },
+                          { x: 285, y: 65 },
+                          { x: 465, y: 60 },
+                          { x: 635, y: 75 },
+                        ].map((pt, idx) => (
+                          <line
+                            key={idx}
+                            x1={pt.x}
+                            y1={pt.y}
+                            x2={pt.x}
+                            y2={205}
+                            stroke="#e2b342"
+                            strokeDasharray="3,4"
+                            strokeWidth="1.5"
+                            opacity="0.35"
+                          />
+                        ))}
+
+                        {/* Baseline Axis */}
+                        <line x1="20" y1="205" x2="740" y2="205" stroke="#475569" strokeWidth="2" strokeLinecap="round" />
+
+                        {/* Baseline Milestones */}
+                        <g fontSize="11" fill="#94a3b8" textAnchor="middle" fontWeight="500">
+                          <circle cx="30" cy="205" r="3.5" fill="#64748b" />
+                          <text x="30" y="224" fill="#64748b">0 tuổi</text>
+
+                          {result.facts.pinnacles[0] && (
+                            <g>
+                              <circle cx="120" cy="205" r="4.5" fill="#10b981" />
+                              <text x="120" y="224" fill="#34d399" fontWeight="bold">
+                                {result.facts.pinnacles[0].startAge} - {result.facts.pinnacles[0].endAge}t
+                              </text>
+                            </g>
+                          )}
+
+                          {result.facts.pinnacles[1] && (
+                            <g>
+                              <circle cx="285" cy="205" r="4.5" fill="#e2b342" />
+                              <text x="285" y="224" fill="#fbbf24" fontWeight="bold">
+                                {result.facts.pinnacles[1].startAge} - {result.facts.pinnacles[1].endAge}t
+                              </text>
+                            </g>
+                          )}
+
+                          {result.facts.pinnacles[2] && (
+                            <g>
+                              <circle cx="465" cy="205" r="4.5" fill="#14b8a6" />
+                              <text x="465" y="224" fill="#2dd4bf" fontWeight="bold">
+                                {result.facts.pinnacles[2].startAge} - {result.facts.pinnacles[2].endAge}t
+                              </text>
+                            </g>
+                          )}
+
+                          {result.facts.pinnacles[3] && (
+                            <g>
+                              <circle cx="635" cy="205" r="4.5" fill="#818cf8" />
+                              <text x="635" y="224" fill="#a5b4fc" fontWeight="bold">
+                                {result.facts.pinnacles[3].startAge}t trở đi
+                              </text>
+                            </g>
+                          )}
+                        </g>
+
+                        {/* 4 Interactive Peak Apex Nodes */}
+                        {result.facts.pinnacles.map((p: any, idx: number) => {
+                          const peakCoords = [
+                            { x: 120, y: 80 },
+                            { x: 285, y: 65 },
+                            { x: 465, y: 60 },
+                            { x: 635, y: 75 },
+                          ];
+                          const pt = peakCoords[idx] || { x: 100 + idx * 150, y: 80 };
+                          const interp = PINNACLE_VALUE_INTERPRETATIONS[p.value];
+
+                          const handlePinnacleSelect = () => {
+                            const ageDesc =
+                              p.endAge === 99
+                                ? `Từ ${p.startAge} Tuổi Đến Hậu Vận`
+                                : `Từ ${p.startAge} Đến ${p.endAge} Tuổi`;
+
+                            setSelectedItem({
+                              category: `ĐỈNH CAO SỐ ${p.pinnacleNumber} (${ageDesc})`,
+                              title: `Đỉnh ${p.pinnacleNumber} (Số ${p.value}): ${interp?.title ?? `Năng Lượng Số ${p.value}`}`,
+                              value: p.value,
+                              beginnerGuide:
+                                interp?.beginnerGuide ??
+                                'Đỉnh cao đời người là 4 giai đoạn nở rộ thành tựu lớn nhất trong cuộc đời bạn. Mỗi đỉnh cao kéo dài khoảng 9 năm, mang lại những cơ hội và bài học đặc thù.',
+                              details: `${interp?.layman ?? `Trong giai đoạn này bạn đón nhận tần số rung động của số ${p.value}.`}\n\n• Chủ đề cốt lõi: ${interp?.theme ?? 'Phát triển bản thân'}`,
+                              strengths: interp?.strengths ?? 'Thời cơ thuận lợi để bứt phá và tích lũy thành quả.',
+                              challenges: interp?.challenges ?? 'Cần tỉnh táo vượt qua các trở ngại thử thách để hoàn thiện bản thân.',
+                              advice: interp?.advice ?? 'Tận dụng tối đa giai đoạn này để gieo trồng và thu hoạch; kiên trì theo đuổi các mục tiêu dài hạn.',
+                            });
+                          };
+
+                          return (
+                            <g
+                              key={p.pinnacleNumber}
+                              onClick={handlePinnacleSelect}
+                              className="cursor-pointer group focus:outline-none"
+                              role="button"
+                              tabIndex={0}
+                            >
+                              {/* Glowing Halo */}
+                              <circle
+                                cx={pt.x}
+                                cy={pt.y}
+                                r="30"
+                                fill="url(#peakHalo)"
+                                className="group-hover:opacity-100 opacity-60 transition-opacity"
+                              />
+
+                              {/* Outer Circle Node */}
+                              <circle
+                                cx={pt.x}
+                                cy={pt.y}
+                                r="22"
+                                fill="#0b1329"
+                                stroke="#e2b342"
+                                strokeWidth="2.5"
+                                className="group-hover:stroke-emerald-400 group-hover:scale-110 transition-all duration-200 origin-center"
+                              />
+
+                              {/* Number Value */}
+                              <text
+                                x={pt.x}
+                                y={pt.y + 6}
+                                textAnchor="middle"
+                                fill="#ffffff"
+                                fontWeight="900"
+                                fontSize="16"
+                                className="group-hover:fill-emerald-300 transition-colors pointer-events-none"
+                              >
+                                {p.value}
+                              </text>
+
+                              {/* Top Badge: ĐỈNH X */}
+                              <g transform={`translate(${pt.x - 36}, ${pt.y - 42})`}>
+                                <rect
+                                  width="72"
+                                  height="22"
+                                  rx="11"
+                                  fill="#0f172a"
+                                  stroke={idx === 0 ? '#10b981' : idx === 1 ? '#e2b342' : idx === 2 ? '#14b8a6' : '#818cf8'}
+                                  strokeWidth="1.5"
+                                  className="group-hover:fill-surfaceHover transition-colors"
+                                />
+                                <text
+                                  x="36"
+                                  y="15"
+                                  textAnchor="middle"
+                                  fill={idx === 0 ? '#34d399' : idx === 1 ? '#fbbf24' : idx === 2 ? '#2dd4bf' : '#a5b4fc'}
+                                  fontSize="10"
+                                  fontWeight="bold"
+                                  className="pointer-events-none tracking-wider"
+                                >
+                                  ĐỈNH {p.pinnacleNumber}
+                                </text>
+                              </g>
+
+                              {/* Bottom Subtitle / Theme pill */}
+                              <text
+                                x={pt.x}
+                                y={pt.y + 40}
+                                textAnchor="middle"
+                                fill="#94a3b8"
+                                fontSize="10.5"
+                                fontWeight="600"
+                                className="group-hover:fill-white transition-colors pointer-events-none"
+                              >
+                                {interp?.theme?.split(',')[0] ?? `Số ${p.value}`}
+                              </text>
+
+                              {/* Tap indicator */}
+                              <text
+                                x={pt.x}
+                                y={pt.y + 54}
+                                textAnchor="middle"
+                                fill="#e2b342"
+                                fontSize="9"
+                                className="group-hover:underline pointer-events-none"
+                              >
+                                [Xem giải nghĩa]
+                              </text>
+                            </g>
+                          );
+                        })}
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Companion Cards Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
+                    {result.facts.pinnacles.map((p: any) => {
+                      const interp = PINNACLE_VALUE_INTERPRETATIONS[p.value];
+                      const ageDesc =
+                        p.endAge === 99
+                          ? `${p.startAge}t - Hậu vận`
+                          : `${p.startAge} - ${p.endAge} tuổi`;
+
+                      const handleCardClick = () => {
+                        const ageDetail =
+                          p.endAge === 99
+                            ? `Từ ${p.startAge} Tuổi Đến Hậu Vận`
+                            : `Từ ${p.startAge} Đến ${p.endAge} Tuổi`;
+
+                        setSelectedItem({
+                          category: `ĐỈNH CAO SỐ ${p.pinnacleNumber} (${ageDetail})`,
+                          title: `Đỉnh ${p.pinnacleNumber} (Số ${p.value}): ${interp?.title ?? `Năng Lượng Số ${p.value}`}`,
+                          value: p.value,
+                          beginnerGuide:
+                            interp?.beginnerGuide ??
+                            'Đỉnh cao đời người là 4 giai đoạn nở rộ thành tựu lớn nhất trong cuộc đời bạn. Mỗi đỉnh cao kéo dài khoảng 9 năm, mang lại những cơ hội và bài học đặc thù.',
+                          details: `${interp?.layman ?? `Trong giai đoạn này bạn đón nhận tần số rung động của số ${p.value}.`}\n\n• Chủ đề cốt lõi: ${interp?.theme ?? 'Phát triển bản thân'}`,
+                          strengths: interp?.strengths ?? 'Thời cơ thuận lợi để bứt phá và tích lũy thành quả.',
+                          challenges: interp?.challenges ?? 'Cần tỉnh táo vượt qua các trở ngại thử thách để hoàn thiện bản thân.',
+                          advice: interp?.advice ?? 'Tận dụng tối đa giai đoạn này để gieo trồng và thu hoạch; kiên trì theo đuổi các mục tiêu dài hạn.',
+                        });
+                      };
+
+                      return (
+                        <div
+                          key={p.pinnacleNumber}
+                          onClick={handleCardClick}
+                          className="p-4 rounded-2xl bg-background/70 border border-borderDark/80 hover:border-accentGold hover:bg-surfaceHover/80 transition-all cursor-pointer group space-y-2"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 font-bold border border-emerald-500/20">
+                              Đỉnh {p.pinnacleNumber}
+                            </span>
+                            <span className="text-[11px] text-gray-400 font-mono">{ageDesc}</span>
+                          </div>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-3xl font-extrabold text-accentGold group-hover:text-emerald-300 transition-colors">
+                              {p.value}
+                            </span>
+                            <span className="text-xs text-white font-medium line-clamp-1">
+                              {interp?.title ?? `Năng Lượng Số ${p.value}`}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-gray-400 line-clamp-2 leading-relaxed">
+                            {interp?.layman ?? 'Giai đoạn phát triển năng lực và thành tựu cá nhân.'}
+                          </p>
+                          <span className="text-[10px] text-accentGold group-hover:underline flex items-center gap-1 pt-1">
+                            <span>Chi tiết đỉnh cao</span>
+                            <ArrowRight className="w-3 h-3" />
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -714,7 +1129,7 @@ export default function NumerologyPage() {
                   <HelpCircle className="w-4 h-4" />
                   <span>Giải Thích Thuật Ngữ Cho Người Mới Bắt Đầu:</span>
                 </div>
-                <p className="text-gray-200 leading-relaxed text-sm">
+                <p className="text-gray-200 leading-relaxed text-sm whitespace-pre-line">
                   {selectedItem.beginnerGuide}
                 </p>
               </div>
@@ -725,7 +1140,7 @@ export default function NumerologyPage() {
                   <Sparkles className="w-4 h-4 text-emerald-400" />
                   <span>Ý Nghĩa Thực Tế Cho Cuộc Sống Của Bạn:</span>
                 </div>
-                <p className="text-gray-100 leading-relaxed text-sm">
+                <p className="text-gray-100 leading-relaxed text-sm whitespace-pre-line">
                   {selectedItem.details}
                 </p>
               </div>

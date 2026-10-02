@@ -241,6 +241,220 @@ const MOON_SIGN_INTERPRETATIONS: Record<
   },
 };
 
+const ZODIAC_GLYPHS: Record<string, string> = {
+  ARIES: '♈',
+  TAURUS: '♉',
+  GEMINI: '♊',
+  CANCER: '♋',
+  LEO: '♌',
+  VIRGO: '♍',
+  LIBRA: '♎',
+  SCORPIO: '♏',
+  SAGITTARIUS: '♐',
+  CAPRICORN: '♑',
+  AQUARIUS: '♒',
+  PISCES: '♓',
+};
+
+const PLANET_GLYPHS: Record<string, string> = {
+  sun: '☉',
+  moon: '☽',
+  mercury: '☿',
+  venus: '♀',
+  mars: '♂',
+  jupiter: '♃',
+  saturn: '♄',
+  uranus: '♅',
+  neptune: '♆',
+  pluto: '♇',
+  northnode: '☊',
+  southnode: '☋',
+  chiron: '⚷',
+};
+
+const HOUSE_INTERPRETATIONS: Record<
+  number,
+  {
+    nameVn: string;
+    latinName: string;
+    domain: string;
+    beginnerGuide: string;
+    layman: string;
+    keyThemes: string;
+    advice: string;
+  }
+> = {
+  1: {
+    nameVn: 'Cung Mệnh / Bản Ngã (House 1 - ASC)',
+    latinName: 'Vita (Sự Sống & Bản Ngã)',
+    domain: 'Bản thân, ngoại hình, phong thái, cá tính tiên phong & ấn tượng ban đầu',
+    beginnerGuide:
+      'Nhà 1 bắt đầu tại Cung Mọc (Ascendant), là cung nhà quan trọng bậc nhất đại diện cho chính con người bạn — ngoại hình, thần thái, phong cách sống và lăng kính bạn dùng để nhìn nhận thế giới.',
+    layman:
+      'Đây là "cánh cổng" bạn bước ra đời. Dấu hiệu hoàng đạo ngự tại Nhà 1 cho biết người khác cảm nhận gì về bạn ngay từ cái nhìn đầu tiên: sự nhiệt huyết, tự tin, trầm tĩnh hay cuốn hút bí ẩn.',
+    keyThemes: 'Bản ngã cá nhân, sức sống thể chất, phong thái đối ngoại, khả năng khởi xướng.',
+    advice: 'Tự tin sống thật với phong cách riêng; xây dựng hình ảnh cá nhân nhất quán với giá trị bên trong của bạn.',
+  },
+  2: {
+    nameVn: 'Tài Chính & Giá Trị Bản Thân (House 2)',
+    latinName: 'Lucrum (Tài Sản & Thu Nhập)',
+    domain: 'Tiền bạc tự kiếm, của cải vật chất, tài nguyên & lòng tự trọng',
+    beginnerGuide:
+      'Nhà 2 quản lý nguồn thu nhập do chính bạn làm ra, cách bạn quản lý tiền của, thái độ đối với vật chất và đặc biệt là ý thức về giá trị tự thân (Self-worth).',
+    layman:
+      'Nhà này trả lời câu hỏi: Bạn kiếm tiền bằng cách nào? Bạn chi tiêu ra sao và bạn đánh giá bản thân xứng đáng với điều gì? Một Nhà 2 vững vàng giúp bạn luôn an tâm về mặt kinh tế.',
+    keyThemes: 'Thu nhập cá nhân, thói quen chi tiêu, đầu tư an toàn, ý thức về sự xứng đáng.',
+    advice: 'Học cách quản lý tài chính thông minh; nâng cao kỹ năng chuyên môn để gia tăng giá trị bản thân trên thị trường.',
+  },
+  3: {
+    nameVn: 'Giao Tiếp, Tư Duy & Môi Trường Gần (House 3)',
+    latinName: 'Fratres (Anh Chị Em & Giao Tiếp)',
+    domain: 'Tư duy logic, cách nói năng, viết lách, anh chị em & di chuyển gần',
+    beginnerGuide:
+      'Nhà 3 chi phối trí tuệ hàng ngày, kỹ năng giao tiếp, viết lách, học tập ngắn hạn, quan hệ với anh chị em ruột, hàng xóm và những chuyến đi cự ly gần.',
+    layman:
+      'Cung nhà này phản ánh bạn là người nói nhiều hay ít, tư duy nhanh hay sâu, và cách bạn kết nối với những người xung quanh hàng ngày. Nó cũng cho thấy năng khiếu ngôn ngữ và truyền thông của bạn.',
+    keyThemes: 'Kỹ năng ăn nói, thu thập thông tin, quan hệ anh chị em, học hỏi kỹ năng mới.',
+    advice: 'Lắng nghe chân thành trước khi phản hồi; trau dồi kỹ năng viết và diễn đạt để mở rộng cơ hội nghề nghiệp.',
+  },
+  4: {
+    nameVn: 'Gia Đình, Cội Nguồn & Bất Động Sản (House 4 - IC)',
+    latinName: 'Genitor (Cội Nguồn & Tổ Ấm)',
+    domain: 'Gia đình, tổ ấm, cha mẹ, gốc rễ tâm lý & bất động sản',
+    beginnerGuide:
+      'Nhà 4 bắt đầu tại Thiên Để (IC), tượng trưng cho phần rễ của một cái cây — cội nguồn gia đình, ký ức tuổi thơ, sự an toàn tâm lý thầm kín và nhà cửa đất đai.',
+    layman:
+      'Đây là chốn bình yên bạn quay về khi mỏi mệt ngoài xã hội. Nó cho biết môi trường gia đình bạn lớn lên và mẫu tổ ấm lý tưởng mà bạn muốn xây dựng trong tương lai.',
+    keyThemes: 'Tình cảm gia đình, chỗ ở, cảm giác an toàn nội tâm, di sản của dòng họ.',
+    advice: 'Vun đắp mối quan hệ ấm áp với gia đình; tạo dựng một không gian sống sạch sẽ, ấm cúng để tái nạp năng lượng sau ngày dài.',
+  },
+  5: {
+    nameVn: 'Sáng Tạo, Lãng Mạn & Niềm Vui Sống (House 5)',
+    latinName: 'Nati (Con Cái & Sự Sáng Tạo)',
+    domain: 'Tình yêu đôi lứa, thú vui giải trí, con cái, nghệ thuật & đầu tư mạo hiểm',
+    beginnerGuide:
+      'Nhà 5 là sân khấu của niềm vui, sự lãng mạn rung động trái tim, đam mê nghệ thuật, sở thích cá nhân, việc nuôi dạy con cái và các trò chơi thử vận may.',
+    layman:
+      'Đây là cung nhà của đứa trẻ bên trong bạn: Bạn thích làm gì để thấy hạnh phúc? Cách bạn tán tỉnh, hẹn hò và thể hiện sự lãng mạn như thế nào? Nó mang lại niềm say mê sống mỗi ngày.',
+    keyThemes: 'Rung động lãng mạn, sự sáng tạo nghệ thuật, nuôi dưỡng con cái, tinh thần cởi mở.',
+    advice: 'Dành thời gian cho đam mê và sở thích lành mạnh; thể hiện tình cảm chân thành và ngọt ngào với người bạn yêu thương.',
+  },
+  6: {
+    nameVn: 'Công Việc Thường Nhật & Sức Khỏe (House 6)',
+    latinName: 'Valetudo (Sức Khỏe & Tận Tụy)',
+    domain: 'Thói quen hàng ngày, công việc chi tiết, sức khỏe thể chất & phụng sự',
+    beginnerGuide:
+      'Nhà 6 chi phối nếp sống kỷ luật hàng ngày, mối quan hệ với đồng nghiệp, sự tận tâm trong công việc chuyên môn và chế độ ăn uống, chăm sóc sức khỏe thể chất.',
+    layman:
+      'Nếu Nhà 10 là danh vọng to lớn thì Nhà 6 là những việc tỉ mỉ bạn làm mỗi ngày từ sáng tới tối để hoàn thành nhiệm vụ. Nó nhắc nhở bạn duy trì lối sống lành mạnh.',
+    keyThemes: 'Hiệu suất làm việc, thói quen sinh hoạt, quan hệ đồng nghiệp, phòng ngừa bệnh tật.',
+    advice: 'Xây dựng thời gian biểu khoa học; chú trọng tập luyện thể thao và dinh dưỡng cân bằng để có sức bền dài hạn.',
+  },
+  7: {
+    nameVn: 'Đối Tác, Hôn Nhân & Hợp Tác Một-Một (House 7 - DSC)',
+    latinName: 'Uxor (Hôn Nhân & Đối Tác)',
+    domain: 'Hôn nhân, bạn đời, đối tác kinh doanh & quan hệ hợp tác đối xứng',
+    beginnerGuide:
+      'Nhà 7 bắt đầu tại Cung Lặn (Descendant), đại diện cho tấm gương phản chiếu bản thân bạn qua các mối quan hệ một-một quan trọng nhất: bạn đời và đối tác làm ăn.',
+    layman:
+      'Cung nhà này cho biết mẫu người bạn đời mà bạn có duyên gắn bó, cách bạn cư xử trong hôn nhân và khả năng đàm phán hợp tác kinh doanh để đôi bên cùng có lợi.',
+    keyThemes: 'Cam kết hôn nhân, chọn bạn đời, thỏa thuận hợp tác, sự công bằng trong quan hệ.',
+    advice: 'Học cách lắng nghe và thấu cảm góc nhìn của đối phương; minh bạch trong mọi thỏa thuận hợp tác.',
+  },
+  8: {
+    nameVn: 'Biến Đổi Sâu Sắc, Tái Sinh & Tài Sản Chung (House 8)',
+    latinName: 'Mors (Tái Sinh & Chuyển Hóa)',
+    domain: 'Tài chính chung (thừa kế, vốn vay, tiền bạn đời), tâm lý học sâu & vượt qua nghịch cảnh',
+    beginnerGuide:
+      'Nhà 8 là vùng nước sâu huyền bí liên quan đến tài nguyên của người khác (tiền của đối tác, bảo hiểm, đầu tư), sự chuyển hóa nội tâm sâu sắc và năng lực phục hồi sau khủng hoảng.',
+    layman:
+      'Cung nhà này giúp bạn nhìn thấu những điều ẩn sâu bên dưới bề mặt. Nó cho thấy cách bạn quản lý tài sản chung và khả năng tự "lột xác" tái sinh mạnh mẽ sau những giai đoạn khó khăn.',
+    keyThemes: 'Tài sản chung, quản lý nợ/vốn, trực giác tâm lý sâu, sự chuyển hóa nội lực.',
+    advice: 'Minh bạch trong các vấn đề tiền bạc chung; rèn luyện bản lĩnh đón nhận thay đổi như một cơ hội để trưởng thành hơn.',
+  },
+  9: {
+    nameVn: 'Triết Học, Du Ngoạn & Tầm Nhìn Xa (House 9)',
+    latinName: 'Iter (Hành Trình & Khám Phá)',
+    domain: 'Học vấn đại học, du lịch đường dài, triết lý sống, tôn giáo & xuất bản',
+    beginnerGuide:
+      'Nhà 9 cai quản khát vọng vươn xa của tâm trí: học vấn bậc cao, các chuyến xuất ngoại, sự mở rộng thế giới quan văn hóa, luật pháp và niềm tin tâm linh.',
+    layman:
+      'Đây là cung nhà của người lữ hành và học giả. Nó phản ánh niềm khao khát đi du lịch xa, khám phá các nền văn hóa mới và xây dựng một hệ thống triết lý sống nhân văn cho riêng mình.',
+    keyThemes: 'Học vấn chuyên sâu, du lịch quốc tế, triết lý nhân sinh, xuất bản & truyền bá ý tưởng.',
+    advice: 'Không ngừng mở rộng chân trời hiểu biết qua sách vở và trải nghiệm thực tế; sống bao dung với các nền văn hóa khác nhau.',
+  },
+  10: {
+    nameVn: 'Sự Nghiệp, Danh Tiếng & Đỉnh Cao Xã Hội (House 10 - MC)',
+    latinName: 'Regnum (Đỉnh Cao Vị Thế & Quyền Uy)',
+    domain: 'Đỉnh cao sự nghiệp, địa vị xã hội, hoài bão lớn & di sản cống hiến',
+    beginnerGuide:
+      'Nhà 10 bắt đầu tại Thiên Đỉnh (Medium Coeli / MC), là điểm cao nhất trên bầu trời lúc bạn chào đời. Nó đại diện cho sự nghiệp rực rỡ, danh tiếng công chúng và đỉnh cao thành tựu bạn đạt được trong xã hội.',
+    layman:
+      'Đây là câu trả lời cho việc: Bạn muốn thế giới ghi nhớ mình vì điều gì? Bạn phù hợp làm lãnh đạo trong lĩnh vực nào? Nó là đích đến của mọi nỗ lực chuyên môn và uy tín xã hội của bạn.',
+    keyThemes: 'Khát vọng sự nghiệp, danh tiếng công chúng, vai trò lãnh đạo, sự công nhận của xã hội.',
+    advice: 'Đặt ra các mục tiêu nghề nghiệp dài hạn; giữ gìn chữ tín và đạo đức nghề nghiệp để xây dựng vị thế trường tồn.',
+  },
+  11: {
+    nameVn: 'Cộng Đồng, Bạn Bè & Ước Mơ Tương Lai (House 11)',
+    latinName: 'Benefacta (Bạn Bè & Lý Tưởng)',
+    domain: 'Mạng lưới bạn bè, đội nhóm, tổ chức xã hội, nhà tài trợ & lý tưởng tương lai',
+    beginnerGuide:
+      'Nhà 11 là nơi của tình bạn, hội nhóm, cộng đồng cùng chung chí hướng và những ước mơ cao đẹp hướng đến tương lai tốt đẹp hơn cho số đông.',
+    layman:
+      'Cung nhà này cho biết bạn có quý nhân phù trợ hay không, cách bạn hòa nhập với đội ngũ đồng nghiệp và những người bạn tri kỷ sẽ đồng hành cùng bạn hiện thực hóa ước mơ lớn.',
+    keyThemes: 'Tình bạn chân thành, mạng lưới quan hệ rộng, làm việc nhóm, ước mơ hoài bão lớn.',
+    advice: 'Tích cực tham gia các cộng đồng lành mạnh; kết nối những người cùng lý tưởng để cùng nhau kiến tạo giá trị.',
+  },
+  12: {
+    nameVn: 'Tiềm Thức, Bí Ẩn & Chữa Lành Tâm Linh (House 12)',
+    latinName: 'Carcer (Tiềm Thức & Giải Thoát)',
+    domain: 'Thế giới tiềm thức, trực giác tâm linh, sự chữa lành, giấc mơ & sự tĩnh lặng',
+    beginnerGuide:
+      'Nhà 12 là cung nhà cuối cùng của vòng hoàng đạo, biểu thị đại dương tiềm thức vô tận, những khả năng tiềm ẩn mà bạn chưa khai phá, sự buông bỏ nghiệp quả và sự thăng hoa tâm linh.',
+    layman:
+      'Đây là không gian tĩnh lặng nhất trong tâm hồn bạn: sự lắng đọng, trực giác thiêng liêng, khả năng thấu cảm nỗi đau người khác và nhu cầu được nghỉ ngơi chữa lành trong không gian riêng.',
+    keyThemes: 'Giác ngộ tâm linh, thế giới giấc mơ, lòng vị tha vô điều kiện, chữa lành tổn thương.',
+    advice: 'Thực hành thiền định hoặc các hoạt động nuôi dưỡng tinh thần; học cách tha thứ và buông bỏ những âu lo trong quá khứ.',
+  },
+};
+
+function getClockCoordinates(cx: number, cy: number, r: number, clockHour: number) {
+  const phi = (clockHour * 30 * Math.PI) / 180;
+  return {
+    x: cx + r * Math.sin(phi),
+    y: cy - r * Math.cos(phi),
+  };
+}
+
+function getHouseClockHours(houseNumber: number) {
+  const startRaw = (10 - houseNumber) % 12;
+  const startHour = startRaw <= 0 ? startRaw + 12 : startRaw;
+
+  const endRaw = (9 - houseNumber) % 12;
+  const endHour = endRaw <= 0 ? endRaw + 12 : endRaw;
+
+  const midRaw = (9.5 - houseNumber) % 12;
+  const midHour = midRaw <= 0 ? midRaw + 12 : midRaw;
+
+  return { startHour, endHour, midHour };
+}
+
+function createSectorPath(
+  cx: number,
+  cy: number,
+  rInner: number,
+  rOuter: number,
+  startHour: number,
+  endHour: number
+) {
+  const p1 = getClockCoordinates(cx, cy, rOuter, startHour);
+  const p2 = getClockCoordinates(cx, cy, rOuter, endHour);
+  const p3 = getClockCoordinates(cx, cy, rInner, endHour);
+  const p4 = getClockCoordinates(cx, cy, rInner, startHour);
+
+  return `M ${p1.x.toFixed(2)} ${p1.y.toFixed(2)} A ${rOuter} ${rOuter} 0 0 0 ${p2.x.toFixed(2)} ${p2.y.toFixed(2)} L ${p3.x.toFixed(2)} ${p3.y.toFixed(2)} A ${rInner} ${rInner} 0 0 1 ${p4.x.toFixed(2)} ${p4.y.toFixed(2)} Z`;
+}
+
 export default function AstrologyPage() {
   const [birthDate, setBirthDate] = useState('1990-07-25');
   const [birthTime, setBirthTime] = useState('08:30:00');
@@ -691,20 +905,327 @@ export default function AstrologyPage() {
                 </div>
               </div>
 
-              {/* Houses (if available) */}
+              {/* Biểu Đồ Bánh Xe 12 Cung Nhà (Natal House Wheel Chart - Interactive SVG + Popup) */}
               {result.facts.houses && (
-                <div className="p-5 rounded-2xl bg-surface border border-borderDark space-y-3">
-                  <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-                    Đỉnh 12 Cung Nhà ({result.metadata.houseSystem})
-                  </h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {result.facts.houses.map((h: any) => (
-                      <div key={h.houseNumber} className="p-2.5 rounded-xl bg-background/60 border border-borderDark/60 text-xs">
-                        <div className="text-gray-400 font-semibold">Nhà {h.houseNumber}</div>
-                        <div className="text-amber-300 font-medium">{ZODIAC_VN[h.sign] ?? h.sign}</div>
-                        <div className="text-[11px] text-gray-500">{h.cuspLongitude?.toFixed(2)}°</div>
-                      </div>
-                    ))}
+                <div className="p-5 md:p-6 rounded-3xl bg-surface border border-accentGold/40 space-y-6 shadow-xl shadow-amber-500/5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-borderDark pb-3">
+                    <div className="space-y-0.5">
+                      <h3 className="text-base font-bold text-white flex items-center gap-2">
+                        <Compass className="w-5 h-5 text-accentGold" />
+                        <span>Biểu Đồ Bánh Xe 12 Cung Nhà (Natal House Wheel)</span>
+                      </h3>
+                      <p className="text-xs text-gray-400">
+                        Phân định 12 lĩnh vực cuộc sống theo hệ thống <strong>{result.metadata?.houseSystem ?? 'Placidus'}</strong>. 
+                        4 Trục then chốt: <strong>ASC (Cung Mọc)</strong> - <strong>DSC (Cung Lặn)</strong>, <strong>MC (Thiên Đỉnh)</strong> - <strong>IC (Thiên Để)</strong>.
+                      </p>
+                    </div>
+                    <span className="self-start sm:self-auto text-[11px] px-3 py-1 rounded-full bg-accentGold/10 text-accentGold border border-accentGold/30 flex items-center gap-1.5 shrink-0">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      Chạm vào Cung Nhà để mở Popup
+                    </span>
+                  </div>
+
+                  {/* SVG Natal House Wheel Chart */}
+                  <div className="flex justify-center py-2">
+                    <div className="w-full max-w-[560px]">
+                      <svg viewBox="0 0 640 640" className="w-full h-auto select-none overflow-visible">
+                        <defs>
+                          {/* Radial Glow for Wheel Center */}
+                          <radialGradient id="wheelCenterGlow" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stopColor="#e2b342" stopOpacity="0.25" />
+                            <stop offset="100%" stopColor="#0b1329" stopOpacity="0.0" />
+                          </radialGradient>
+                        </defs>
+
+                        {/* Outer Background Border */}
+                        <circle cx="320" cy="320" r="285" fill="#070c18" stroke="#334155" strokeWidth="2" />
+                        <circle cx="320" cy="320" r="230" fill="none" stroke="#475569" strokeWidth="1.5" />
+                        <circle cx="320" cy="320" r="75" fill="#0b1329" stroke="#334155" strokeWidth="1.5" />
+
+                        {/* 12 House Sectors */}
+                        {result.facts.houses.map((h: any) => {
+                          const { startHour, endHour, midHour } = getHouseClockHours(h.houseNumber);
+                          const houseInfo = HOUSE_INTERPRETATIONS[h.houseNumber];
+                          const element = ZODIAC_ELEMENT[h.sign] ?? 'FIRE';
+                          const glyph = ZODIAC_GLYPHS[h.sign] ?? '';
+                          const signVn = ZODIAC_VN[h.sign] ?? h.sign;
+
+                          // Resident planets in this house
+                          const occupants = Object.entries(result.facts.bodies || {}).filter(
+                            ([_, pos]: [string, any]) => pos.houseNumber === h.houseNumber
+                          );
+
+                          // Coordinates for labels
+                          const outerLabelPos = getClockCoordinates(320, 320, 256, midHour);
+                          const houseBadgePos = getClockCoordinates(320, 320, 160, midHour);
+                          const planetsPos = getClockCoordinates(320, 320, 110, midHour);
+
+                          // Element color palette
+                          const elemColors = {
+                            FIRE: { fill: 'rgba(239, 68, 68, 0.16)', border: '#f87171', text: '#fca5a5' },
+                            EARTH: { fill: 'rgba(16, 185, 129, 0.16)', border: '#34d399', text: '#6ee7b7' },
+                            AIR: { fill: 'rgba(6, 182, 212, 0.16)', border: '#22d3ee', text: '#7dd3fc' },
+                            WATER: { fill: 'rgba(99, 102, 241, 0.16)', border: '#818cf8', text: '#a5b4fc' },
+                          }[element];
+
+                          const handleHouseClick = () => {
+                            const occupantsDesc =
+                              occupants.length > 0
+                                ? `Hành tinh trú ngụ trong Nhà ${h.houseNumber}:\n` +
+                                  occupants
+                                    .map(([name, pos]: [string, any]) => {
+                                      const vnName = PLANET_NAMES_VN[name.toLowerCase()] ?? name;
+                                      const pGlyph = PLANET_GLYPHS[name.toLowerCase()] ?? '●';
+                                      return `• ${pGlyph} ${vnName}: Tọa độ ${pos.signDegree?.toFixed(2)}° cung ${ZODIAC_VN[pos.sign] ?? pos.sign}`;
+                                    })
+                                    .join('\n')
+                                : 'Cung nhà này không có hành tinh chính ngụ (Cung nhà trống). Trong chiêm tinh học phương Tây, cung nhà trống mang ý nghĩa lĩnh vực này diễn ra êm đềm, năng lượng được dẫn dắt bởi chủ tinh của cung hoàng đạo tại đỉnh nhà.';
+
+                            setSelectedAstroItem({
+                              category: `ĐỈNH CUNG NHÀ ${h.houseNumber} (${houseInfo?.latinName ?? ''})`,
+                              title: `Nhà ${h.houseNumber} Tại ${signVn} (${h.cuspLongitude?.toFixed(2)}°)`,
+                              sign: signVn,
+                              degree: h.cuspLongitude,
+                              house: h.houseNumber,
+                              beginnerGuide: `${houseInfo?.beginnerGuide ?? ''}\n\n• Lĩnh vực cuộc sống chi phối: ${houseInfo?.domain ?? ''}`,
+                              layman: `${houseInfo?.layman ?? ''}\n\n${occupantsDesc}\n\n• Chủ đề then chốt: ${houseInfo?.keyThemes ?? ''}`,
+                              mechanism: `Đỉnh nhà (Cusp) ngự tại ${h.signDegree?.toFixed(2)}° ${signVn}. Hệ thống phân chia nhà: ${result.metadata?.houseSystem ?? 'Placidus'}.`,
+                              advice: houseInfo?.advice ?? 'Khai thác tối đa nguồn lực tích cực của cung nhà này.',
+                            });
+                          };
+
+                          return (
+                            <g
+                              key={h.houseNumber}
+                              onClick={handleHouseClick}
+                              className="cursor-pointer group focus:outline-none"
+                              role="button"
+                              tabIndex={0}
+                            >
+                              {/* Outer Rim: Zodiac Sign Slice */}
+                              <path
+                                d={createSectorPath(320, 320, 230, 285, startHour, endHour)}
+                                fill={elemColors.fill}
+                                stroke={elemColors.border}
+                                strokeWidth="1"
+                                className="group-hover:opacity-100 opacity-80 transition-opacity"
+                              />
+
+                              {/* Outer Rim Text: Glyph & Name */}
+                              <text
+                                x={outerLabelPos.x}
+                                y={outerLabelPos.y + 4}
+                                textAnchor="middle"
+                                fill={elemColors.text}
+                                fontSize="11"
+                                fontWeight="bold"
+                                className="pointer-events-none"
+                              >
+                                {glyph} {signVn.split(' ')[0]}
+                              </text>
+
+                              {/* Inner House Slice */}
+                              <path
+                                d={createSectorPath(320, 320, 75, 230, startHour, endHour)}
+                                fill="#0f172a"
+                                fillOpacity="0.45"
+                                stroke="#334155"
+                                strokeWidth="1"
+                                className="group-hover:fill-accentGold/20 group-hover:stroke-accentGold transition-all duration-200"
+                              />
+
+                              {/* House Number Badge */}
+                              <circle
+                                cx={houseBadgePos.x}
+                                cy={houseBadgePos.y}
+                                r="13"
+                                fill="#1e293b"
+                                stroke={h.houseNumber % 3 === 1 ? '#e2b342' : '#64748b'}
+                                strokeWidth="1.5"
+                                className="group-hover:stroke-accentGold group-hover:scale-110 transition-all origin-center"
+                              />
+                              <text
+                                x={houseBadgePos.x}
+                                y={houseBadgePos.y + 4.5}
+                                textAnchor="middle"
+                                fill={h.houseNumber % 3 === 1 ? '#fbbf24' : '#cbd5e1'}
+                                fontSize="11"
+                                fontWeight="bold"
+                                className="pointer-events-none"
+                              >
+                                {h.houseNumber}
+                              </text>
+
+                              {/* Resident Planet Glyphs */}
+                              {occupants.length > 0 && (
+                                <g>
+                                  <text
+                                    x={planetsPos.x}
+                                    y={planetsPos.y + 5}
+                                    textAnchor="middle"
+                                    fill="#fbbf24"
+                                    fontSize="14"
+                                    fontWeight="bold"
+                                    className="pointer-events-none drop-shadow"
+                                  >
+                                    {occupants.map(([b]) => PLANET_GLYPHS[b.toLowerCase()] ?? '●').join('')}
+                                  </text>
+                                </g>
+                              )}
+                            </g>
+                          );
+                        })}
+
+                        {/* Cardinal Axes Lines (ASC-DSC, MC-IC) */}
+                        {/* ASC - DSC Axis (9 o'clock to 3 o'clock) */}
+                        <line x1="35" y1="320" x2="605" y2="320" stroke="#10b981" strokeWidth="2.5" strokeDasharray="5,4" />
+                        {/* ASC Marker Badge (Left - 9 o'clock) */}
+                        <g transform="translate(10, 305)">
+                          <rect width="52" height="30" rx="8" fill="#064e3b" stroke="#34d399" strokeWidth="2" />
+                          <text x="26" y="20" textAnchor="middle" fill="#6ee7b7" fontSize="12" fontWeight="900">
+                            ASC
+                          </text>
+                        </g>
+                        {/* DSC Marker Badge (Right - 3 o'clock) */}
+                        <g transform="translate(578, 305)">
+                          <rect width="52" height="30" rx="8" fill="#0c4a6e" stroke="#38bdf8" strokeWidth="2" />
+                          <text x="26" y="20" textAnchor="middle" fill="#7dd3fc" fontSize="12" fontWeight="900">
+                            DSC
+                          </text>
+                        </g>
+
+                        {/* MC - IC Axis (12 o'clock to 6 o'clock) */}
+                        <line x1="320" y1="35" x2="320" y2="605" stroke="#e2b342" strokeWidth="2.5" strokeDasharray="5,4" />
+                        {/* MC Marker Badge (Top - 12 o'clock) */}
+                        <g transform="translate(294, 10)">
+                          <rect width="52" height="30" rx="8" fill="#78350f" stroke="#fbbf24" strokeWidth="2" />
+                          <text x="26" y="20" textAnchor="middle" fill="#fde68a" fontSize="12" fontWeight="900">
+                            MC
+                          </text>
+                        </g>
+                        {/* IC Marker Badge (Bottom - 6 o'clock) */}
+                        <g transform="translate(294, 600)">
+                          <rect width="52" height="30" rx="8" fill="#312e81" stroke="#818cf8" strokeWidth="2" />
+                          <text x="26" y="20" textAnchor="middle" fill="#c7d2fe" fontSize="12" fontWeight="900">
+                            IC
+                          </text>
+                        </g>
+
+                        {/* Center Hub */}
+                        <circle cx="320" cy="320" r="58" fill="#0b1329" stroke="#e2b342" strokeWidth="2" />
+                        <circle cx="320" cy="320" r="52" fill="url(#wheelCenterGlow)" />
+                        <text x="320" y="310" textAnchor="middle" fill="#fbbf24" fontSize="11" fontWeight="bold">
+                          12 CUNG NHÀ
+                        </text>
+                        <text x="320" y="325" textAnchor="middle" fill="#94a3b8" fontSize="9.5" fontWeight="500">
+                          {result.metadata?.houseSystem ?? 'PLACIDUS'}
+                        </text>
+                        <text x="320" y="340" textAnchor="middle" fill="#34d399" fontSize="9">
+                          [Chạm vào Nhà]
+                        </text>
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Companion 12 House Cards Grid */}
+                  <div className="space-y-2 pt-2">
+                    <div className="flex items-center justify-between text-xs text-gray-400">
+                      <span className="font-semibold text-gray-200">Danh Mục Chi Tiết 12 Cung Nhà</span>
+                      <span>Nhấp vào thẻ để xem phân tích</span>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
+                      {result.facts.houses.map((h: any) => {
+                        const houseInfo = HOUSE_INTERPRETATIONS[h.houseNumber];
+                        const signVn = ZODIAC_VN[h.sign] ?? h.sign;
+                        const glyph = ZODIAC_GLYPHS[h.sign] ?? '';
+                        const occupants = Object.entries(result.facts.bodies || {}).filter(
+                          ([_, pos]: [string, any]) => pos.houseNumber === h.houseNumber
+                        );
+
+                        const handleCardClick = () => {
+                          const occupantsDesc =
+                            occupants.length > 0
+                              ? `Hành tinh trú ngụ trong Nhà ${h.houseNumber}:\n` +
+                                occupants
+                                  .map(([name, pos]: [string, any]) => {
+                                    const vnName = PLANET_NAMES_VN[name.toLowerCase()] ?? name;
+                                    const pGlyph = PLANET_GLYPHS[name.toLowerCase()] ?? '●';
+                                    return `• ${pGlyph} ${vnName}: Tọa độ ${pos.signDegree?.toFixed(2)}° cung ${ZODIAC_VN[pos.sign] ?? pos.sign}`;
+                                  })
+                                  .join('\n')
+                              : 'Cung nhà này không có hành tinh chính ngụ (Cung nhà trống). Trong chiêm tinh học phương Tây, cung nhà trống mang ý nghĩa lĩnh vực này diễn ra êm đềm, năng lượng được dẫn dắt bởi chủ tinh của cung hoàng đạo tại đỉnh nhà.';
+
+                          setSelectedAstroItem({
+                            category: `ĐỈNH CUNG NHÀ ${h.houseNumber} (${houseInfo?.latinName ?? ''})`,
+                            title: `Nhà ${h.houseNumber} Tại ${signVn} (${h.cuspLongitude?.toFixed(2)}°)`,
+                            sign: signVn,
+                            degree: h.cuspLongitude,
+                            house: h.houseNumber,
+                            beginnerGuide: `${houseInfo?.beginnerGuide ?? ''}\n\n• Lĩnh vực cuộc sống chi phối: ${houseInfo?.domain ?? ''}`,
+                            layman: `${houseInfo?.layman ?? ''}\n\n${occupantsDesc}\n\n• Chủ đề then chốt: ${houseInfo?.keyThemes ?? ''}`,
+                            mechanism: `Đỉnh nhà (Cusp) ngự tại ${h.signDegree?.toFixed(2)}° ${signVn}. Hệ thống phân chia nhà: ${result.metadata?.houseSystem ?? 'Placidus'}.`,
+                            advice: houseInfo?.advice ?? 'Khai thác tối đa nguồn lực tích cực của cung nhà này.',
+                          });
+                        };
+
+                        return (
+                          <div
+                            key={h.houseNumber}
+                            onClick={handleCardClick}
+                            className="p-3 rounded-xl bg-background/60 border border-borderDark/70 hover:border-accentGold hover:bg-surfaceHover/80 transition-all cursor-pointer group space-y-1.5"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold text-white group-hover:text-accentGold transition-colors">
+                                Nhà {h.houseNumber}
+                              </span>
+                              {h.houseNumber === 1 && (
+                                <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
+                                  ASC
+                                </span>
+                              )}
+                              {h.houseNumber === 4 && (
+                                <span className="text-[9px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-bold border border-indigo-500/30">
+                                  IC
+                                </span>
+                              )}
+                              {h.houseNumber === 7 && (
+                                <span className="text-[9px] px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 font-bold border border-sky-500/30">
+                                  DSC
+                                </span>
+                              )}
+                              {h.houseNumber === 10 && (
+                                <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">
+                                  MC
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="text-amber-300 font-medium text-xs flex items-center gap-1">
+                              <span>{glyph}</span>
+                              <span className="truncate">{signVn}</span>
+                            </div>
+
+                            <div className="text-[10px] text-gray-400 font-mono">
+                              Đỉnh: {h.cuspLongitude?.toFixed(2)}°
+                            </div>
+
+                            {occupants.length > 0 ? (
+                              <div className="text-[10px] text-accentGold font-medium truncate pt-0.5">
+                                ★ {occupants.map(([b]) => PLANET_GLYPHS[b.toLowerCase()] ?? '●').join(' ')}{' '}
+                                ({occupants.length} hành tinh)
+                              </div>
+                            ) : (
+                              <div className="text-[10px] text-gray-500 pt-0.5">Cung trống</div>
+                            )}
+
+                            <span className="text-[9.5px] text-accentGold block pt-0.5 group-hover:underline">
+                              Luận giải chi tiết →
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               )}
@@ -750,7 +1271,7 @@ export default function AstrologyPage() {
                   <HelpCircle className="w-4 h-4" />
                   <span>Giải Thích Dành Cho Người Mới Bắt Đầu:</span>
                 </div>
-                <p className="text-gray-200 leading-relaxed text-sm">
+                <p className="text-gray-200 leading-relaxed text-sm whitespace-pre-line">
                   {selectedAstroItem.beginnerGuide}
                 </p>
                 {selectedAstroItem.degree && (
@@ -767,7 +1288,7 @@ export default function AstrologyPage() {
                   <Sparkles className="w-4 h-4" />
                   <span>Ý Nghĩa Thực Tế Cho Tính Cách & Cuộc Sống Của Bạn:</span>
                 </div>
-                <p className="text-gray-100 leading-relaxed text-sm">
+                <p className="text-gray-100 leading-relaxed text-sm whitespace-pre-line">
                   {selectedAstroItem.layman}
                 </p>
               </div>
