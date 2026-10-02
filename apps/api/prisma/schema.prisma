@@ -1,0 +1,740 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserRole {
+  USER
+  EXPERT
+  ADMIN
+  SUPERADMIN
+}
+
+model User {
+  id                   String                @id @default(uuid())
+  email                String                @unique
+  passwordHash         String?
+  fullName             String
+  role                 UserRole              @default(USER)
+  emailVerified        DateTime?
+  image                String?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+
+  profiles             Profile[]
+  readings             Reading[]
+  auditLogs            AuditLog[]
+  compatibilityReports CompatibilityReport[]
+
+  @@index([email])
+}
+
+enum BirthTimeAccuracy {
+  EXACT
+  APPROXIMATE
+  UNKNOWN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+model Profile {
+  id                 String              @id @default(uuid())
+  userId             String
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName           String
+  gender             Gender
+  isDefault          Boolean             @default(false)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  birthData          BirthData?
+  astroCharts        AstrologyChart[]
+  tuviCharts         TuViChart[]
+  numerologyProfiles NumerologyProfile[]
+  tarotReadings      TarotReading[]
+
+  @@index([userId])
+}
+
+model BirthData {
+  id                    String            @id @default(uuid())
+  profileId             String            @unique
+  profile               Profile           @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  birthDate             DateTime
+  birthTime             String?
+  timeAccuracy          BirthTimeAccuracy @default(EXACT)
+  country               String
+  city                  String
+  latitude              Float
+  longitude             Float
+  timezone              String
+  timezoneOffsetMinutes Int
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+
+  @@index([profileId])
+}
+
+enum ZodiacSystem {
+  TROPICAL
+  SIDEREAL
+}
+
+enum HouseSystem {
+  PLACIDUS
+  KOCH
+  WHOLE_SIGN
+  EQUAL
+  CAMPANUS
+  REGIOMONTANUS
+}
+
+model AstrologyChart {
+  id            String             @id @default(uuid())
+  profileId     String
+  profile       Profile            @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  engineVersion String
+  configVersion String
+  zodiacSystem  ZodiacSystem       @default(TROPICAL)
+  houseSystem   HouseSystem        @default(PLACIDUS)
+  julianDay     Float
+  hasExactTime  Boolean
+  inputHash     String
+  createdAt     DateTime           @default(now())
+
+  positions     AstrologyPosition[]
+  houses        AstrologyHouse[]
+  aspects       AstrologyAspect[]
+
+  @@index([profileId])
+  @@index([inputHash, engineVersion, configVersion])
+}
+
+enum CelestialBody {
+  SUN
+  MOON
+  MERCURY
+  VENUS
+  MARS
+  JUPITER
+  SATURN
+  URANUS
+  NEPTUNE
+  PLUTO
+  CHIRON
+  NORTH_NODE
+  SOUTH_NODE
+  ASCENDANT
+  MIDHEAVEN
+  VERTEX
+}
+
+enum ZodiacSign {
+  ARIES
+  TAURUS
+  GEMINI
+  CANCER
+  LEO
+  VIRGO
+  LIBRA
+  SCORPIO
+  SAGITTARIUS
+  CAPRICORN
+  AQUARIUS
+  PISCES
+}
+
+model AstrologyPosition {
+  id           String         @id @default(uuid())
+  chartId      String
+  chart        AstrologyChart @relation(fields: [chartId], references: [id], onDelete: Cascade)
+  body         CelestialBody
+  longitude    Float
+  latitude     Float
+  distance     Float
+  speed        Float
+  isRetrograde Boolean        @default(false)
+  sign         ZodiacSign
+  signDegree   Float
+  houseNumber  Int?
+  createdAt    DateTime       @default(now())
+
+  @@index([chartId, body])
+}
+
+model AstrologyHouse {
+  id            String         @id @default(uuid())
+  chartId       String
+  chart         AstrologyChart @relation(fields: [chartId], references: [id], onDelete: Cascade)
+  houseNumber   Int
+  cuspLongitude Float
+  sign          ZodiacSign
+  signDegree    Float
+  createdAt     DateTime       @default(now())
+
+  @@unique([chartId, houseNumber])
+}
+
+enum AspectType {
+  CONJUNCTION
+  OPPOSITION
+  TRINE
+  SQUARE
+  SEXTILE
+  QUINCUNX
+  SEMI_SEXTILE
+  SEMI_SQUARE
+  SESQUIQUADRATE
+}
+
+model AstrologyAspect {
+  id         String         @id @default(uuid())
+  chartId    String
+  chart      AstrologyChart @relation(fields: [chartId], references: [id], onDelete: Cascade)
+  bodyA      CelestialBody
+  bodyB      CelestialBody
+  aspectType AspectType
+  angle      Float
+  orb        Float
+  isApplying Boolean
+  createdAt  DateTime       @default(now())
+
+  @@index([chartId])
+}
+
+enum HeavenlyStem {
+  GIAP
+  AT
+  BINH
+  DINH
+  MAU
+  KY
+  CANH
+  TAN
+  NHAM
+  QUY
+}
+
+enum EarthlyBranch {
+  TY_RAT
+  SUU_OX
+  DAN_TIGER
+  MAO_CAT
+  THIN_DRAGON
+  TY_SNAKE
+  NGO_HORSE
+  MUI_GOAT
+  THAN_MONKEY
+  DAU_ROOSTER
+  TUAT_DOG
+  HOI_PIG
+}
+
+enum FiveElements {
+  KIM
+  MOC
+  THUY
+  HOA
+  THO
+}
+
+enum CucType {
+  THUY_NHI_CUC
+  MOC_TAM_CUC
+  KIM_TU_CUC
+  THO_NGU_CUC
+  HOA_LUC_CUC
+}
+
+enum PalaceName {
+  MENH
+  PHU_MAU
+  PHUC_DUC
+  DIEN_TRACH
+  QUAN_LOC
+  NO_BOC
+  THIEN_DI
+  TAT_ACH
+  TAI_BACH
+  TU_TUC
+  PHU_THE
+  HUYNH_DE
+}
+
+model TuViChart {
+  id              String         @id @default(uuid())
+  profileId       String
+  profile         Profile        @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  methodVersion   String
+  solarDate       DateTime
+  lunarDay        Int
+  lunarMonth      Int
+  lunarYear       Int
+  isLeapMonth     Boolean        @default(false)
+  lunarHourBranch EarthlyBranch
+  yearStem        HeavenlyStem
+  yearBranch      EarthlyBranch
+  monthStem       HeavenlyStem
+  monthBranch     EarthlyBranch
+  dayStem         HeavenlyStem
+  dayBranch       EarthlyBranch
+  hourStem        HeavenlyStem
+  hourBranch      EarthlyBranch
+  menhNguHanh     FiveElements
+  menhDetail      String
+  cuc             CucType
+  cucNumber       Int
+  thanBranch      EarthlyBranch
+  menhBranch      EarthlyBranch
+  amDuongNamNu    String
+  inputHash       String
+  createdAt       DateTime       @default(now())
+
+  palaces         TuViPalace[]
+  cycles          TuViCycle[]
+
+  @@index([profileId])
+  @@index([inputHash, methodVersion])
+}
+
+model TuViPalace {
+  id             String              @id @default(uuid())
+  chartId        String
+  chart          TuViChart           @relation(fields: [chartId], references: [id], onDelete: Cascade)
+  palaceName     PalaceName
+  branch         EarthlyBranch
+  stem           HeavenlyStem
+  isThan         Boolean             @default(false)
+  isTuan         Boolean             @default(false)
+  isTriet        Boolean             @default(false)
+  daiHanStartAge Int
+  daiHanEndAge   Int
+  createdAt      DateTime            @default(now())
+
+  stars          TuViStarPlacement[]
+
+  @@unique([chartId, palaceName])
+  @@unique([chartId, branch])
+}
+
+enum StarBrightness {
+  MIEU_DIA
+  VUONG_DIA
+  DAC_DIA
+  BINH_HOA
+  HAM_DIA
+}
+
+enum StarGroup {
+  CHINH_TINH
+  TRUNG_TINH
+  LUC_SAT_TINH
+  TU_HOA
+  PHU_TINH
+}
+
+model TuViStarPlacement {
+  id         String          @id @default(uuid())
+  palaceId   String
+  palace     TuViPalace      @relation(fields: [palaceId], references: [id], onDelete: Cascade)
+  starCode   String
+  starName   String
+  starGroup  StarGroup
+  brightness StarBrightness?
+  element    FiveElements
+  createdAt  DateTime        @default(now())
+
+  @@index([palaceId, starCode])
+}
+
+model TuViCycle {
+  id           String        @id @default(uuid())
+  chartId      String
+  chart        TuViChart     @relation(fields: [chartId], references: [id], onDelete: Cascade)
+  cycleType    String
+  yearNumber   Int
+  age          Int
+  palaceBranch EarthlyBranch
+  createdAt    DateTime      @default(now())
+
+  @@index([chartId, yearNumber])
+}
+
+model NumerologyProfile {
+  id             String             @id @default(uuid())
+  profileId      String
+  profile        Profile            @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  engineVersion  String
+  configVersion  String
+  normalizedName String
+  birthDate      DateTime
+  inputHash      String
+  createdAt      DateTime           @default(now())
+
+  results        NumerologyResult[]
+  cycles         NumerologyCycle[]
+
+  @@index([profileId])
+  @@index([inputHash, engineVersion])
+}
+
+enum NumerologyNumberType {
+  LIFE_PATH
+  BIRTHDAY
+  EXPRESSION_DESTINY
+  SOUL_URGE
+  PERSONALITY
+  MATURITY
+  PERSONAL_YEAR
+  PERSONAL_MONTH
+  PERSONAL_DAY
+}
+
+model NumerologyResult {
+  id             String               @id @default(uuid())
+  numerologyId   String
+  numerology     NumerologyProfile    @relation(fields: [numerologyId], references: [id], onDelete: Cascade)
+  numberType     NumerologyNumberType
+  rawCalculation String
+  finalValue     Int
+  isMasterNumber Boolean              @default(false)
+  createdAt      DateTime             @default(now())
+
+  @@unique([numerologyId, numberType])
+}
+
+model NumerologyCycle {
+  id           String            @id @default(uuid())
+  numerologyId String
+  numerology   NumerologyProfile @relation(fields: [numerologyId], references: [id], onDelete: Cascade)
+  cycleType    String
+  cycleNumber  Int
+  startAge     Int?
+  endAge       Int?
+  yearNumber   Int?
+  value        Int
+  createdAt    DateTime          @default(now())
+
+  @@index([numerologyId, yearNumber])
+}
+
+model TarotDeck {
+  id         String         @id @default(uuid())
+  code       String         @unique
+  name       String
+  version    String
+  totalCards Int            @default(78)
+  isActive   Boolean        @default(true)
+  createdAt  DateTime       @default(now())
+
+  cards      TarotCard[]
+  readings   TarotReading[]
+}
+
+enum TarotArcana {
+  MAJOR
+  MINOR
+}
+
+enum TarotSuit {
+  WANDS
+  CUPS
+  SWORDS
+  PENTACLES
+}
+
+model TarotCard {
+  id        String      @id @default(uuid())
+  deckId    String
+  deck      TarotDeck   @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  cardCode  String
+  name      String
+  arcana    TarotArcana
+  suit      TarotSuit?
+  number    Int
+  keywords  String[]
+  imagePath String
+  createdAt DateTime    @default(now())
+
+  draws     TarotDraw[]
+
+  @@unique([deckId, cardCode])
+}
+
+model TarotSpread {
+  id          String                @id @default(uuid())
+  code        String                @unique
+  name        String
+  cardCount   Int
+  description String
+  isActive    Boolean               @default(true)
+  createdAt   DateTime              @default(now())
+
+  positions   TarotSpreadPosition[]
+  readings    TarotReading[]
+}
+
+model TarotSpreadPosition {
+  id            String      @id @default(uuid())
+  spreadId      String
+  spread        TarotSpread @relation(fields: [spreadId], references: [id], onDelete: Cascade)
+  positionIndex Int
+  name          String
+  description   String
+  createdAt     DateTime    @default(now())
+
+  draws         TarotDraw[]
+
+  @@unique([spreadId, positionIndex])
+}
+
+model TarotReading {
+  id               String      @id @default(uuid())
+  profileId        String?
+  profile          Profile?    @relation(fields: [profileId], references: [id], onDelete: SetNull)
+  deckId           String
+  deck             TarotDeck   @relation(fields: [deckId], references: [id])
+  spreadId         String
+  spread           TarotSpread @relation(fields: [spreadId], references: [id])
+  seed             String
+  shuffleAlgorithm String
+  engineVersion    String
+  rulesetVersion   String
+  createdAt        DateTime    @default(now())
+
+  draws            TarotDraw[]
+
+  @@index([profileId])
+  @@index([seed])
+}
+
+model TarotDraw {
+  id         String              @id @default(uuid())
+  readingId  String
+  reading    TarotReading        @relation(fields: [readingId], references: [id], onDelete: Cascade)
+  positionId String
+  position   TarotSpreadPosition @relation(fields: [positionId], references: [id])
+  cardId     String
+  card       TarotCard           @relation(fields: [cardId], references: [id])
+  isReversed Boolean             @default(false)
+  drawOrder  Int
+  createdAt  DateTime            @default(now())
+
+  @@unique([readingId, positionId])
+}
+
+enum RuleStatus {
+  DRAFT
+  TESTING
+  PUBLISHED
+  ARCHIVED
+}
+
+enum RuleScope {
+  ASTROLOGY
+  TUVI
+  NUMEROLOGY
+  TAROT
+  CROSS_SYSTEM
+  COMPATIBILITY
+}
+
+model RuleSet {
+  id        String        @id @default(uuid())
+  code      String        @unique
+  name      String
+  scope     RuleScope
+  version   String
+  isDefault Boolean       @default(false)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  rules     Rule[]
+  versions  RuleVersion[]
+}
+
+model Rule {
+  id               String          @id @default(uuid())
+  ruleCode         String          @unique
+  ruleSetId        String
+  ruleSet          RuleSet         @relation(fields: [ruleSetId], references: [id], onDelete: Cascade)
+  scope            RuleScope
+  priority         Int
+  specificityScore Int             @default(10)
+  status           RuleStatus      @default(DRAFT)
+  version          String          @default("1.0.0")
+  description      String
+  conditionAst     Json
+  actionPayload    Json
+  interpretationId String?
+  interpretation   Interpretation? @relation(fields: [interpretationId], references: [id], onDelete: SetNull)
+  tags             String[]
+  createdBy        String
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  versions         RuleVersion[]
+
+  @@index([scope, status])
+  @@index([priority(sort: Desc)])
+}
+
+model RuleVersion {
+  id             String   @id @default(uuid())
+  ruleId         String
+  rule           Rule     @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  ruleSetId      String
+  ruleSet        RuleSet  @relation(fields: [ruleSetId], references: [id], onDelete: Cascade)
+  versionNumber  String
+  snapshotAst    Json
+  snapshotAction Json
+  changeNote     String
+  createdBy      String
+  createdAt      DateTime @default(now())
+
+  @@unique([ruleId, versionNumber])
+}
+
+model Interpretation {
+  id        String                @id @default(uuid())
+  code      String                @unique
+  scope     RuleScope
+  category  String
+  themes    String[]
+  version   String                @default("1.0.0")
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+
+  rules     Rule[]
+  blocks    InterpretationBlock[]
+
+  @@index([scope, category])
+}
+
+enum InterpretationDomain {
+  OVERVIEW
+  STRENGTHS
+  CHALLENGES
+  LOVE
+  CAREER
+  FINANCE
+  SOCIAL
+  REFLECTION
+}
+
+model InterpretationBlock {
+  id               String               @id @default(uuid())
+  interpretationId String
+  interpretation   Interpretation       @relation(fields: [interpretationId], references: [id], onDelete: Cascade)
+  domain           InterpretationDomain
+  languageCode     String               @default("vi")
+  templateText     String
+  variableSchema   Json
+  version          String               @default("1.0.0")
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  @@unique([interpretationId, domain, languageCode])
+}
+
+enum ReadingType {
+  NATAL_ASTROLOGY
+  TUVI_CHART
+  NUMEROLOGY_REPORT
+  TAROT_SPREAD
+  CROSS_SYNTHESIS
+  DAILY_READING
+  COMPATIBILITY
+}
+
+model Reading {
+  id               String             @id @default(uuid())
+  userId           String?
+  user             User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  readingType      ReadingType
+  engineVersion    String
+  configVersion    String
+  rulesetVersion   String
+  knowledgeVersion String
+  inputHash        String
+  inputSnapshot    Json
+  factsSnapshot    Json
+  matchedRuleCodes String[]
+  createdDate      DateTime           @default(now())
+
+  sections         ReadingSection[]
+  ruleTraces       ReadingRuleTrace[]
+
+  @@index([userId])
+  @@index([inputHash, rulesetVersion])
+}
+
+model ReadingSection {
+  id               String               @id @default(uuid())
+  readingId        String
+  reading          Reading              @relation(fields: [readingId], references: [id], onDelete: Cascade)
+  sectionOrder     Int
+  domain           InterpretationDomain
+  title            String
+  renderedText     String
+  sourceRuleCode   String
+  interpretationId String
+  createdAt        DateTime             @default(now())
+
+  @@index([readingId, sectionOrder])
+}
+
+model ReadingRuleTrace {
+  id                  String   @id @default(uuid())
+  readingId           String
+  reading             Reading  @relation(fields: [readingId], references: [id], onDelete: Cascade)
+  ruleCode            String
+  status              String
+  specificity         Int
+  priority            Int
+  evaluatedConditions Json
+  skipReason          String?
+  createdAt           DateTime @default(now())
+
+  @@index([readingId, ruleCode])
+}
+
+model CompatibilityReport {
+  id               String   @id @default(uuid())
+  creatorUserId    String
+  creatorUser      User     @relation(fields: [creatorUserId], references: [id], onDelete: Cascade)
+  personAProfileId String
+  personBProfileId String
+  methodVersion    String
+  rulesetVersion   String
+  factsSnapshot    Json
+  reportSections   Json
+  createdAt        DateTime @default(now())
+
+  @@index([creatorUserId])
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action      String
+  entityType  String
+  entityId    String
+  beforeState Json?
+  afterState  Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
