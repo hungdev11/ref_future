@@ -76,11 +76,10 @@ export class RiderWaiteTarotEngine
 
     const spread: SpreadDefinition = STANDARD_SPREADS[input.spreadCode]!;
 
-    // 1. Establish deterministic seed
+    // 1. Establish seed (genuine CSPRNG randomness if not provided)
     let seed = input.seed;
-    if (!seed) {
-      const entropy = `${input.userId ?? 'anon'}:${input.timestamp ?? new Date().toISOString()}:${input.clientNonce ?? '0'}:${input.spreadCode}`;
-      seed = crypto.createHash('sha256').update(entropy).digest('hex');
+    if (!seed || seed.trim() === '' || seed === 'random') {
+      seed = crypto.randomBytes(32).toString('hex');
     }
 
     // 2. Initialize Seeded PRNG and standard 78-card deck
