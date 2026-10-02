@@ -35,3 +35,4 @@ describe('SafeTemplateRenderer', () => {
     expect(result).toBe('Mệnh của bạn là [Chưa xác định: missing_var].');
   });
 });
+

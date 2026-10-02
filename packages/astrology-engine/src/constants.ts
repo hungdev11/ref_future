@@ -50,3 +50,4 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
   ZodiacSign.AQUARIUS,
   ZodiacSign.PISCES,
 ];
+

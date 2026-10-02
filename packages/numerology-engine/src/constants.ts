@@ -25,3 +25,4 @@ export const PYTHAGOREAN_MAP: Record<string, number> = {
 };
 
 export const STANDARD_VOWELS = new Set(['A', 'E', 'I', 'O', 'U']);
+

@@ -76,3 +76,4 @@ export const STANDARD_SPREADS: Record<string, SpreadDefinition> = {
     ],
   },
 };
+

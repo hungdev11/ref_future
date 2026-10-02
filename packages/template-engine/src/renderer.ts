@@ -55,3 +55,4 @@ export class SafeTemplateRenderer {
     return current;
   }
 }
+
