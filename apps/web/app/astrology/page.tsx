@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Compass,
   AlertTriangle,
@@ -17,6 +17,9 @@ import {
   Droplets,
   Layers,
   ArrowRight,
+  Sparkles,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 
 import {
@@ -26,9 +29,13 @@ import {
   PLANET_BEGINNER_GUIDES,
   SUN_SIGN_INTERPRETATIONS,
   MOON_SIGN_INTERPRETATIONS,
+  ASCENDANT_SIGN_INTERPRETATIONS,
   ZODIAC_GLYPHS,
   PLANET_GLYPHS,
   HOUSE_INTERPRETATIONS,
+  getPlanetInSignInsight,
+  getAspectInsight,
+  synthesizeNatalChart,
 } from '@mystic/astrology-engine';
 import { DateInput } from '@/components/DateInput';
 
@@ -81,6 +88,22 @@ const VIETNAM_CITIES: { name: string; lat: number; lng: number }[] = [
   { name: 'Khác (Nhập tọa độ thủ công)', lat: 0, lng: 0 },
 ];
 
+interface SelectedAstroItem {
+  category: string;
+  title: string;
+  sign?: string;
+  degree?: number;
+  house?: number;
+  beginnerGuide: string;
+  layman: string;
+  mechanism?: string;
+  strengths?: string[];
+  pitfalls?: string[];
+  advice: string;
+  ruleId?: string;
+  technicalDetails?: string;
+}
+
 export default function AstrologyPage() {
   const [birthDate, setBirthDate] = useState('1990-07-25');
   const [birthTime, setBirthTime] = useState('08:30:00');
@@ -95,18 +118,13 @@ export default function AstrologyPage() {
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Modal State for clicked Astrology Item
-  const [selectedAstroItem, setSelectedAstroItem] = useState<{
-    category: string;
-    title: string;
-    sign: string;
-    degree?: number;
-    house?: number;
-    beginnerGuide: string;
-    layman: string;
-    mechanism?: string;
-    advice: string;
-  } | null>(null);
+  // Progressive Disclosure Modal State
+  const [selectedAstroItem, setSelectedAstroItem] = useState<SelectedAstroItem | null>(null);
+  const [modalShowEvidence, setModalShowEvidence] = useState(false);
+  const [modalShowTechnical, setModalShowTechnical] = useState(false);
+
+  // Filter for aspects tab
+  const [aspectTab, setAspectTab] = useState<'all' | 'harmonious' | 'tension'>('all');
 
   const handleCityChange = (cityName: string) => {
     setSelectedCity(cityName);
@@ -157,17 +175,42 @@ export default function AstrologyPage() {
   const moonSignKey = result?.facts?.bodies?.moon?.sign ?? result?.facts?.bodies?.MOON?.sign ?? '';
   const ascendantSignKey = result?.facts?.ascendant?.sign ?? '';
 
-  const sunInterp = SUN_SIGN_INTERPRETATIONS[sunSignKey] ?? {
-    meaning: 'Năng lượng bản ngã theo vị trí Mặt Trời.',
-    layman: 'Cá tính tự nhiên của bạn đang tỏa sáng theo phong cách riêng.',
-    mechanism: 'Hệ thống Hoàng Đạo Nhiệt Đới (Tropical Zodiac).',
-    advice: 'Phát huy thế mạnh bản thân và kiên định với lý tưởng.',
-  };
+  // Deterministic Chart Synthesis
+  const chartSynthesis = useMemo(() => {
+    if (!result?.facts?.bodies) return null;
+    return synthesizeNatalChart(
+      result.facts.bodies,
+      result.facts.houses || [],
+      result.facts.aspects || []
+    );
+  }, [result]);
 
-  const moonInterp = MOON_SIGN_INTERPRETATIONS[moonSignKey] ?? {
-    meaning: 'Thế giới cảm xúc nội tâm theo vị trí Mặt Trăng.',
-    layman: 'Nội tâm của bạn phản ứng tự nhiên với các biến động cảm xúc.',
-    advice: 'Lắng nghe cảm xúc của chính mình và duy trì lối sống lành mạnh.',
+  // Categorize Aspects
+  const { harmoniousAspects, tensionAspects, allAspects } = useMemo(() => {
+    if (!result?.facts?.aspects || !Array.isArray(result.facts.aspects)) {
+      return { harmoniousAspects: [], tensionAspects: [], allAspects: [] };
+    }
+    const harmonious: any[] = [];
+    const tension: any[] = [];
+    for (const asp of result.facts.aspects) {
+      const t = (asp.aspectType || asp.type || '').toUpperCase();
+      if (['TRINE', 'SEXTILE', 'CONJUNCTION'].includes(t)) {
+        harmonious.push(asp);
+      } else if (['SQUARE', 'OPPOSITION'].includes(t)) {
+        tension.push(asp);
+      }
+    }
+    return {
+      harmoniousAspects: harmonious,
+      tensionAspects: tension,
+      allAspects: result.facts.aspects,
+    };
+  }, [result]);
+
+  const openItemModal = (item: SelectedAstroItem) => {
+    setSelectedAstroItem(item);
+    setModalShowEvidence(false);
+    setModalShowTechnical(false);
   };
 
   return (
@@ -183,8 +226,9 @@ export default function AstrologyPage() {
           Bản Đồ Sao Cá Nhân & Bánh Xe 12 Cung Nhà
         </h1>
         <p className="text-xs sm:text-sm text-stone max-w-2xl leading-relaxed">
-          Tính toán tọa độ 10 thiên thể và 12 cung địa bàn theo hệ tọa độ Hoàng Đạo. 
-          <strong> Nhấn vào Mặt Trời, Mặt Trăng, Cung Mọc hay bất kỳ hành tinh nào để mở bảng giải nghĩa chi tiết, dễ hiểu nhất cho bạn.</strong>
+          Hệ thống luận giải chiêm tinh học thực thụ 100% có cơ sở: Từ bản ngã cốt lõi (Bộ Ba), phân bổ tứ đại nguyên tố, 
+          mối tương quan góc chiếu giữa các hành tinh đến cấu trúc 12 cung địa bàn. 
+          <strong> Nhấp vào bất kỳ yếu tố nào để xem luận giải đa tầng và cơ sở tính toán.</strong>
         </p>
       </div>
 
@@ -307,11 +351,13 @@ export default function AstrologyPage() {
           <div className="p-3.5 bg-background border border-borderDark space-y-2 text-xs">
             <div className="font-mono text-accentGold text-[11px] uppercase tracking-wider flex items-center gap-1.5">
               <HelpCircle className="w-3.5 h-3.5" />
-              <span>Hướng Dẫn Cho Người Mới</span>
+              <span>Cấu Trúc 4 Tầng Thông Tin</span>
             </div>
             <p className="text-stone text-[11px] leading-relaxed">
-              Bộ ba <strong>Mặt Trời, Mặt Trăng, Cung Mọc</strong> phản ánh bản ngã cốt lõi, cảm xúc nội tâm và phong thái bên ngoài. 
-              <strong> Bạn chỉ cần nhấp vào từng thẻ</strong> để mở bảng giải nghĩa chi tiết và lời khuyên cân bằng cuộc sống.
+              <strong>Tầng 1:</strong> Kết quả chính (Bản ngã & Trọng tâm).<br />
+              <strong>Tầng 2:</strong> Giải thích đời thường & Lời khuyên cân bằng.<br />
+              <strong>Tầng 3:</strong> Góc chiếu & Cung nhà (Nhấp vào thẻ để xem cơ sở).<br />
+              <strong>Tầng 4:</strong> Bảng tọa độ thiên văn & Ephemeris chuẩn xác.
             </p>
           </div>
         </div>
@@ -349,201 +395,419 @@ export default function AstrologyPage() {
               <div className="p-4 bg-surface border border-borderDark flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
                 <div className="flex items-center gap-2 text-stone">
                   <ShieldCheck className="w-4 h-4 text-accentGold" />
-                  <span>Bản đồ sao cá nhân hóa chuẩn xác</span>
+                  <span>Bản đồ sao cá nhân hóa 100% Deterministic (Swiss Ephemeris Base)</span>
                 </div>
-                <span className="text-[11px] text-accentGold underline">
-                  Nhấp vào hành tinh hoặc cung nhà để xem giải nghĩa chi tiết →
+                <span className="text-[11px] text-accentGold">
+                  Nhấp vào bất kỳ yếu tố nào để xem giải nghĩa chi tiết →
                 </span>
               </div>
 
-              {/* THE BIG THREE SUMMARY CARDS (Clickable to open Popup) */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {/* 1. Sun Sign */}
-                <div
-                  onClick={() =>
-                    setSelectedAstroItem({
-                      category: 'CUNG MẶT TRỜI (SUN SIGN)',
-                      title: `Mặt Trời Tại ${ZODIAC_VN[sunSignKey] ?? sunSignKey}`,
-                      sign: ZODIAC_VN[sunSignKey] ?? sunSignKey,
-                      beginnerGuide: PLANET_BEGINNER_GUIDES.sun,
-                      layman: sunInterp.layman,
-                      mechanism: sunInterp.mechanism,
-                      advice: sunInterp.advice,
-                    })
-                  }
-                  className="p-4 bg-surface border border-accentGold/80 hover:border-parchment transition-colors cursor-pointer group space-y-2 flex flex-col justify-between"
-                >
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between text-xs font-mono">
-                      <span className="text-stone flex items-center gap-1.5">
-                        <Sun className="w-3.5 h-3.5 text-accentGold" />
-                        Mặt Trời
-                      </span>
-                      <span className="text-[10px] text-stone">Bản Ngã</span>
-                    </div>
-                    <div className="text-lg font-serif font-bold text-accentGold group-hover:text-parchment transition-colors">
-                      {ZODIAC_VN[sunSignKey] ?? sunSignKey}
-                    </div>
-                    <p className="text-xs text-stone line-clamp-1">{sunInterp.layman}</p>
-                  </div>
-                  <span className="text-[10px] font-mono text-accentGold group-hover:underline pt-2 border-t border-borderDark">
-                    Chi tiết Mặt Trời →
-                  </span>
-                </div>
-
-                {/* 2. Moon Sign */}
-                <div
-                  onClick={() =>
-                    setSelectedAstroItem({
-                      category: 'CUNG MẶT TRĂNG (MOON SIGN)',
-                      title: `Mặt Trăng Tại ${ZODIAC_VN[moonSignKey] ?? moonSignKey}`,
-                      sign: ZODIAC_VN[moonSignKey] ?? moonSignKey,
-                      beginnerGuide: PLANET_BEGINNER_GUIDES.moon,
-                      layman: moonInterp.layman,
-                      advice: moonInterp.advice,
-                    })
-                  }
-                  className="p-4 bg-surface border border-borderDark hover:border-accentGold transition-colors cursor-pointer group space-y-2 flex flex-col justify-between"
-                >
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between text-xs font-mono">
-                      <span className="text-stone flex items-center gap-1.5">
-                        <Moon className="w-3.5 h-3.5 text-stone" />
-                        Mặt Trăng
-                      </span>
-                      <span className="text-[10px] text-stone">Cảm Xúc</span>
-                    </div>
-                    <div className="text-lg font-serif font-bold text-parchment group-hover:text-accentGold transition-colors">
-                      {ZODIAC_VN[moonSignKey] ?? moonSignKey}
-                    </div>
-                    <p className="text-xs text-stone line-clamp-1">{moonInterp.layman}</p>
-                  </div>
-                  <span className="text-[10px] font-mono text-accentGold group-hover:underline pt-2 border-t border-borderDark">
-                    Chi tiết Mặt Trăng →
-                  </span>
-                </div>
-
-                {/* 3. Ascendant */}
-                <div
-                  onClick={() => {
-                    if (result.isDegraded || !ascendantSignKey) return;
-                    setSelectedAstroItem({
-                      category: 'CUNG MỌC (ASCENDANT / RISING)',
-                      title: `Cung Mọc Tại ${ZODIAC_VN[ascendantSignKey] ?? ascendantSignKey}`,
-                      sign: ZODIAC_VN[ascendantSignKey] ?? ascendantSignKey,
-                      beginnerGuide: PLANET_BEGINNER_GUIDES.ascendant,
-                      layman: `Cung Mọc ${ZODIAC_VN[ascendantSignKey] ?? ascendantSignKey} định hình phong thái, ngoại hình và cách tiếp cận thế giới bên ngoài của bạn. Người khác thường ấn tượng với sự độc lập, tự tin và cách ứng xử đặc trưng của cung này khi mới tiếp xúc.`,
-                      advice: 'Hãy sống đúng với thần thái tự nhiên của mình, đồng thời kết nối sâu với thế giới cảm xúc nội tâm bên trong.',
-                    });
-                  }}
-                  className={`p-4 bg-surface border transition-colors space-y-2 flex flex-col justify-between ${
-                    result.isDegraded
-                      ? 'border-borderDark opacity-50'
-                      : 'border-borderDark hover:border-accentGold cursor-pointer group'
-                  }`}
-                >
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between text-xs font-mono">
-                      <span className="text-stone flex items-center gap-1.5">
-                        <Compass className="w-3.5 h-3.5 text-stone" />
-                        Cung Mọc
-                      </span>
-                      <span className="text-[10px] text-stone">Phong Thái</span>
-                    </div>
-                    <div className="text-lg font-serif font-bold text-parchment group-hover:text-accentGold transition-colors">
-                      {result.isDegraded ? 'Chưa rõ (Cần giờ sinh)' : ZODIAC_VN[ascendantSignKey] ?? ascendantSignKey}
-                    </div>
-                    <p className="text-xs text-stone line-clamp-1">
-                      {result.isDegraded ? 'Cần giờ sinh để xác định' : 'Ấn tượng ban đầu & ngoại hình'}
-                    </p>
-                  </div>
-                  {!result.isDegraded && (
-                    <span className="text-[10px] font-mono text-accentGold group-hover:underline pt-2 border-t border-borderDark">
-                      Chi tiết Cung Mọc →
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Planetary Positions Table (Each row is interactive) */}
-              <div className="p-5 rounded-2xl bg-surface border border-borderDark space-y-3">
+              {/* LEVEL 1: THE BIG THREE (BỘ BA TRỤ CỘT BẢN NGÃ) */}
+              <div className="space-y-3">
                 <div className="flex items-center justify-between border-b border-borderDark pb-2">
-                  <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                    <span>Bảng Tọa Độ Các Hành Tinh</span>
-                    <span className="text-[11px] font-normal text-gray-400">
-                      ({Object.keys(result.facts.bodies).length} thiên thể)
+                  <div className="space-y-0.5">
+                    <span className="text-[10px] font-mono text-accentGold uppercase tracking-wider">
+                      Cấp Độ 1 • Kết Quả Cốt Lõi
                     </span>
-                  </h3>
-                  <span className="text-[11px] text-accentGold">Nhấp vào dòng để xem chi tiết</span>
+                    <h2 className="text-sm font-serif text-parchment uppercase tracking-wide">
+                      Bộ Ba Trụ Cột: Bản Ngã — Cảm Xúc — Phong Thái
+                    </h2>
+                  </div>
+                  <span className="text-[11px] font-mono text-stone">Nhấp vào thẻ để xem</span>
                 </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-xs text-left">
-                    <thead className="text-gray-400 bg-background/50 border-b border-borderDark">
-                      <tr>
-                        <th className="py-2.5 px-3">Thiên Thể</th>
-                        <th className="py-2.5 px-3">Cung Hoàng Đạo</th>
-                        <th className="py-2.5 px-3">Độ Cung</th>
-                        <th className="py-2.5 px-3">Nhà</th>
-                        <th className="py-2.5 px-3 text-right">Chi Tiết</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-borderDark/40">
-                      {Object.entries(result.facts.bodies).map(([bodyName, pos]: [string, any]) => (
-                        <tr
-                          key={bodyName}
-                          onClick={() => {
-                            const nameVn = PLANET_NAMES_VN[bodyName.toLowerCase()] ?? bodyName;
-                            const guide = PLANET_BEGINNER_GUIDES[bodyName.toLowerCase()] ?? 'Thiên thể chi phối một khía cạnh năng lượng đặc thù trong bản đồ sao.';
-                            const signVn = ZODIAC_VN[pos.sign] ?? pos.sign;
 
-                            setSelectedAstroItem({
-                              category: `HÀNH TINH: ${nameVn.toUpperCase()}`,
-                              title: `${nameVn} Tại ${signVn}`,
-                              sign: signVn,
-                              degree: pos.signDegree,
-                              house: pos.houseNumber,
-                              beginnerGuide: guide,
-                              layman: `Vị trí ${nameVn} ngự tại ${signVn} thể hiện bạn biểu đạt khía cạnh này một cách ${
-                                ZODIAC_ELEMENT[pos.sign] === 'FIRE'
-                                  ? 'nhiệt huyết, chủ động và đầy đam mê.'
-                                  : ZODIAC_ELEMENT[pos.sign] === 'EARTH'
-                                  ? 'thực tế, kiên nhẫn và trọng sự an toàn vững bền.'
-                                  : ZODIAC_ELEMENT[pos.sign] === 'AIR'
-                                  ? 'thông minh, linh hoạt và giàu tư duy kết nối.'
-                                  : 'sâu lắng, trực giác nhạy bén và giàu tình cảm.'
-                              }`,
-                              advice: 'Khai thác tối đa phẩm chất tích cực của cung hoàng đạo này trong các hoạt động thực tế thường nhật.',
-                            });
-                          }}
-                          className="hover:bg-surfaceHover/80 cursor-pointer transition-colors group"
-                        >
-                          <td className="py-2.5 px-3 font-semibold text-white capitalize group-hover:text-accentGold">
-                            {PLANET_NAMES_VN[bodyName.toLowerCase()] ?? bodyName}
-                          </td>
-                          <td className="py-2.5 px-3 text-amber-300 font-medium">
-                            {ZODIAC_VN[pos.sign] ?? pos.sign}
-                          </td>
-                          <td className="py-2.5 px-3 text-gray-300">{pos.signDegree?.toFixed(2)}°</td>
-                          <td className="py-2.5 px-3 text-gray-300">
-                            {pos.houseNumber ? `Nhà ${pos.houseNumber}` : '—'}
-                          </td>
-                          <td className="py-2.5 px-3 text-right">
-                            <span className="text-[10px] text-accentGold group-hover:underline">
-                              Xem giải mã →
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {/* 1. Sun Sign */}
+                  {(() => {
+                    const insight = getPlanetInSignInsight('sun', sunSignKey, result.facts.bodies?.sun?.houseNumber);
+                    return (
+                      <div
+                        onClick={() =>
+                          openItemModal({
+                            category: 'CUNG MẶT TRỜI (SUN SIGN)',
+                            title: insight.headline,
+                            sign: ZODIAC_VN[sunSignKey] ?? sunSignKey,
+                            degree: result.facts.bodies?.sun?.signDegree,
+                            house: result.facts.bodies?.sun?.houseNumber,
+                            beginnerGuide: insight.beginnerGuide,
+                            layman: insight.layman,
+                            mechanism: `Mặt Trời ngự tại ${sunSignKey} (${result.facts.bodies?.sun?.signDegree?.toFixed(2)}°) thuộc cung ${ZODIAC_VN[sunSignKey]}.`,
+                            strengths: insight.strengths,
+                            pitfalls: insight.pitfalls,
+                            advice: insight.advice,
+                            technicalDetails: `Ephemeris: SUN | Longitude: ${result.facts.bodies?.sun?.longitude?.toFixed(4)}° | House: ${result.facts.bodies?.sun?.houseNumber ?? 'N/A'}`,
+                          })
+                        }
+                        className="p-4 bg-surface border border-accentGold/80 hover:border-parchment transition-colors cursor-pointer group space-y-2 flex flex-col justify-between"
+                      >
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between text-xs font-mono">
+                            <span className="text-stone flex items-center gap-1.5">
+                              <Sun className="w-3.5 h-3.5 text-accentGold" />
+                              Mặt Trời
                             </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                            <span className="text-[10px] text-accentGold border border-accentGold/30 px-1 py-0.2">
+                              Bản Ngã
+                            </span>
+                          </div>
+                          <div className="text-base font-serif font-bold text-accentGold group-hover:text-parchment transition-colors">
+                            {ZODIAC_VN[sunSignKey] ?? sunSignKey}
+                          </div>
+                          <p className="text-xs text-stone line-clamp-2 leading-relaxed">{insight.layman}</p>
+                        </div>
+                        <span className="text-[10px] font-mono text-accentGold group-hover:underline pt-2 border-t border-borderDark flex items-center justify-between">
+                          <span>Chi tiết Bản Ngã</span>
+                          <ArrowRight className="w-3 h-3" />
+                        </span>
+                      </div>
+                    );
+                  })()}
+
+                  {/* 2. Moon Sign */}
+                  {(() => {
+                    const insight = getPlanetInSignInsight('moon', moonSignKey, result.facts.bodies?.moon?.houseNumber);
+                    return (
+                      <div
+                        onClick={() =>
+                          openItemModal({
+                            category: 'CUNG MẶT TRĂNG (MOON SIGN)',
+                            title: insight.headline,
+                            sign: ZODIAC_VN[moonSignKey] ?? moonSignKey,
+                            degree: result.facts.bodies?.moon?.signDegree,
+                            house: result.facts.bodies?.moon?.houseNumber,
+                            beginnerGuide: insight.beginnerGuide,
+                            layman: insight.layman,
+                            mechanism: `Mặt Trăng ngự tại ${moonSignKey} (${result.facts.bodies?.moon?.signDegree?.toFixed(2)}°) thuộc cung ${ZODIAC_VN[moonSignKey]}.`,
+                            strengths: insight.strengths,
+                            pitfalls: insight.pitfalls,
+                            advice: insight.advice,
+                            technicalDetails: `Ephemeris: MOON | Longitude: ${result.facts.bodies?.moon?.longitude?.toFixed(4)}° | House: ${result.facts.bodies?.moon?.houseNumber ?? 'N/A'}`,
+                          })
+                        }
+                        className="p-4 bg-surface border border-borderDark hover:border-accentGold transition-colors cursor-pointer group space-y-2 flex flex-col justify-between"
+                      >
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between text-xs font-mono">
+                            <span className="text-stone flex items-center gap-1.5">
+                              <Moon className="w-3.5 h-3.5 text-stone" />
+                              Mặt Trăng
+                            </span>
+                            <span className="text-[10px] text-stone border border-borderDark px-1 py-0.2">
+                              Cảm Xúc
+                            </span>
+                          </div>
+                          <div className="text-base font-serif font-bold text-parchment group-hover:text-accentGold transition-colors">
+                            {ZODIAC_VN[moonSignKey] ?? moonSignKey}
+                          </div>
+                          <p className="text-xs text-stone line-clamp-2 leading-relaxed">{insight.layman}</p>
+                        </div>
+                        <span className="text-[10px] font-mono text-accentGold group-hover:underline pt-2 border-t border-borderDark flex items-center justify-between">
+                          <span>Chi tiết Cảm Xúc</span>
+                          <ArrowRight className="w-3 h-3" />
+                        </span>
+                      </div>
+                    );
+                  })()}
+
+                  {/* 3. Ascendant */}
+                  {(() => {
+                    const ascSign = ascendantSignKey || 'ARIES';
+                    const insight = ASCENDANT_SIGN_INTERPRETATIONS[ascSign] || {
+                      meaning: 'Phong thái ứng xử và ấn tượng đầu tiên của bạn với thế giới.',
+                      layman: 'Cách bạn tiếp cận thế giới bên ngoài và tạo dựng phong cách sống đặc thù.',
+                      strengths: ['Tự tin', 'Thích ứng', 'Bản lĩnh'],
+                      pitfalls: ['Cần rèn luyện tính kiên nhẫn'],
+                      advice: 'Sống đúng với phẩm chất tự nhiên của mình.',
+                    };
+
+                    return (
+                      <div
+                        onClick={() => {
+                          if (result.isDegraded || !ascendantSignKey) return;
+                          openItemModal({
+                            category: 'CUNG MỌC (ASCENDANT / RISING SIGN)',
+                            title: `Cung Mọc tại ${ZODIAC_VN[ascendantSignKey] ?? ascendantSignKey}`,
+                            sign: ZODIAC_VN[ascendantSignKey] ?? ascendantSignKey,
+                            degree: result.facts.ascendant?.signDegree,
+                            house: 1,
+                            beginnerGuide: PLANET_BEGINNER_GUIDES.ascendant,
+                            layman: insight.layman,
+                            mechanism: `Đỉnh Cung 1 (Ascendant) ngự tại ${result.facts.ascendant?.signDegree?.toFixed(2)}° cung ${ZODIAC_VN[ascendantSignKey]}.`,
+                            strengths: insight.strengths,
+                            pitfalls: insight.pitfalls,
+                            advice: insight.advice,
+                            technicalDetails: `ASC Cusp: ${result.facts.ascendant?.longitude?.toFixed(4)}° | House System: ${result.metadata?.houseSystem ?? 'Placidus'}`,
+                          });
+                        }}
+                        className={`p-4 bg-surface border transition-colors space-y-2 flex flex-col justify-between ${
+                          result.isDegraded
+                            ? 'border-borderDark opacity-50'
+                            : 'border-borderDark hover:border-accentGold cursor-pointer group'
+                        }`}
+                      >
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between text-xs font-mono">
+                            <span className="text-stone flex items-center gap-1.5">
+                              <Compass className="w-3.5 h-3.5 text-stone" />
+                              Cung Mọc
+                            </span>
+                            <span className="text-[10px] text-stone border border-borderDark px-1 py-0.2">
+                              Phong Thái
+                            </span>
+                          </div>
+                          <div className="text-base font-serif font-bold text-parchment group-hover:text-accentGold transition-colors">
+                            {result.isDegraded ? 'Chưa rõ (Cần giờ sinh)' : ZODIAC_VN[ascendantSignKey] ?? ascendantSignKey}
+                          </div>
+                          <p className="text-xs text-stone line-clamp-2 leading-relaxed">
+                            {result.isDegraded ? 'Cần giờ sinh để xác định chính xác Cung Mọc' : insight.layman}
+                          </p>
+                        </div>
+                        {!result.isDegraded && (
+                          <span className="text-[10px] font-mono text-accentGold group-hover:underline pt-2 border-t border-borderDark flex items-center justify-between">
+                            <span>Chi tiết Cung Mọc</span>
+                            <ArrowRight className="w-3 h-3" />
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
 
-              {/* Biểu Đồ Bánh Xe 12 Cung Nhà (Natal House Wheel Chart - Interactive SVG + Popup) */}
-              {result.facts.houses && (
-                <div className="p-5 md:p-6 rounded-3xl bg-surface border border-accentGold/40 space-y-6 shadow-xl shadow-amber-500/5">
+              {/* LEVEL 2: NATAL CHART SYNTHESIS (TỔNG QUAN CẤU TRÚC NĂNG LƯỢNG) */}
+              {chartSynthesis && (
+                <div className="p-5 bg-surface border border-borderDark space-y-5">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-borderDark pb-3">
                     <div className="space-y-0.5">
+                      <span className="text-[10px] font-mono text-accentGold uppercase tracking-wider">
+                        Cấp Độ 2 • Tổng Hợp Cấu Trúc Năng Lượng
+                      </span>
+                      <h3 className="text-base font-serif text-parchment font-normal">
+                        Cân Bằng Tứ Đại Nguyên Tố & Tam Tính Chất
+                      </h3>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs font-mono">
+                      <span className="px-2 py-0.5 border border-accentGold/40 text-accentGold bg-background">
+                        Ưu thế: {chartSynthesis.elementSummary.dominantVn.split(' (')[0]}
+                      </span>
+                      <span className="px-2 py-0.5 border border-borderDark text-stone bg-background">
+                        Tính chất: {chartSynthesis.modalitySummary.dominantVn.split(' (')[0]}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Core Pattern Statement */}
+                  <div className="p-3.5 bg-background border border-borderDark space-y-1.5">
+                    <span className="text-[11px] font-mono text-accentGold uppercase tracking-wider block">
+                      ✦ Tuyên Ngôn Năng Lượng Cốt Lõi:
+                    </span>
+                    <p className="text-xs text-parchment leading-relaxed font-normal">
+                      {chartSynthesis.corePatternStatement}
+                    </p>
+                  </div>
+
+                  {/* Elemental Balance Progress Grid */}
+                  <div className="space-y-3">
+                    <span className="text-[11px] font-mono text-stone uppercase tracking-wider block">
+                      Phân Bổ Tứ Đại Nguyên Tố Trên Bản Đồ Sao (10 Thiên Thể):
+                    </span>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {[
+                        { key: 'FIRE', name: 'Lửa (Fire)', icon: Flame, color: 'text-rose-400', count: chartSynthesis.elementSummary.counts.FIRE },
+                        { key: 'EARTH', name: 'Đất (Earth)', icon: Globe, color: 'text-emerald-400', count: chartSynthesis.elementSummary.counts.EARTH },
+                        { key: 'AIR', name: 'Khí (Air)', icon: Wind, color: 'text-sky-400', count: chartSynthesis.elementSummary.counts.AIR },
+                        { key: 'WATER', name: 'Nước (Water)', icon: Droplets, color: 'text-indigo-400', count: chartSynthesis.elementSummary.counts.WATER },
+                      ].map((elem) => {
+                        const Icon = elem.icon;
+                        const pct = Math.round((elem.count / 10) * 100);
+                        const isDominant = chartSynthesis.elementSummary.dominant === elem.key;
+                        const isDeficient = chartSynthesis.elementSummary.deficient === elem.key;
+
+                        return (
+                          <div
+                            key={elem.key}
+                            className={`p-3 bg-background border ${
+                              isDominant
+                                ? 'border-accentGold'
+                                : isDeficient
+                                ? 'border-borderDark/60 opacity-80'
+                                : 'border-borderDark'
+                            } space-y-1.5`}
+                          >
+                            <div className="flex items-center justify-between text-xs font-mono">
+                              <span className={`flex items-center gap-1.5 ${elem.color} font-bold`}>
+                                <Icon className="w-3.5 h-3.5" />
+                                {elem.name.split(' (')[0]}
+                              </span>
+                              <span className="text-parchment">{elem.count} sao ({pct}%)</span>
+                            </div>
+                            <div className="w-full bg-surface h-1.5 overflow-hidden">
+                              <div
+                                className={`h-full ${
+                                  isDominant ? 'bg-accentGold' : 'bg-stone/50'
+                                }`}
+                                style={{ width: `${pct}%` }}
+                              />
+                            </div>
+                            <div className="text-[10px] font-mono text-stone pt-0.5">
+                              {isDominant && <span className="text-accentGold font-bold">★ Nổi trội</span>}
+                              {isDeficient && <span className="text-cinnabar">▲ Khuyết thiếu</span>}
+                              {!isDominant && !isDeficient && <span>Cân bằng</span>}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Element Description & Deficient Remedy */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                    <div className="p-3.5 bg-background border border-borderDark space-y-1">
+                      <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
+                        Đặc Tính Nguyên Tố Nổi Trội
+                      </span>
+                      <p className="text-stone leading-relaxed text-[11px]">
+                        {chartSynthesis.elementSummary.description}
+                      </p>
+                    </div>
+
+                    <div className="p-3.5 bg-background border border-cinnabar/40 space-y-1">
+                      <span className="font-mono text-cinnabar text-[11px] uppercase tracking-wider block">
+                        Phương Pháp Bổ Khuyết Nguyên Tố Thấp
+                      </span>
+                      <p className="text-stone leading-relaxed text-[11px]">
+                        {chartSynthesis.elementSummary.remedyAdvice}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* LEVEL 3: PLANETARY ASPECTS & DYNAMICS (MỐI QUAN HỆ GÓC CHIẾU HÀNH TINH) */}
+              <div className="p-5 rounded-2xl bg-surface border border-borderDark space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-borderDark pb-3">
+                  <div className="space-y-0.5">
+                    <span className="text-[10px] font-mono text-accentGold uppercase tracking-wider">
+                      Cấp Độ 3 • Cơ Sở & Mối Tương Quan Thiên Thể
+                    </span>
+                    <h3 className="text-base font-serif text-parchment font-normal flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-accentGold" />
+                      <span>Mối Tương Quan Góc Chiếu (Aspects & Inter-planetary Dynamics)</span>
+                    </h3>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs font-mono">
+                    <button
+                      onClick={() => setAspectTab('all')}
+                      className={`px-2.5 py-1 border text-[11px] ${
+                        aspectTab === 'all'
+                          ? 'border-accentGold text-accentGold bg-background'
+                          : 'border-borderDark text-stone hover:text-parchment'
+                      }`}
+                    >
+                      Tất cả ({allAspects.length})
+                    </button>
+                    <button
+                      onClick={() => setAspectTab('harmonious')}
+                      className={`px-2.5 py-1 border text-[11px] ${
+                        aspectTab === 'harmonious'
+                          ? 'border-accentGold text-accentGold bg-background'
+                          : 'border-borderDark text-stone hover:text-parchment'
+                      }`}
+                    >
+                      Thuận Hòa ({harmoniousAspects.length})
+                    </button>
+                    <button
+                      onClick={() => setAspectTab('tension')}
+                      className={`px-2.5 py-1 border text-[11px] ${
+                        aspectTab === 'tension'
+                          ? 'border-accentGold text-accentGold bg-background'
+                          : 'border-borderDark text-stone hover:text-parchment'
+                      }`}
+                    >
+                      Cọ Xát ({tensionAspects.length})
+                    </button>
+                  </div>
+                </div>
+
+                <p className="text-xs text-stone leading-relaxed">
+                  Trong Chiêm Tinh, các hành tinh không đứng độc lập mà liên tục đối thoại với nhau thông qua các góc chiếu hình học.
+                  Góc <strong>Thuận Hòa</strong> tạo nên tài năng thiên bẩm và vận may tự nhiên; 
+                  Góc <strong>Cọ Xát</strong> đóng vai trò là "lò luyện thép" rèn giũa bản lĩnh kiên cường.
+                </p>
+
+                {/* Aspect Cards Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                  {(aspectTab === 'all'
+                    ? allAspects
+                    : aspectTab === 'harmonious'
+                    ? harmoniousAspects
+                    : tensionAspects
+                  ).slice(0, 8).map((asp: any, idx: number) => {
+                    const insight = getAspectInsight(asp.body1, asp.body2, asp.aspectType, asp.orb);
+                    const p1Glyph = PLANET_GLYPHS[asp.body1.toLowerCase()] ?? '●';
+                    const p2Glyph = PLANET_GLYPHS[asp.body2.toLowerCase()] ?? '●';
+
+                    return (
+                      <div
+                        key={idx}
+                        onClick={() =>
+                          openItemModal({
+                            category: `GÓC CHIẾU HÀNH TINH: ${asp.aspectType}`,
+                            title: insight.headline,
+                            beginnerGuide: insight.beginnerGuide,
+                            layman: insight.layman,
+                            mechanism: `Mối tương quan góc chiếu ${asp.aspectType} giữa ${asp.body1} và ${asp.body2}. Sai số góc tính toán: ${asp.orb?.toFixed(2)}°. Tọa độ thực tế: ${asp.actualAngle?.toFixed(2)}°.`,
+                            advice: insight.advice,
+                            technicalDetails: `Aspect Rule: ASTRO_ASPECT_${asp.aspectType} | Body 1: ${asp.body1} | Body 2: ${asp.body2} | Angle: ${asp.actualAngle?.toFixed(2)}° | Orb: ${asp.orb?.toFixed(2)}°`,
+                          })
+                        }
+                        className={`p-3.5 bg-background border ${
+                          insight.isHarmonious ? 'border-borderDark hover:border-accentGold' : 'border-cinnabar/40 hover:border-cinnabar'
+                        } cursor-pointer group space-y-2 transition-colors`}
+                      >
+                        <div className="flex items-center justify-between text-xs font-mono">
+                          <div className="flex items-center gap-1.5 font-bold text-parchment">
+                            <span className="text-accentGold">{p1Glyph}</span>
+                            <span>{PLANET_NAMES_VN[asp.body1.toLowerCase()]?.split(' (')[0] ?? asp.body1}</span>
+                            <span className="text-stone">×</span>
+                            <span className="text-accentGold">{p2Glyph}</span>
+                            <span>{PLANET_NAMES_VN[asp.body2.toLowerCase()]?.split(' (')[0] ?? asp.body2}</span>
+                          </div>
+                          <span
+                            className={`text-[10px] px-1.5 py-0.2 border ${
+                              insight.isHarmonious
+                                ? 'border-emerald-500/40 text-emerald-400'
+                                : 'border-cinnabar text-cinnabar'
+                            }`}
+                          >
+                            {insight.isHarmonious ? 'Thuận Hòa' : 'Cọ Xát'}
+                          </span>
+                        </div>
+
+                        <p className="text-xs text-stone line-clamp-2 leading-relaxed">
+                          {insight.layman}
+                        </p>
+
+                        <div className="flex items-center justify-between pt-1 border-t border-borderDark/60 text-[10px] font-mono text-stone">
+                          <span>Sai số góc (Orb): {asp.orb?.toFixed(2)}°</span>
+                          <span className="text-accentGold group-hover:underline">
+                            Xem luận giải chi tiết →
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* LEVEL 3: BIỂU ĐỒ BÁNH XE 12 CUNG NHÀ (NATAL HOUSE WHEEL CHART) */}
+              {result.facts.houses && (
+                <div className="p-5 md:p-6 bg-surface border border-accentGold/40 space-y-6 shadow-xl shadow-amber-500/5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-borderDark pb-3">
+                    <div className="space-y-0.5">
+                      <span className="text-[10px] font-mono text-accentGold uppercase tracking-wider">
+                        Cấp Độ 3 • Không Gian 12 Lĩnh Vực Đời Sống
+                      </span>
                       <h3 className="text-base font-bold text-white flex items-center gap-2">
                         <Compass className="w-5 h-5 text-accentGold" />
                         <span>Biểu Đồ Bánh Xe 12 Cung Nhà (Natal House Wheel)</span>
@@ -553,7 +817,7 @@ export default function AstrologyPage() {
                         4 Trục then chốt: <strong>ASC (Cung Mọc)</strong> - <strong>DSC (Cung Lặn)</strong>, <strong>MC (Thiên Đỉnh)</strong> - <strong>IC (Thiên Để)</strong>.
                       </p>
                     </div>
-                    <span className="self-start sm:self-auto text-[11px] px-3 py-1 font-mono bg-surface border-borderDark text-accentGold border border-accentGold/30 flex items-center gap-1.5 shrink-0">
+                    <span className="self-start sm:self-auto text-[11px] px-3 py-1 font-mono bg-surface border border-accentGold/30 text-accentGold flex items-center gap-1.5 shrink-0">
                       <BookOpen className="w-3.5 h-3.5" />
                       Chạm vào Cung Nhà để mở Popup
                     </span>
@@ -564,7 +828,6 @@ export default function AstrologyPage() {
                     <div className="w-full max-w-[560px]">
                       <svg viewBox="0 0 640 640" className="w-full h-auto select-none overflow-visible">
                         <defs>
-                          {/* Radial Glow for Wheel Center */}
                           <radialGradient id="wheelCenterGlow" cx="50%" cy="50%" r="50%">
                             <stop offset="0%" stopColor="#e2b342" stopOpacity="0.25" />
                             <stop offset="100%" stopColor="#0b1329" stopOpacity="0.0" />
@@ -615,7 +878,7 @@ export default function AstrologyPage() {
                                     .join('\n')
                                 : 'Cung nhà này không có hành tinh chính ngụ (Cung nhà trống). Trong chiêm tinh học phương Tây, cung nhà trống mang ý nghĩa lĩnh vực này diễn ra êm đềm, năng lượng được dẫn dắt bởi chủ tinh của cung hoàng đạo tại đỉnh nhà.';
 
-                            setSelectedAstroItem({
+                            openItemModal({
                               category: `ĐỈNH CUNG NHÀ ${h.houseNumber} (${houseInfo?.latinName ?? ''})`,
                               title: `Nhà ${h.houseNumber} Tại ${signVn} (${h.cuspLongitude?.toFixed(2)}°)`,
                               sign: signVn,
@@ -625,6 +888,7 @@ export default function AstrologyPage() {
                               layman: `${houseInfo?.layman ?? ''}\n\n${occupantsDesc}\n\n• Chủ đề then chốt: ${houseInfo?.keyThemes ?? ''}`,
                               mechanism: `Đỉnh nhà (Cusp) ngự tại ${h.signDegree?.toFixed(2)}° ${signVn}. Hệ thống phân chia nhà: ${result.metadata?.houseSystem ?? 'Placidus'}.`,
                               advice: houseInfo?.advice ?? 'Khai thác tối đa nguồn lực tích cực của cung nhà này.',
+                              technicalDetails: `House ${h.houseNumber} | Cusp Longitude: ${h.cuspLongitude?.toFixed(4)}° | Sign: ${h.sign} | System: ${result.metadata?.houseSystem ?? 'Placidus'}`,
                             });
                           };
 
@@ -711,16 +975,13 @@ export default function AstrologyPage() {
                         })}
 
                         {/* Cardinal Axes Lines (ASC-DSC, MC-IC) */}
-                        {/* ASC - DSC Axis (9 o'clock to 3 o'clock) */}
                         <line x1="35" y1="320" x2="605" y2="320" stroke="#10b981" strokeWidth="2.5" strokeDasharray="5,4" />
-                        {/* ASC Marker Badge (Left - 9 o'clock) */}
                         <g transform="translate(10, 305)">
                           <rect width="52" height="30" rx="8" fill="#064e3b" stroke="#34d399" strokeWidth="2" />
                           <text x="26" y="20" textAnchor="middle" fill="#6ee7b7" fontSize="12" fontWeight="900">
                             ASC
                           </text>
                         </g>
-                        {/* DSC Marker Badge (Right - 3 o'clock) */}
                         <g transform="translate(578, 305)">
                           <rect width="52" height="30" rx="8" fill="#0c4a6e" stroke="#38bdf8" strokeWidth="2" />
                           <text x="26" y="20" textAnchor="middle" fill="#7dd3fc" fontSize="12" fontWeight="900">
@@ -728,16 +989,13 @@ export default function AstrologyPage() {
                           </text>
                         </g>
 
-                        {/* MC - IC Axis (12 o'clock to 6 o'clock) */}
                         <line x1="320" y1="35" x2="320" y2="605" stroke="#e2b342" strokeWidth="2.5" strokeDasharray="5,4" />
-                        {/* MC Marker Badge (Top - 12 o'clock) */}
                         <g transform="translate(294, 10)">
                           <rect width="52" height="30" rx="8" fill="#78350f" stroke="#fbbf24" strokeWidth="2" />
                           <text x="26" y="20" textAnchor="middle" fill="#fde68a" fontSize="12" fontWeight="900">
                             MC
                           </text>
                         </g>
-                        {/* IC Marker Badge (Bottom - 6 o'clock) */}
                         <g transform="translate(294, 600)">
                           <rect width="52" height="30" rx="8" fill="#312e81" stroke="#818cf8" strokeWidth="2" />
                           <text x="26" y="20" textAnchor="middle" fill="#c7d2fe" fontSize="12" fontWeight="900">
@@ -790,7 +1048,7 @@ export default function AstrologyPage() {
                                   .join('\n')
                               : 'Cung nhà này không có hành tinh chính ngụ (Cung nhà trống). Trong chiêm tinh học phương Tây, cung nhà trống mang ý nghĩa lĩnh vực này diễn ra êm đềm, năng lượng được dẫn dắt bởi chủ tinh của cung hoàng đạo tại đỉnh nhà.';
 
-                          setSelectedAstroItem({
+                          openItemModal({
                             category: `ĐỈNH CUNG NHÀ ${h.houseNumber} (${houseInfo?.latinName ?? ''})`,
                             title: `Nhà ${h.houseNumber} Tại ${signVn} (${h.cuspLongitude?.toFixed(2)}°)`,
                             sign: signVn,
@@ -800,6 +1058,7 @@ export default function AstrologyPage() {
                             layman: `${houseInfo?.layman ?? ''}\n\n${occupantsDesc}\n\n• Chủ đề then chốt: ${houseInfo?.keyThemes ?? ''}`,
                             mechanism: `Đỉnh nhà (Cusp) ngự tại ${h.signDegree?.toFixed(2)}° ${signVn}. Hệ thống phân chia nhà: ${result.metadata?.houseSystem ?? 'Placidus'}.`,
                             advice: houseInfo?.advice ?? 'Khai thác tối đa nguồn lực tích cực của cung nhà này.',
+                            technicalDetails: `House ${h.houseNumber} | Cusp Longitude: ${h.cuspLongitude?.toFixed(4)}° | Sign: ${h.sign} | System: ${result.metadata?.houseSystem ?? 'Placidus'}`,
                           });
                         };
 
@@ -863,16 +1122,102 @@ export default function AstrologyPage() {
                   </div>
                 </div>
               )}
+
+              {/* LEVEL 4: TECHNICAL PLANETARY TABLE (BẢNG TỌA ĐỘ CÁC THIÊN THỂ) */}
+              <div className="p-5 rounded-2xl bg-surface border border-borderDark space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-borderDark pb-2">
+                  <div>
+                    <span className="text-[10px] font-mono text-accentGold uppercase tracking-wider">
+                      Cấp Độ 4 • Chi Tiết Kỹ Thuật & Tọa Độ Thiên Văn
+                    </span>
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                      <span>Bảng Tọa Độ 10 Thiên Thể (Astronomical Ephemeris)</span>
+                      <span className="text-[11px] font-normal text-gray-400">
+                        ({Object.keys(result.facts.bodies).length} thiên thể)
+                      </span>
+                    </h3>
+                  </div>
+                  <span className="text-[11px] text-accentGold">Nhấp vào dòng để xem giải mã chuyên sâu</span>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs text-left">
+                    <thead className="text-gray-400 bg-background/50 border-b border-borderDark">
+                      <tr>
+                        <th className="py-2.5 px-3">Thiên Thể</th>
+                        <th className="py-2.5 px-3">Ký Hiệu</th>
+                        <th className="py-2.5 px-3">Cung Hoàng Đạo</th>
+                        <th className="py-2.5 px-3">Tọa Độ Cung</th>
+                        <th className="py-2.5 px-3">Cung Nhà</th>
+                        <th className="py-2.5 px-3 text-right">Chi Tiết</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-borderDark/40">
+                      {Object.entries(result.facts.bodies).map(([bodyName, pos]: [string, any]) => {
+                        const nameVn = PLANET_NAMES_VN[bodyName.toLowerCase()] ?? bodyName;
+                        const glyph = PLANET_GLYPHS[bodyName.toLowerCase()] ?? '●';
+                        const signVn = ZODIAC_VN[pos.sign] ?? pos.sign;
+
+                        return (
+                          <tr
+                            key={bodyName}
+                            onClick={() => {
+                              const insight = getPlanetInSignInsight(bodyName, pos.sign, pos.houseNumber);
+
+                              openItemModal({
+                                category: `HÀNH TINH: ${nameVn.toUpperCase()}`,
+                                title: insight.headline,
+                                sign: signVn,
+                                degree: pos.signDegree,
+                                house: pos.houseNumber,
+                                beginnerGuide: insight.beginnerGuide,
+                                layman: insight.layman,
+                                mechanism: `Thiên thể ${nameVn} ngự tại ${pos.signDegree?.toFixed(2)}° cung ${signVn}. Tọa độ kinh độ hoàng đạo tuyệt đối: ${pos.longitude?.toFixed(2)}°. Nằm tại Nhà ${pos.houseNumber ?? '—'}.`,
+                                strengths: insight.strengths,
+                                pitfalls: insight.pitfalls,
+                                advice: insight.advice,
+                                technicalDetails: `Body: ${bodyName.toUpperCase()} | Longitude: ${pos.longitude?.toFixed(4)}° | House: ${pos.houseNumber ?? 'N/A'} | System: ${result.metadata?.houseSystem ?? 'Placidus'}`,
+                              });
+                            }}
+                            className="hover:bg-surfaceHover/80 cursor-pointer transition-colors group"
+                          >
+                            <td className="py-2.5 px-3 font-semibold text-white capitalize group-hover:text-accentGold">
+                              {nameVn}
+                            </td>
+                            <td className="py-2.5 px-3 text-accentGold font-mono text-sm">
+                              {glyph}
+                            </td>
+                            <td className="py-2.5 px-3 text-amber-300 font-medium">
+                              {signVn}
+                            </td>
+                            <td className="py-2.5 px-3 text-gray-300 font-mono">
+                              {pos.signDegree?.toFixed(2)}°
+                            </td>
+                            <td className="py-2.5 px-3 text-gray-300 font-mono">
+                              {pos.houseNumber ? `Nhà ${pos.houseNumber}` : '—'}
+                            </td>
+                            <td className="py-2.5 px-3 text-right">
+                              <span className="text-[10px] text-accentGold group-hover:underline">
+                                Xem luận giải →
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           )}
         </div>
       </div>
 
-      {/* POPUP / MODAL: COMPREHENSIVE ASTROLOGY ITEM INTERPRETATION */}
+      {/* POPUP / MODAL: 4-LAYER PROGRESSIVE DISCLOSURE ASTROLOGY MODAL */}
       {selectedAstroItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 animate-fadeIn">
-          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-surface border border-borderDark p-6 md:p-8 space-y-6">
-            {/* Modal Header */}
+          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-surface border border-borderDark p-6 md:p-8 space-y-5">
+            {/* Modal Header (Level 1: Kết quả chính) */}
             <div className="flex items-center justify-between border-b border-borderDark pb-4">
               <div className="space-y-1">
                 <span className="text-[10px] font-mono text-accentGold uppercase tracking-wider">
@@ -881,6 +1226,12 @@ export default function AstrologyPage() {
                 <h2 className="text-xl sm:text-2xl font-serif text-parchment">
                   {selectedAstroItem.title}
                 </h2>
+                {selectedAstroItem.degree && (
+                  <div className="text-[11px] font-mono text-stone">
+                    Tọa độ: <strong className="text-parchment">{selectedAstroItem.degree.toFixed(2)}°</strong>
+                    {selectedAstroItem.house ? ` • Nằm tại Cung Nhà ${selectedAstroItem.house}` : ''}
+                  </div>
+                )}
               </div>
 
               <button
@@ -892,46 +1243,114 @@ export default function AstrologyPage() {
               </button>
             </div>
 
-            {/* Modal Body */}
-            <div className="space-y-5 text-xs">
-              {/* Beginner Guide */}
+            {/* Modal Body: Progressive Disclosure */}
+            <div className="space-y-4 text-xs">
+              {/* LEVEL 2: Ý NGHĨA ĐỜI SỐNG THỰC TẾ & LỜI KHUYÊN (Always Visible) */}
               <div className="p-4 bg-background border border-borderDark space-y-2">
-                <div className="font-mono text-accentGold text-[11px] uppercase tracking-wider flex items-center gap-1.5">
-                  <HelpCircle className="w-3.5 h-3.5" />
-                  <span>Giải Thích Dành Cho Người Mới Bắt Đầu:</span>
-                </div>
-                <p className="text-stone leading-relaxed text-xs whitespace-pre-line">
-                  {selectedAstroItem.beginnerGuide}
-                </p>
-                {selectedAstroItem.degree && (
-                  <div className="pt-2 text-[11px] font-mono text-stone border-t border-borderDark">
-                    Tọa độ: <strong className="text-parchment">{selectedAstroItem.degree.toFixed(2)}°</strong>
-                    {selectedAstroItem.house ? ` • Nằm tại Nhà ${selectedAstroItem.house}` : ''}
-                  </div>
-                )}
-              </div>
-
-              {/* Core Layman Meaning */}
-              <div className="p-4 bg-background border border-borderDark space-y-1.5">
                 <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
-                  Ý Nghĩa Thực Tế Cho Tính Cách & Cuộc Sống Của Bạn:
+                  1. Ý Nghĩa Thực Tế Cho Tính Cách & Đời Sống:
                 </span>
                 <p className="text-parchment leading-relaxed text-xs whitespace-pre-line font-normal">
                   {selectedAstroItem.layman}
                 </p>
+
+                {/* Strengths & Pitfalls if available */}
+                {(selectedAstroItem.strengths || selectedAstroItem.pitfalls) && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-3 border-t border-borderDark/60 text-[11px]">
+                    {selectedAstroItem.strengths && (
+                      <div className="space-y-1">
+                        <strong className="text-accentGold block">✦ Điểm Mạnh Nổi Bật:</strong>
+                        <ul className="text-stone space-y-0.5">
+                          {selectedAstroItem.strengths.map((s, idx) => (
+                            <li key={idx}>• {s}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {selectedAstroItem.pitfalls && (
+                      <div className="space-y-1">
+                        <strong className="text-cinnabar block">▲ Thách Thức Cần Lưu Ý:</strong>
+                        <ul className="text-stone space-y-0.5">
+                          {selectedAstroItem.pitfalls.map((p, idx) => (
+                            <li key={idx}>• {p}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
-              {/* Actionable Advice */}
+              {/* LEVEL 2: HÀNH ĐỘNG CÂN BẰNG (Actionable Advice) */}
               <div className="p-4 bg-background border border-borderDark space-y-1.5">
                 <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
-                  🎯 Lời Khuyên Cân Bằng & Phát Huy Năng Lượng:
+                  2. Lời Khuyên Hành Động Thực Tế (Practical Guidance):
                 </span>
                 <p className="text-stone leading-relaxed text-xs">
                   {selectedAstroItem.advice}
                 </p>
               </div>
 
-              {/* Close Button */}
+              {/* LEVEL 3: CƠ SỞ & NGUYÊN LÝ LUẬN GIẢI (Collapsible Evidence) */}
+              <div className="border border-borderDark">
+                <button
+                  type="button"
+                  onClick={() => setModalShowEvidence(!modalShowEvidence)}
+                  className="w-full p-3 bg-surface hover:bg-surfaceHover flex items-center justify-between text-left transition-colors font-mono text-[11px] text-stone"
+                >
+                  <span className="flex items-center gap-1.5 text-accentGold">
+                    <HelpCircle className="w-3.5 h-3.5" />
+                    <span>✦ Vì sao hệ thống luận như vậy? (Xem cơ sở luận giải)</span>
+                  </span>
+                  {modalShowEvidence ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                </button>
+
+                {modalShowEvidence && (
+                  <div className="p-4 bg-background border-t border-borderDark space-y-2 text-stone text-xs leading-relaxed animate-fadeIn">
+                    <p className="whitespace-pre-line">
+                      {selectedAstroItem.beginnerGuide}
+                    </p>
+                    {selectedAstroItem.mechanism && (
+                      <div className="pt-2 border-t border-borderDark text-[11px] font-mono text-stone">
+                        <strong className="text-parchment">Cơ chế thiên văn:</strong> {selectedAstroItem.mechanism}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* LEVEL 4: CHI TIẾT KỸ THUẬT & TOẠ ĐỘ (Collapsible Technical Details) */}
+              <div className="border border-borderDark">
+                <button
+                  type="button"
+                  onClick={() => setModalShowTechnical(!modalShowTechnical)}
+                  className="w-full p-3 bg-surface hover:bg-surfaceHover flex items-center justify-between text-left transition-colors font-mono text-[11px] text-stone"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <Layers className="w-3.5 h-3.5 text-stone" />
+                    <span>⚙ Xem chi tiết chuyên môn & Quy chuẩn thiên văn</span>
+                  </span>
+                  {modalShowTechnical ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                </button>
+
+                {modalShowTechnical && (
+                  <div className="p-4 bg-background border-t border-borderDark space-y-2 text-[11px] font-mono text-stone animate-fadeIn">
+                    <div>
+                      Hệ thống Hoàng Đạo: <strong className="text-parchment">Tropical Zodiac</strong>
+                    </div>
+                    <div>
+                      Phân chia Cung Nhà: <strong className="text-parchment">{result.metadata?.houseSystem ?? 'Placidus'}</strong>
+                    </div>
+                    {selectedAstroItem.technicalDetails && (
+                      <div className="p-2 bg-surface border border-borderDark text-[10px] text-accentGold">
+                        {selectedAstroItem.technicalDetails}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Modal Footer */}
               <div className="pt-2 flex justify-end">
                 <button
                   type="button"

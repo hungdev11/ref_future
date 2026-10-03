@@ -648,6 +648,9 @@ export const MAJOR_ARCANA_DETAILED: Record<string, TarotCardInsight> = {
   },
 };
 
+import { MINOR_ARCANA_DETAILED } from './minor-arcana-data.js';
+export { MINOR_ARCANA_DETAILED };
+
 /**
  * Generate detailed insights for Minor Arcana cards deterministically
  */
@@ -656,55 +659,47 @@ export function getMinorArcanaInsight(
   rankNum: number,
   cardName: string
 ): TarotCardInsight {
-  const suitConfig = {
-    WANDS: { element: 'Hỏa (Fire)', domain: 'Đam mê, hành động, sự nghiệp & sáng tạo', theme: 'nhiệt huyết' },
-    CUPS: { element: 'Thủy (Water)', domain: 'Cảm xúc, tình yêu, trực giác & mối quan hệ', theme: 'tâm hồn' },
-    SWORDS: { element: 'Khí (Air)', domain: 'Tư duy, logic, sự thật & thử thách quyết định', theme: 'trí tuệ' },
-    PENTACLES: { element: 'Đất (Earth)', domain: 'Tài chính, vật chất, sức khỏe & sự bền vững', theme: 'thực tiễn' },
-  } as const;
-
-  const currentSuit = suitConfig[suit as keyof typeof suitConfig] ?? suitConfig.WANDS;
-  const rankNames: Record<number, string> = {
-    1: 'Ace (Ách)',
-    2: 'Hai (Two)',
-    3: 'Ba (Three)',
-    4: 'Bốn (Four)',
-    5: 'Năm (Five)',
-    6: 'Sáu (Six)',
-    7: 'Bảy (Seven)',
-    8: 'Tám (Eight)',
-    9: 'Chín (Nine)',
-    10: 'Mười (Ten)',
-    11: 'Page (Thị Tùng)',
-    12: 'Knight (Hiệp Sĩ)',
-    13: 'Queen (Hoàng Hậu)',
-    14: 'King (Quốc Vương)',
+  const COURT_NAMES: Record<number, string> = {
+    1: 'ACE',
+    11: 'PAGE',
+    12: 'KNIGHT',
+    13: 'QUEEN',
+    14: 'KING',
   };
+  const rankKey = COURT_NAMES[rankNum] ?? String(rankNum);
+  const code = `${suit}_${String(rankNum).padStart(2, '0')}_${rankKey}`;
+  const codeAlt = `${suit}_${String(rankNum).padStart(2, '0')}`;
 
-  const rankStr = rankNames[rankNum] || `Số ${rankNum}`;
+  if (MINOR_ARCANA_DETAILED[code]) {
+    return MINOR_ARCANA_DETAILED[code]!;
+  }
+  if (MINOR_ARCANA_DETAILED[codeAlt]) {
+    return MINOR_ARCANA_DETAILED[codeAlt]!;
+  }
 
+  // Fallback
   return {
-    cardCode: `${suit}_${String(rankNum).padStart(2, '0')}`,
-    nameVn: `${cardName} (${rankStr})`,
-    keywords: [(currentSuit.domain.split(',')[0] ?? currentSuit.domain).trim(), rankStr, currentSuit.element],
-    symbolism: `Thuộc Bộ ${suit} — Nguyên tố ${currentSuit.element}. Biểu thị các động lực liên quan mật thiết đến ${currentSuit.domain}.`,
-    uprightMeaning: `Lá ${cardName} ở chiều xuôi mở ra nguồn năng lượng ${currentSuit.theme} thuận dòng. Đây là thời điểm phát huy thế mạnh của nguyên tố ${currentSuit.element} để giải quyết công việc và đời sống thực tế.`,
-    reversedMeaning: `Lá ${cardName} ở chiều ngược cảnh báo sự tắc nghẽn hoặc sử dụng thái quá năng lượng ${currentSuit.theme}. Cần điều chỉnh lại nhịp điệu và kiềm chế những phản ứng bốc đồng.`,
+    cardCode: code,
+    nameVn: cardName,
+    keywords: [cardName, suit],
+    symbolism: `Lá bài thuộc bộ ${suit}.`,
+    uprightMeaning: `Năng lượng thuận dòng của lá ${cardName}.`,
+    reversedMeaning: `Cảnh báo năng lượng nghẽn của lá ${cardName}.`,
     careerFinance: {
-      upright: `Trong công việc, các yếu tố ${currentSuit.domain} đang tạo đà phát triển tốt. Chủ động nắm bắt cơ hội và duy trì tính chuyên nghiệp cao.`,
-      reversed: `Tiến độ có thể chậm lại do thiếu thông tin hoặc xung đột quan điểm. Hãy rà soát kỹ quy trình và quản lý ngân sách cẩn mật.`,
+      upright: 'Thuận lợi trong công việc và tài chính.',
+      reversed: 'Cẩn trọng trong các quyết định tài chính.',
     },
     loveRelationship: {
-      upright: `Mối quan hệ có sự đồng điệu về ${currentSuit.domain}. Giao tiếp thẳng thắn và sự tôn trọng giúp đôi bên thêm gắn kết bền vững.`,
-      reversed: `Tránh hiểu lầm do suy diễn chủ quan. Dành thời gian lắng nghe tâm tư của đối phương với tinh thần xây dựng.`,
+      upright: 'Tình cảm hài hòa và gắn kết.',
+      reversed: 'Cần đối thoại chân thành để tháo gỡ khúc mắc.',
     },
     dos: {
-      upright: `Tận dụng cơ hội; hành động nhất quán với giá trị của mình; duy trì kỷ luật và sự chính trực.`,
-      reversed: `Bình tĩnh rà soát lại phương án; lắng nghe lời khuyên khách quan; không nóng vội ép buộc kết quả.`,
+      upright: 'Hành động kiên định và chính trực.',
+      reversed: 'Bình tâm rà soát lại hoàn cảnh.',
     },
     donts: {
-      upright: `Không chủ quan tự mãn khi mọi việc đang thuận lợi.`,
-      reversed: `Không đưa ra quyết định quan trọng khi tâm lý đang bị xáo trộn.`,
+      upright: 'Không chủ quan nóng vội.',
+      reversed: 'Không quyết định khi đang bốc đồng.',
     },
   };
 }

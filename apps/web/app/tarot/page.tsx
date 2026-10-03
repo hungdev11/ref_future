@@ -186,33 +186,50 @@ export default function TarotPage() {
                       </div>
 
                       {/* Card Image */}
-                      <div className="p-4 flex flex-col items-center bg-background/50">
-                        <div className="relative w-36 aspect-[2/3.4] overflow-hidden border border-borderDark group-hover:border-accentGold transition-colors bg-black shadow-md">
-                          <img
-                            src={imageUrl}
-                            alt={draw.card.name}
-                            className={`w-full h-full object-cover transition-transform duration-300 ${
-                              isRev ? 'rotate-180' : ''
-                            }`}
-                          />
-                        </div>
-                        <h4 className="mt-3 font-serif font-bold text-sm text-parchment group-hover:text-accentGold transition-colors text-center">
-                          {draw.card.name}
-                        </h4>
-                        <span className="text-[10px] font-mono text-stone">
-                          {draw.card.arcana === 'MAJOR' ? 'Bộ Ẩn Chính' : 'Bộ Ẩn Phụ'}
-                        </span>
-                      </div>
+                      {(() => {
+                        const quickInsight = getAuthenticTarotCardInsights(
+                          draw.card.cardCode,
+                          draw.card.name,
+                          draw.card.arcana,
+                          draw.positionName,
+                          draw.isReversed
+                        );
 
-                      {/* Card Footer */}
-                      <div className="p-3 border-t border-borderDark flex items-center justify-between text-[11px] font-mono text-stone">
-                        <span className="text-[10px] text-stone/80 truncate max-w-[130px]">
-                          {draw.card.keywords.slice(0, 2).join(' • ')}
-                        </span>
-                        <span className="text-accentGold group-hover:underline">
-                          Chi tiết →
-                        </span>
-                      </div>
+                        return (
+                          <>
+                            <div className="p-4 flex flex-col items-center bg-background/50">
+                              <div className="relative w-36 aspect-[2/3.4] overflow-hidden border border-borderDark group-hover:border-accentGold transition-colors bg-black shadow-md">
+                                <img
+                                  src={imageUrl}
+                                  alt={draw.card.name}
+                                  className={`w-full h-full object-cover transition-transform duration-300 ${
+                                    isRev ? 'rotate-180' : ''
+                                  }`}
+                                />
+                              </div>
+                              <h4 className="mt-3 font-serif font-bold text-sm text-parchment group-hover:text-accentGold transition-colors text-center">
+                                {draw.card.name}
+                              </h4>
+                              <span className="text-[11px] text-accentGold/90 font-medium text-center">
+                                {quickInsight.cardTitle}
+                              </span>
+                              <span className="text-[10px] font-mono text-stone mt-0.5">
+                                {draw.card.arcana === 'MAJOR' ? 'Bộ Ẩn Chính' : 'Bộ Ẩn Phụ'}
+                              </span>
+                            </div>
+
+                            {/* Card Footer */}
+                            <div className="p-3 border-t border-borderDark flex items-center justify-between text-[11px] font-mono text-stone">
+                              <span className="text-[10px] text-stone/80 truncate max-w-[130px]">
+                                {quickInsight.keywords.slice(0, 2).join(' • ')}
+                              </span>
+                              <span className="text-accentGold group-hover:underline">
+                                Chi tiết →
+                              </span>
+                            </div>
+                          </>
+                        );
+                      })()}
                     </div>
                   );
                 })}
@@ -351,54 +368,58 @@ export default function TarotPage() {
       )}
 
       {/* POPUP / MODAL: DETAILED TAROT CARD READING */}
-      {selectedDraw && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 animate-fadeIn">
-          <div className="w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-surface border border-borderDark p-6 md:p-8 space-y-6">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-borderDark pb-4">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2 text-xs font-mono">
-                  <span className="text-accentGold">
-                    Vị trí {selectedDraw.positionIndex}: {selectedDraw.positionName}
-                  </span>
-                  <span
-                    className={`text-[10px] px-1.5 py-0.2 border ${
-                      selectedDraw.isReversed
-                        ? 'border-cinnabar text-cinnabar'
-                        : 'border-borderLight text-parchment'
-                    }`}
-                  >
-                    {selectedDraw.isReversed ? 'Ngược (Reversed)' : 'Xuôi (Upright)'}
-                  </span>
+      {selectedDraw && (() => {
+        const insights = getAuthenticTarotCardInsights(
+          selectedDraw.card.cardCode,
+          selectedDraw.card.name,
+          selectedDraw.card.arcana,
+          selectedDraw.positionName,
+          selectedDraw.isReversed
+        );
+        const imageUrl = getTarotCardImageUrl(selectedDraw.card.cardCode);
+
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 animate-fadeIn">
+            <div className="w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-surface border border-borderDark p-6 md:p-8 space-y-6">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between border-b border-borderDark pb-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-xs font-mono">
+                    <span className="text-accentGold">
+                      Vị trí {selectedDraw.positionIndex}: {selectedDraw.positionName}
+                    </span>
+                    <span
+                      className={`text-[10px] px-1.5 py-0.2 border ${
+                        selectedDraw.isReversed
+                          ? 'border-cinnabar text-cinnabar'
+                          : 'border-borderLight text-parchment'
+                      }`}
+                    >
+                      {selectedDraw.isReversed ? 'Ngược (Reversed)' : 'Xuôi (Upright)'}
+                    </span>
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-serif text-parchment flex flex-wrap items-baseline gap-2">
+                    <span>{selectedDraw.card.name}</span>
+                    {insights.cardTitle && insights.cardTitle !== selectedDraw.card.name && (
+                      <span className="text-accentGold text-base sm:text-lg font-serif">
+                        — {insights.cardTitle}
+                      </span>
+                    )}
+                  </h2>
                 </div>
-                <h2 className="text-xl sm:text-2xl font-serif text-parchment">
-                  {selectedDraw.card.name}
-                </h2>
+
+                <button
+                  onClick={() => setSelectedDraw(null)}
+                  className="p-1.5 text-stone hover:text-parchment hover:bg-surfaceHover transition-colors border border-borderDark"
+                  title="Đóng popup"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
 
-              <button
-                onClick={() => setSelectedDraw(null)}
-                className="p-1.5 text-stone hover:text-parchment hover:bg-surfaceHover transition-colors border border-borderDark"
-                title="Đóng popup"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Modal Body */}
-            {(() => {
-              const insights = getAuthenticTarotCardInsights(
-                selectedDraw.card.cardCode,
-                selectedDraw.card.name,
-                selectedDraw.card.arcana,
-                selectedDraw.positionName,
-                selectedDraw.isReversed
-              );
-              const imageUrl = getTarotCardImageUrl(selectedDraw.card.cardCode);
-
-              return (
-                <div className="space-y-5 text-xs">
-                  {/* Top Overview: Card Image + Layman Beginners Explanations */}
+              {/* Modal Body */}
+              <div className="space-y-5 text-xs">
+                {/* Top Overview: Card Image + Layman Beginners Explanations */}
                   <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 p-4 bg-background border border-borderDark">
                     <div className="relative w-32 shrink-0 aspect-[2/3.4] overflow-hidden border border-borderDark bg-black shadow-md">
                       <img
@@ -435,10 +456,10 @@ export default function TarotPage() {
 
                       {/* Keywords */}
                       <div className="pt-2 flex flex-wrap gap-1 font-mono text-[10px]">
-                        {selectedDraw.card.keywords.map((kw: string, kidx: number) => (
+                        {insights.keywords.map((kw: string, kidx: number) => (
                           <span
                             key={kidx}
-                            className="px-2 py-0.5 bg-surface border border-borderDark text-stone"
+                            className="px-2 py-0.5 bg-surface border border-borderDark text-parchment font-medium"
                           >
                             {kw}
                           </span>
@@ -510,11 +531,10 @@ export default function TarotPage() {
                     </button>
                   </div>
                 </div>
-              );
-            })()}
-          </div>
-        </div>
-      )}
+              </div>
+            </div>
+          );
+        })()}
     </div>
   );
 }

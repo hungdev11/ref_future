@@ -9,17 +9,24 @@ import {
   ASTROLOGY_ZODIAC_PROFILES,
   ASTROLOGY_HOUSE_PROFILES,
 } from './semantic-profiles.js';
+import {
+  getPlanetInSignInsight,
+  getAspectInsight,
+  synthesizeNatalChart,
+} from './planetary-interpretations.js';
 
 export interface AstrologyContextEvaluation {
   signals: SemanticSignal[];
   interpretations: ContextualInterpretation[];
-  synthesis: StructuredSynthesis;
+  synthesis: StructuredSynthesis & {
+    chartSynthesis?: ReturnType<typeof synthesizeNatalChart>;
+  };
   guidance: PracticalGuidance[];
 }
 
 export function evaluateAstrologyChart(
   planets: Record<string, { sign: string; longitude: number; house?: number }>,
-  _houses: Array<{ houseNumber: number; sign: string; cuspLongitude: number }>,
+  houses: Array<{ houseNumber: number; sign: string; cuspLongitude: number }>,
   aspects: Array<{ planet1: string; planet2: string; type: string; orb: number; isHarmonious?: boolean }>
 ): AstrologyContextEvaluation {
   const signals: SemanticSignal[] = [];
@@ -43,8 +50,10 @@ export function evaluateAstrologyChart(
     const isLuminary = planetProfile.category === 'LUMINARY';
     const weight = isLuminary ? 0.90 : 0.75;
 
+    const insight = getPlanetInSignInsight(planetProfile.id, signProfile.id, houseProfile?.houseNumber);
+
     // Emits constructive signals
-    for (const cons of signProfile.constructive.slice(0, 2)) {
+    for (const cons of (insight.strengths || signProfile.constructive).slice(0, 2)) {
       signals.push({
         id: `astro_${planetProfile.id}_${signProfile.id}_${cons}`,
         dimension: planetProfile.id,
@@ -54,12 +63,12 @@ export function evaluateAstrologyChart(
         evidenceIds: [`planet_${planetProfile.id}`, `sign_${signProfile.id}`, ...(houseProfile ? [`house_${houseProfile.houseNumber}`] : [])],
         ruleIds: ['RULE_ASTRO_PLANET_SIGN_HARMONY'],
         contextTags: [signProfile.element, signProfile.modality, ...(houseProfile ? [houseProfile.domain] : [])],
-        description: `${planetProfile.name} tại ${signProfile.name}: Phát huy phẩm chất ${cons}`,
+        description: `${planetProfile.name} tại ${signProfile.name}: Phát huy ${cons}`,
       });
     }
 
     // Emits shadow signals
-    for (const sh of signProfile.shadow.slice(0, 2)) {
+    for (const sh of (insight.pitfalls || signProfile.shadow).slice(0, 2)) {
       signals.push({
         id: `astro_${planetProfile.id}_${signProfile.id}_shadow_${sh}`,
         dimension: planetProfile.id,
@@ -69,24 +78,21 @@ export function evaluateAstrologyChart(
         evidenceIds: [`planet_${planetProfile.id}`, `sign_${signProfile.id}`],
         ruleIds: ['RULE_ASTRO_PLANET_SIGN_SHADOW'],
         contextTags: [signProfile.element, 'shadow_trigger'],
-        description: `Nguy cơ phát sinh từ ${sh} khi gặp áp lực`,
+        description: `Lưu ý cạm bẫy từ ${sh} khi gặp áp lực`,
       });
     }
 
-    // Generate Contextual Interpretation for Sun, Moon, Ascendant
-    if (['sun', 'moon'].includes(planetProfile.id)) {
-      const houseText = houseProfile ? ` tại ${houseProfile.name}` : '';
-      const headline = `${planetProfile.name} tại ${signProfile.name}${houseText}`;
-      const statement = `Vị trí ${planetProfile.name} tại cung ${signProfile.name} (${signProfile.element}, ${signProfile.modality}) thể hiện sự kết hợp giữa (${planetProfile.themes.slice(0, 2).join(' & ')}) và (${signProfile.themes.slice(0, 2).join(' & ')}). Năng lượng tích cực hướng tới (${signProfile.constructive.join(', ')}), đồng thời cần ý thức kiểm soát (${signProfile.shadow.join(', ')}).`;
-
+    // Generate Contextual Interpretation for Major Personal Bodies
+    const majorBodies = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'ascendant'];
+    if (majorBodies.includes(planetProfile.id)) {
       interpretations.push({
         id: `astro_interp_${planetProfile.id}`,
         dimension: planetProfile.id.toUpperCase(),
-        headline,
-        statement,
+        headline: insight.headline,
+        statement: `${insight.layman} Lời khuyên: ${insight.advice}`,
         signals: signals.filter(s => s.source === planetProfile.id).map(s => s.id),
         evidenceIds: [`planet_${planetProfile.id}`, `sign_${signProfile.id}`],
-        ruleIds: ['RULE_ASTRO_CORE_LUMINARY'],
+        ruleIds: ['RULE_ASTRO_CORE_BODY'],
         polarity: 'supportive',
         strength: weight,
         confidence: 'high',
@@ -112,6 +118,7 @@ export function evaluateAstrologyChart(
 
     const orbWeight = Math.max(0.4, Math.round((1 - asp.orb / 8.0) * 100) / 100);
     const aspectTypeUpper = asp.type.toUpperCase();
+    const aspectInsight = getAspectInsight(asp.planet1, asp.planet2, asp.type, asp.orb);
 
     if (aspectTypeUpper === 'SQUARE' || aspectTypeUpper === 'OPPOSITION') {
       signals.push({
@@ -123,16 +130,16 @@ export function evaluateAstrologyChart(
         evidenceIds: [`planet_${p1.id}`, `planet_${p2.id}`, `aspect_${aspectTypeUpper}`],
         ruleIds: ['RULE_ASTRO_TENSE_ASPECT'],
         contextTags: [aspectTypeUpper, 'friction_point'],
-        description: `Góc căng ${aspectTypeUpper} giữa ${p1.name} và ${p2.name} (sai số ${asp.orb.toFixed(1)}°): Đòi hỏi sự tích hợp giữa ${p1.themes[0]} và ${p2.themes[0]}`,
+        description: `${aspectInsight.headline}: ${aspectInsight.layman}`,
       });
 
       tensions.push({
-        traitA: `${p1.name} (${p1.themes.slice(0, 2).join(', ')})`,
-        traitB: `${p2.name} (${p2.themes.slice(0, 2).join(', ')})`,
-        dynamics: `Sự giằng co giữa ${p1.themes[0]} và ${p2.themes[0]} tạo nên áp lực cần chuyển hóa thành động lực hành động.`,
-        resolution: `Tích hợp bài học kỷ luật: Dùng sự thận trọng và phương pháp thực tế để định hướng cho nguồn năng lượng này.`,
+        traitA: p1.name,
+        traitB: p2.name,
+        dynamics: aspectInsight.layman,
+        resolution: aspectInsight.advice,
       });
-    } else if (aspectTypeUpper === 'TRINE' || aspectTypeUpper === 'SEXTILE') {
+    } else if (aspectTypeUpper === 'TRINE' || aspectTypeUpper === 'SEXTILE' || aspectTypeUpper === 'CONJUNCTION') {
       signals.push({
         id: `astro_aspect_${p1.id}_${aspectTypeUpper}_${p2.id}`,
         dimension: 'ASPECT_HARMONY',
@@ -142,26 +149,23 @@ export function evaluateAstrologyChart(
         evidenceIds: [`planet_${p1.id}`, `planet_${p2.id}`, `aspect_${aspectTypeUpper}`],
         ruleIds: ['RULE_ASTRO_HARMONIC_ASPECT'],
         contextTags: [aspectTypeUpper, 'synergy'],
-        description: `Góc thuận ${aspectTypeUpper} giữa ${p1.name} và ${p2.name}: Hỗ trợ tự nhiên giữa ${p1.constructive[0]} và ${p2.constructive[0]}`,
+        description: `${aspectInsight.headline}: ${aspectInsight.layman}`,
       });
 
       reinforcements.push({
-        theme: `Dòng chảy thuận hòa giữa ${p1.name} và ${p2.name}`,
+        theme: aspectInsight.headline,
         sources: [p1.name, p2.name],
-        explanation: `Góc chiếu ${aspectTypeUpper} tạo điều kiện thuận lợi để bổ trợ năng lực lẫn nhau mà không gặp cản trở nội tại.`,
+        explanation: `${aspectInsight.layman} ${aspectInsight.advice}`,
       });
     }
   }
 
-  // 3. Dominant Elements
-  const dominantElementEntry = Object.entries(elementCounts).sort((a, b) => b[1] - a[1])[0];
-  const dominantElement = dominantElementEntry ? dominantElementEntry[0] : 'FIRE';
+  // 3. Dominant Elements & Synthesis
+  const chartSynthesis = synthesizeNatalChart(planets, houses, aspects);
 
   const dominantThemes = Array.from(
     new Set(signals.filter(s => s.polarity === 'constructive').map(s => s.description || s.id))
   ).slice(0, 4);
-
-  const coreDynamicStatement = `Bản đồ sao mang cấu trúc nổi trội của nguyên tố ${dominantElement} (${elementCounts[dominantElement]} hành tinh). Có ${tensions.length} trục đối kháng cần chuyển hóa và ${reinforcements.length} liên kết tương sinh hỗ trợ vận trình.`;
 
   // 4. Practical Guidance
   const whatToContinue: string[] = [];
@@ -180,7 +184,7 @@ export function evaluateAstrologyChart(
     {
       actionPriority: tensions.length > 2 ? 'IMMEDIATE' : 'STRATEGIC',
       timeframe: 'Theo chu kỳ vận chuyển hành tinh (Transit)',
-      rationale: `Dựa trên cân bằng nguyên tố ${dominantElement} và các góc chiếu căng thẳng trên bản đồ sao cá nhân.`,
+      rationale: `${chartSynthesis.elementSummary.remedyAdvice}`,
       whatToContinue,
       whatToAdjustOrStop,
       triggerSignals: signals.filter(s => s.polarity === 'tension').map(s => s.id),
@@ -194,8 +198,9 @@ export function evaluateAstrologyChart(
       dominantThemes,
       reinforcements,
       tensions,
-      coreDynamicStatement,
+      coreDynamicStatement: chartSynthesis.corePatternStatement,
       elementalBalance: elementCounts,
+      chartSynthesis,
     },
     guidance,
   };
@@ -210,11 +215,11 @@ export function evaluatePlanetPlacement(
 ): ContextualInterpretation & { signalItems: SemanticSignal[] } {
   const planetProfile = ASTROLOGY_PLANET_PROFILES[planetKey.toLowerCase()];
   const signProfile = ASTROLOGY_ZODIAC_PROFILES[signKey.toUpperCase()];
-  const houseProfile = ASTROLOGY_HOUSE_PROFILES[`house_${houseNumber}`];
+  const insight = getPlanetInSignInsight(planetKey, signKey, houseNumber);
 
   const signals: SemanticSignal[] = [];
   if (planetProfile && signProfile) {
-    for (const cons of signProfile.constructive.slice(0, 2)) {
+    for (const cons of (insight.strengths || signProfile.constructive).slice(0, 2)) {
       signals.push({
         id: `astro_${planetProfile.id}_${signProfile.id}_${cons}`,
         dimension: planetProfile.id,
@@ -229,15 +234,11 @@ export function evaluatePlanetPlacement(
     }
   }
 
-  const statement = planetProfile && signProfile
-    ? `${planetProfile.name} tại cung ${signProfile.name} (${signProfile.element}): Thể hiện phẩm chất ${signProfile.constructive.join(', ')} trong lĩnh vực ${houseProfile?.domain ?? 'bản mệnh'}.`
-    : 'Luận giải vị trí hành tinh.';
-
   return {
     id: `interp_${planetKey}_${signKey}`,
     dimension: planetKey,
-    headline: `${planetProfile?.name ?? planetKey} tại ${signProfile?.name ?? signKey}`,
-    statement,
+    headline: insight.headline,
+    statement: `${insight.layman} Lời khuyên: ${insight.advice}`,
     signals: signals.map((s) => s.id),
     evidenceIds: [`planet_${planetKey}`, `sign_${signKey}`],
     ruleIds: ['RULE_ASTRO_PLANET_SIGN'],
@@ -252,4 +253,5 @@ export function evaluatePlanetPlacement(
     signalItems: signals,
   };
 }
+
 
