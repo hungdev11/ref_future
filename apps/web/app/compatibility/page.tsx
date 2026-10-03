@@ -222,57 +222,60 @@ export default function CompatibilityPage() {
   };
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="space-y-2">
-        <div className="flex items-center gap-2 text-pink-400 font-semibold text-sm">
-          <HeartHandshake className="w-4 h-4" />
-          <span>Hòa Hợp Lứa Đôi & Tri Kỷ</span>
+    <div className="space-y-8 py-2">
+      {/* Editorial Header */}
+      <div className="border-b border-borderDark pb-6 space-y-2">
+        <div className="flex items-center gap-2 text-stone text-xs font-mono tracking-widest uppercase">
+          <span className="text-accentGold">05</span>
+          <span>/</span>
+          <span>Khảo Cứu Độ Tương Hợp</span>
         </div>
-        <h1 className="text-3xl font-extrabold text-white">Xem Độ Tương Hợp Giữa Hai Bạn</h1>
-        <p className="text-sm text-gray-400 max-w-2xl">
-          Đối chiếu sự hòa hợp dựa trên nguyên lý nguyên tố Hoàng Đạo (Lửa, Đất, Khí, Nước) và cặp Số Chủ Đạo Thần Số Học Pythagoras. 
-          Giúp bạn thấu hiểu điểm chung, nhận diện nguy cơ xung đột và nhận lời khuyên vun đắp tình cảm bền chặt.
+        <h1 className="text-2xl sm:text-4xl font-serif text-parchment font-normal tracking-tight">
+          Hòa Hợp Bản Mệnh Lứa Đôi & Tri Kỷ
+        </h1>
+        <p className="text-xs sm:text-sm text-stone max-w-2xl leading-relaxed">
+          Đối chiếu sự hòa hợp dựa trên nguyên lý tương tác 4 nguyên tố Hoàng Đạo và cặp Số Chủ Đạo Pythagoras. 
+          Nhận diện điểm tương đồng, nguy cơ xung đột và lời khuyên đối thoại chân thành.
         </p>
       </div>
 
       <form onSubmit={handleCompare} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Person A */}
-          <div className="p-6 rounded-2xl bg-surface border border-borderDark space-y-4">
-            <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
-              <User className="w-4 h-4" />
+          <div className="p-5 bg-surface border border-borderDark space-y-4">
+            <div className="text-xs font-mono text-accentGold uppercase tracking-wider border-b border-borderDark pb-2 flex items-center gap-2">
+              <User className="w-3.5 h-3.5" />
               <span>Đối Tượng A</span>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-300 mb-1">Họ và Tên</label>
+              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">Họ và Tên</label>
               <input
                 type="text"
                 value={nameA}
                 onChange={(e) => setNameA(e.target.value)}
                 required
-                className="w-full px-3 py-2 rounded-xl bg-background border border-borderDark text-white text-sm focus:outline-none focus:border-accentGold"
+                className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-300 mb-1">Ngày Sinh (Dương Lịch)</label>
+              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">Ngày Sinh Dương Lịch</label>
               <input
                 type="date"
                 value={dateA}
                 onChange={(e) => setDateA(e.target.value)}
                 required
-                className="w-full px-3 py-2 rounded-xl bg-background border border-borderDark text-white text-sm focus:outline-none focus:border-accentGold"
+                className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-300 mb-1">Giới Tính</label>
+              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">Giới Tính</label>
               <select
                 value={genderA}
                 onChange={(e) => setGenderA(e.target.value as any)}
-                className="w-full px-3 py-2 rounded-xl bg-background border border-borderDark text-white text-sm focus:outline-none focus:border-accentGold"
+                className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
               >
                 <option value="MALE">Nam</option>
                 <option value="FEMALE">Nữ</option>
@@ -281,40 +284,40 @@ export default function CompatibilityPage() {
           </div>
 
           {/* Person B */}
-          <div className="p-6 rounded-2xl bg-surface border border-borderDark space-y-4">
-            <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm">
-              <User className="w-4 h-4" />
+          <div className="p-5 bg-surface border border-borderDark space-y-4">
+            <div className="text-xs font-mono text-accentGold uppercase tracking-wider border-b border-borderDark pb-2 flex items-center gap-2">
+              <User className="w-3.5 h-3.5" />
               <span>Đối Tượng B</span>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-300 mb-1">Họ và Tên</label>
+              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">Họ và Tên</label>
               <input
                 type="text"
                 value={nameB}
                 onChange={(e) => setNameB(e.target.value)}
                 required
-                className="w-full px-3 py-2 rounded-xl bg-background border border-borderDark text-white text-sm focus:outline-none focus:border-accentGold"
+                className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-300 mb-1">Ngày Sinh (Dương Lịch)</label>
+              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">Ngày Sinh Dương Lịch</label>
               <input
                 type="date"
                 value={dateB}
                 onChange={(e) => setDateB(e.target.value)}
                 required
-                className="w-full px-3 py-2 rounded-xl bg-background border border-borderDark text-white text-sm focus:outline-none focus:border-accentGold"
+                className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-300 mb-1">Giới Tính</label>
+              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">Giới Tính</label>
               <select
                 value={genderB}
                 onChange={(e) => setGenderB(e.target.value as any)}
-                className="w-full px-3 py-2 rounded-xl bg-background border border-borderDark text-white text-sm focus:outline-none focus:border-accentGold"
+                className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
               >
                 <option value="FEMALE">Nữ</option>
                 <option value="MALE">Nam</option>
@@ -327,88 +330,84 @@ export default function CompatibilityPage() {
           <button
             type="submit"
             disabled={loading}
-            className="px-8 py-3 rounded-xl bg-gradient-to-r from-pink-500 to-rose-600 text-white font-bold text-sm shadow-lg shadow-pink-500/20 hover:opacity-95 transition-opacity disabled:opacity-50 flex items-center gap-2"
+            className="px-8 py-2.5 bg-accentGold text-background font-mono text-xs font-bold uppercase tracking-widest hover:bg-parchment transition-colors border border-accentGold disabled:opacity-50 flex items-center gap-2"
           >
             {loading ? (
               <>
-                <RefreshCw className="w-4 h-4 animate-spin" />
-                Đang đối chiếu dữ liệu hai người...
+                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                Đang đối chiếu dữ liệu...
               </>
             ) : (
-              <>
-                <HeartHandshake className="w-5 h-5" />
-                Khởi Chạy Đối Chiếu Tương Hợp
-              </>
+              'Khảo Cứu Tương Hợp →'
             )}
           </button>
         </div>
       </form>
 
       {error && (
-        <div className="p-4 rounded-xl bg-rose-950/40 border border-rose-500/40 text-rose-300 text-xs flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 text-rose-400" />
+        <div className="p-3 bg-background border border-cinnabar text-cinnabar text-xs flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4" />
           <span>{error}</span>
         </div>
       )}
 
       {analysis && (
-        <div className="space-y-6 pt-4 animate-fadeIn">
+        <div className="space-y-6 pt-2 animate-fadeIn">
           {/* Side by side profile summary */}
-          <div className="p-6 rounded-2xl bg-surface border border-borderDark space-y-6">
-            <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-accentGold" />
-              Bảng Tổng Hợp Đối Chiếu Năng Lượng Hai Bạn
+          <div className="p-5 bg-surface border border-borderDark space-y-4">
+            <h2 className="text-base font-serif text-parchment border-b border-borderDark pb-2">
+              Đối Chiếu Tọa Độ Hai Cá Nhân
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-5 rounded-xl bg-background/70 border border-amber-500/30 space-y-3">
-                <div className="font-bold text-amber-400 text-base">{analysis.personA.name}</div>
-                <div className="text-xs text-gray-300 space-y-2">
+              <div className="p-4 bg-background border border-borderDark space-y-2 text-xs font-mono">
+                <div className="font-serif font-bold text-parchment text-sm">{analysis.personA.name}</div>
+                <div className="space-y-1 text-stone">
                   <div className="flex justify-between border-b border-borderDark/40 pb-1">
-                    <span className="text-gray-400">Mặt Trời (Sun Sign):</span>
-                    <span className="text-white font-semibold">{ZODIAC_VN[analysis.personA.sun]?.name ?? analysis.personA.sun}</span>
+                    <span>Mặt Trời (Sun Sign):</span>
+                    <span className="text-parchment">{ZODIAC_VN[analysis.personA.sun]?.name ?? analysis.personA.sun}</span>
                   </div>
                   <div className="flex justify-between border-b border-borderDark/40 pb-1">
-                    <span className="text-gray-400">Nguyên Tố Cốt Lõi:</span>
-                    <span className="text-amber-300 font-bold">Nguyên tố {ZODIAC_VN[analysis.personA.sun]?.elementVn ?? 'Thổ'}</span>
+                    <span>Nguyên Tố Cốt Lõi:</span>
+                    <span className="text-accentGold">Nguyên tố {ZODIAC_VN[analysis.personA.sun]?.elementVn ?? 'Thổ'}</span>
                   </div>
                   <div className="flex justify-between border-b border-borderDark/40 pb-1">
-                    <span className="text-gray-400">Mặt Trăng (Moon Sign):</span>
-                    <span className="text-indigo-300 font-medium">{ZODIAC_VN[analysis.personA.moon]?.name ?? analysis.personA.moon}</span>
+                    <span>Mặt Trăng (Moon Sign):</span>
+                    <span className="text-parchment">{ZODIAC_VN[analysis.personA.moon]?.name ?? analysis.personA.moon}</span>
                   </div>
                   <div className="flex justify-between border-b border-borderDark/40 pb-1">
-                    <span className="text-gray-400">Số Chủ Đạo (Life Path):</span>
-                    <span className="text-emerald-400 font-bold">Số {analysis.personA.lifePath}</span>
+                    <span>Số Chủ Đạo:</span>
+                    <span className="text-accentGold font-bold">Số {analysis.personA.lifePath}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Số Sứ Mệnh (Expression):</span>
-                    <span className="text-white font-medium">Số {analysis.personA.expression}</span>
+                    <span>Số Sứ Mệnh:</span>
+                    <span className="text-parchment">Số {analysis.personA.expression}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="p-5 rounded-xl bg-background/70 border border-indigo-500/30 space-y-3">
-                <div className="font-bold text-indigo-400 text-base">{analysis.personB.name}</div>
-                <div className="text-xs text-gray-300 space-y-2">
+              <div className="p-4 bg-background border border-borderDark space-y-2 text-xs font-mono">
+                <div className="font-serif font-bold text-parchment text-sm">{analysis.personB.name}</div>
+                <div className="space-y-1 text-stone">
                   <div className="flex justify-between border-b border-borderDark/40 pb-1">
-                    <span className="text-gray-400">Mặt Trời (Sun Sign):</span>
-                    <span className="text-white font-semibold">{ZODIAC_VN[analysis.personB.sun]?.name ?? analysis.personB.sun}</span>
+                    <span>Mặt Trời (Sun Sign):</span>
+                    <span className="text-parchment">{ZODIAC_VN[analysis.personB.sun]?.name ?? analysis.personB.sun}</span>
                   </div>
                   <div className="flex justify-between border-b border-borderDark/40 pb-1">
-                    <span className="text-gray-400">Nguyên Tố Cốt Lõi:</span>
-                    <span className="text-indigo-300 font-bold">Nguyên tố {ZODIAC_VN[analysis.personB.sun]?.elementVn ?? 'Khí'}</span>
+                    <span>Nguyên Tố Cốt Lõi:</span>
+                    <span className="text-accentGold">Nguyên tố {ZODIAC_VN[analysis.personB.sun]?.elementVn ?? 'Khí'}</span>
                   </div>
                   <div className="flex justify-between border-b border-borderDark/40 pb-1">
-                    <span className="text-gray-400">Mặt Trăng (Moon Sign):</span>
-                    <span className="text-indigo-300 font-medium">{ZODIAC_VN[analysis.personB.moon]?.name ?? analysis.personB.moon}</span>
+                    <span>Mặt Trăng (Moon Sign):</span>
+                    <span className="text-parchment">{ZODIAC_VN[analysis.personB.moon]?.name ?? analysis.personB.moon}</span>
                   </div>
                   <div className="flex justify-between border-b border-borderDark/40 pb-1">
-                    <span className="text-gray-400">Số Chủ Đạo (Life Path):</span>
-                    <span className="text-emerald-400 font-bold">Số {analysis.personB.lifePath}</span>
+                    <span>Số Chủ Đạo:</span>
+                    <span className="text-accentGold font-bold">Số {analysis.personB.lifePath}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Số Sứ Mệnh (Expression):</span>
-                    <span className="text-white font-medium">Số {analysis.personB.expression}</span>
+                    <span>Số Sứ Mệnh:</span>
+                    <span className="text-parchment">Số {analysis.personB.expression}</span>
                   </div>
                 </div>
               </div>
@@ -416,88 +415,77 @@ export default function CompatibilityPage() {
           </div>
 
           {/* 1. Astrology Element Harmony Breakdown */}
-          <div className="p-6 rounded-2xl bg-surface border border-borderDark space-y-5">
-            <div className="flex items-center justify-between border-b border-borderDark pb-3">
-              <div className="flex items-center gap-2">
-                <Flame className="w-5 h-5 text-rose-400" />
-                <h3 className="text-base font-bold text-white">
-                  1. Tương Hợp Nguyên Tố Chiêm Tinh Học: {analysis.elementAnalysis.harmonyLevel}
-                </h3>
-              </div>
-              <span className="text-xs px-2.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-300 font-medium">
-                Synastry Element Dynamics
-              </span>
+          <div className="p-5 bg-surface border border-borderDark space-y-4">
+            <div className="flex items-center justify-between border-b border-borderDark pb-2 text-xs font-mono">
+              <h3 className="font-serif text-sm text-parchment">
+                1. Tương Hợp 4 Nguyên Tố: {analysis.elementAnalysis.harmonyLevel}
+              </h3>
+              <span className="text-accentGold text-[11px]">Giao Thoa Bản Mệnh</span>
             </div>
 
-            <p className="text-sm text-gray-200 leading-relaxed">
+            <p className="text-stone leading-relaxed text-xs">
               {analysis.elementAnalysis.synergy}
             </p>
 
-            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-1.5">
-              <span className="font-semibold text-amber-300 block">💡 Ý Nghĩa Thực Tế Cho Hai Bạn (Dễ Hiểu):</span>
-              <p className="text-gray-200 leading-relaxed">
-                {analysis.elementAnalysis.layman}
-              </p>
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+              <div className="p-3 bg-background border border-borderDark space-y-1">
+                <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
+                  Điểm Chung & Gắn Kết
+                </span>
+                <p className="text-stone leading-relaxed text-[11px]">
+                  {analysis.elementAnalysis.layman}
+                </p>
+              </div>
 
-            <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-xs space-y-1.5">
-              <span className="font-semibold text-indigo-300 block">🔍 Điểm Thách Thức Cần Thấu Hiểu Để Tránh Bất Đồng:</span>
-              <p className="text-gray-300 leading-relaxed">
-                {analysis.elementAnalysis.challenges}
-              </p>
-            </div>
+              <div className="p-3 bg-background border border-borderDark space-y-1">
+                <span className="font-mono text-cinnabar text-[11px] uppercase tracking-wider block">
+                  Nguy Cơ Bất Đồng
+                </span>
+                <p className="text-stone leading-relaxed text-[11px]">
+                  {analysis.elementAnalysis.challenges}
+                </p>
+              </div>
 
-            <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs space-y-1.5">
-              <span className="font-semibold text-emerald-300 block">🎯 Lời Khuyên Hành Động Đồng Hành:</span>
-              <p className="text-emerald-200/90 leading-relaxed">
-                {analysis.elementAnalysis.advice}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surfaceHover border border-borderDark text-[11px] text-gray-400">
-              <BookOpen className="w-3.5 h-3.5 text-accentGold shrink-0" />
-              <span>Nguồn tham chiếu kinh điển: <strong className="text-gray-200">Love Signs (Linda Goodman)</strong> & <strong className="text-gray-200">Relating: An Astrological Guide to Living with Others (Liz Greene)</strong></span>
+              <div className="p-3 bg-background border border-borderDark space-y-1">
+                <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
+                  Bí Quyết Hòa Hợp
+                </span>
+                <p className="text-stone leading-relaxed text-[11px]">
+                  {analysis.elementAnalysis.advice}
+                </p>
+              </div>
             </div>
           </div>
 
           {/* 2. Numerology Synergy Breakdown */}
-          <div className="p-6 rounded-2xl bg-surface border border-borderDark space-y-5">
-            <div className="flex items-center justify-between border-b border-borderDark pb-3">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-emerald-400" />
-                <h3 className="text-base font-bold text-white">
-                  2. Cộng Hưởng Thần Số Học Pythagoras: {analysis.numAnalysis.synergyTitle}
-                </h3>
-              </div>
-              <span className="text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-medium">
-                Life Path Vibration
-              </span>
+          <div className="p-5 bg-surface border border-borderDark space-y-4">
+            <div className="flex items-center justify-between border-b border-borderDark pb-2 text-xs font-mono">
+              <h3 className="font-serif text-sm text-parchment">
+                2. Nhịp Điệu Thần Số Học: {analysis.numAnalysis.synergyTitle}
+              </h3>
+              <span className="text-accentGold text-[11px]">Tần Số Rung Động</span>
             </div>
 
-            <p className="text-sm text-gray-200 leading-relaxed">
+            <p className="text-stone leading-relaxed text-xs">
               {analysis.numAnalysis.dynamic}
             </p>
 
-            <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs space-y-1.5">
-              <span className="font-semibold text-emerald-300 block">🎯 Lời Khuyên Gắn Kết Số Học:</span>
-              <p className="text-emerald-200/90 leading-relaxed">
+            <div className="p-3.5 bg-background border border-borderDark space-y-1 text-xs">
+              <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
+                🎯 Lời Khuyên Gắn Kết Số Học:
+              </span>
+              <p className="text-stone leading-relaxed text-xs">
                 {analysis.numAnalysis.advice}
               </p>
-            </div>
-
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surfaceHover border border-borderDark text-[11px] text-gray-400">
-              <BookOpen className="w-3.5 h-3.5 text-accentGold shrink-0" />
-              <span>Nguồn tham chiếu kinh điển: <strong className="text-gray-200">The Complete Book of Numerology (Dr. David A. Phillips)</strong></span>
             </div>
           </div>
 
           {/* Transparent explanation */}
-          <div className="p-4 rounded-xl bg-surfaceHover/60 border border-borderDark space-y-2 text-xs text-gray-300">
-            <div className="font-semibold text-white flex items-center gap-1.5">
-              <Info className="w-4 h-4 text-pink-400" />
-              Nguyên Tắc Đánh Giá Hòa Hợp
-            </div>
-            <p className="leading-relaxed text-gray-400">
+          <div className="p-4 bg-background border border-borderDark space-y-1 text-xs text-stone">
+            <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
+              Nguyên Tắc Đánh Giá Tương Hợp
+            </span>
+            <p className="leading-relaxed text-[11px]">
               Hệ thống xác định tương thích thông qua nguyên tắc tương sinh tương khắc giữa các nguyên tố và nhịp điệu chu kỳ số học. Chúng tôi không đưa ra những con số phần trăm may rủi vô nghĩa, mà tập trung chỉ ra cách hai bạn có thể thấu cảm, nhường nhịn và đồng hành cùng nhau trên chặng đường dài.
             </p>
           </div>

@@ -4,9 +4,9 @@ import './globals.css';
 import { Navbar } from '../components/Navbar';
 
 export const metadata: Metadata = {
-  title: 'Mysticos - Khám Phá Bản Thân & Vận Mệnh Toàn Diện',
+  title: 'Mysticos — Khảo Cứu Vận Mệnh Cổ Điển & Đương Đại',
   description:
-    'Nền tảng tra cứu Chiêm Tinh Học, Tử Vi Đẩu Số, Thần Số Học và Tarot chuẩn mực, chuyên sâu, dễ hiểu và hoàn toàn miễn phí.',
+    'Hệ thống tra cứu Thần Số Học, Tử Vi Đẩu Số, Chiêm Tinh Học và Tarot cổ điển. Chuẩn xác, minh bạch, dễ hiểu và hoàn toàn miễn phí cho tất cả mọi người.',
 };
 
 export default function RootLayout({
@@ -16,15 +16,26 @@ export default function RootLayout({
 }) {
   return (
     <html lang="vi" className="dark">
-      <body className="antialiased selection:bg-accentGold/30 selection:text-white bg-background text-gray-100 min-h-screen flex flex-col justify-between">
+      <body className="antialiased selection:bg-accentGold/20 selection:text-parchment bg-background text-parchment min-h-screen flex flex-col justify-between font-sans">
         <div>
           <Navbar />
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</main>
         </div>
-        <footer className="mt-20 border-t border-borderDark/60 py-8 text-center text-xs text-gray-500 space-y-2">
-          <p className="text-gray-400">© 2026 Mysticos. Nền tảng tra cứu & luận giải vận mệnh cá nhân hóa chuẩn xác.</p>
-          <p className="text-gray-600 text-[11px]">
-            Tất cả các phương pháp tra cứu đều miễn phí, bảo mật thông tin và phục vụ định hướng cuộc sống tích cực.
+        <footer className="mt-20 border-t border-borderDark py-10 text-center text-xs text-stone space-y-2">
+          <div className="flex items-center justify-center gap-4 text-[11px] font-mono tracking-widest uppercase text-stone/80">
+            <span>Thần Số Học</span>
+            <span>•</span>
+            <span>Tử Vi Đẩu Số</span>
+            <span>•</span>
+            <span>Chiêm Tinh Học</span>
+            <span>•</span>
+            <span>Tarot Cổ Điển</span>
+          </div>
+          <p className="text-stone">
+            © 2026 Mysticos. Nền tảng khảo cứu và giải mã dữ liệu cá nhân theo nguyên lý cổ điển.
+          </p>
+          <p className="text-[11px] text-stone/60">
+            Không thu phí, không yêu cầu đăng ký, hoàn toàn bảo mật và tôn trọng dữ liệu người dùng.
           </p>
         </footer>
       </body>

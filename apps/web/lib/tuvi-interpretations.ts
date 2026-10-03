@@ -539,3 +539,164 @@ export const STAR_DETAILED_READINGS: Record<
     cautions: 'Dễ suy nghĩ quá nhiều dẫn đến căng thẳng thần kinh; cần tập trung hành động dứt khoát.',
   },
 };
+
+export const BRANCH_VN: Record<string, string> = {
+  TY_RAT: 'Tý',
+  SUU_OX: 'Sửu',
+  DAN_TIGER: 'Dần',
+  MAO_CAT: 'Mão',
+  THIN_DRAGON: 'Thìn',
+  TY_SNAKE: 'Tỵ',
+  NGO_HORSE: 'Ngọ',
+  MUI_GOAT: 'Mùi',
+  THAN_MONKEY: 'Thân',
+  DAU_ROOSTER: 'Dậu',
+  TUAT_DOG: 'Tuất',
+  HOI_PIG: 'Hợi',
+  TY: 'Tý',
+  SUU: 'Sửu',
+  DAN: 'Dần',
+  MAO: 'Mão',
+  THIN: 'Thìn',
+  NGO: 'Ngọ',
+  MUI: 'Mùi',
+  THAN: 'Thân',
+  DAU: 'Dậu',
+  TUAT: 'Tuất',
+  HOI: 'Hợi',
+};
+
+export const STEM_VN: Record<string, string> = {
+  GIAP: 'Giáp',
+  AT: 'Ất',
+  BINH: 'Bính',
+  DINH: 'Đinh',
+  MAU: 'Mậu',
+  KY: 'Kỷ',
+  CANH: 'Canh',
+  TAN: 'Tân',
+  NHAM: 'Nhâm',
+  QUY: 'Quý',
+};
+
+export const PALACE_VN: Record<string, string> = {
+  MENH: 'MỆNH',
+  PHU_MAU: 'PHỤ MẪU',
+  PHUC_DUC: 'PHÚC ĐỨC',
+  DIEN_TRACH: 'ĐIỀN TRẠCH',
+  QUAN_LOC: 'QUAN LỘC',
+  NO_BOC: 'NÔ BỘC',
+  THIEN_DI: 'THIÊN DI',
+  TAT_ACH: 'TẬT ÁCH',
+  TAI_BACH: 'TÀI BẠCH',
+  TU_TUC: 'TỬ TỨC',
+  PHU_THE: 'PHU THÊ',
+  HUYNH_DE: 'HUYNH ĐỆ',
+};
+
+export const PALACE_INFO: Record<
+  string,
+  {
+    meaning: string;
+    beginnerGuide: string;
+    coreAdvice: string;
+    challenges: string;
+  }
+> = {
+  MENH: {
+    meaning: 'Cốt cách, bản tính, tư chất và vận mệnh tổng quan cả đời',
+    beginnerGuide:
+      'Cung Mệnh là cung quan trọng nhất trong lá số Tử Vi, ví như gốc rễ của một cái cây. Nó quyết định diện mạo, tính khí bẩm sinh, tài năng và khả năng vượt qua nghịch cảnh của bạn.',
+    coreAdvice:
+      'Bạn sở hữu nội lực thâm hậu, chữ tín cao và khả năng dẫn dắt tốt. Hãy kiên định với mục tiêu dài hạn và luôn trau dồi tri thức.',
+    challenges: 'Đôi khi quá nguyên tắc hoặc tự tạo áp lực lớn cho bản thân.',
+  },
+  PHU_MAU: {
+    meaning: 'Tình cảm với cha mẹ, phúc ấm gia đình và sự nâng đỡ của bậc tiền bối',
+    beginnerGuide:
+      'Cung Phụ Mẫu phản ánh sự gắn kết giữa bạn và đấng sinh thành, mức độ thừa hưởng phúc đức, giáo dục gia đình và sự trợ giúp của cấp trên.',
+    coreAdvice:
+      'Hiếu kính với cha mẹ và luôn lắng nghe lời chỉ dạy từ những người đi trước giàu kinh nghiệm để tránh vấp ngã.',
+    challenges: 'Khoảng cách thế hệ đôi lúc gây bất đồng quan điểm, cần kiên nhẫn đối thoại.',
+  },
+  PHUC_DUC: {
+    meaning: 'Phúc phận tổ tiên, đời sống tinh thần và sự an lạc tâm hồn',
+    beginnerGuide:
+      'Cung Phúc Đức là linh hồn của lá số, quyết định bạn có được an vui, may mắn lúc hoạn nạn hay không. Phúc Đức tốt có thể hóa giải nhiều tai ương.',
+    coreAdvice:
+      'Tích đức hành thiện, giữ tâm hồn thanh thản, chăm sóc gia tiên và nuôi dưỡng đời sống nội tâm phong phú.',
+    challenges: 'Dễ suy nghĩ nhiều hoặc lo âu viển vông khi gặp nghịch cảnh.',
+  },
+  DIEN_TRACH: {
+    meaning: 'Nhà cửa, đất đai, bất động sản và môi trường an cư',
+    beginnerGuide:
+      'Cung Điền Trạch cho biết khả năng tự mua nhà, tích lũy đất đai, nơi ăn chốn ở và phong thủy không gian sống của bạn.',
+    coreAdvice:
+      'Tích lũy tài sản an toàn, hướng đến việc sở hữu bất động sản dài hạn thay vì lướt sóng mạo hiểm.',
+    challenges: 'Tránh tranh chấp giấy tờ pháp lý liên quan đến đất đai và tài sản gia đình.',
+  },
+  QUAN_LOC: {
+    meaning: 'Công danh, sự nghiệp, học vấn và vị thế công việc',
+    beginnerGuide:
+      'Cung Quan Lộc xem đường học tập, thi cử, việc làm, cơ hội thăng tiến và phong cách làm việc chuyên môn của bạn.',
+    coreAdvice:
+      'Phát huy thế mạnh chuyên môn, kiên trì theo đuổi 1-2 lĩnh vực mũi nhọn để đạt vị trí vững chắc trong xã hội.',
+    challenges: 'Tránh nôn nóng muốn thành công nhanh hoặc đứng núi này trông núi nọ.',
+  },
+  NO_BOC: {
+    meaning: 'Bạn bè, đồng nghiệp, cấp dưới và các mối quan hệ xã giao',
+    beginnerGuide:
+      'Cung Nô Bộc (còn gọi là Cung Giao Hữu) phản ánh bạn bè xung quanh, thuộc cấp dưới quyền và những người bạn tiếp xúc thường nhật.',
+    coreAdvice:
+      'Chọn bạn mà chơi, đối đãi với cấp dưới và đồng nghiệp bằng sự công tâm, chân thành và tôn trọng.',
+    challenges: 'Cẩn trọng với những lời tâng bốc và tránh cho vay mượn tiền bạc không minh bạch.',
+  },
+  THIEN_DI: {
+    meaning: 'Giao tiếp xã hội bên ngoài, đi lại, xuất ngoại và cơ hội phương xa',
+    beginnerGuide:
+      'Cung Thiên Di đối chiếu trực tiếp với Cung Mệnh, phản ánh bạn khi bước chân ra xã hội: có được quý nhân giúp đỡ, có hợp xuất ngoại hay lập nghiệp phương xa.',
+    coreAdvice:
+      'Mạnh dạn bước ra thế giới, thích nghi linh hoạt với môi trường mới và mở rộng quan hệ đối ngoại.',
+    challenges: 'Chú ý an toàn khi đi xa và cẩn thận trong việc ký kết các thỏa thuận bên ngoài.',
+  },
+  TAT_ACH: {
+    meaning: 'Sức khỏe, thể trạng thể chất và các bệnh lý cần phòng ngừa',
+    beginnerGuide:
+      'Cung Tật Ách cho biết những cơ quan nội tạng dễ yếu ớt trong cơ thể và các rủi ro sức khỏe bạn cần chủ động phòng tránh.',
+    coreAdvice:
+      'Duy trì lối sống điều độ, khám sức khỏe định kỳ và rèn luyện thể dục thể thao mỗi ngày.',
+    challenges: 'Tránh làm việc kiệt sức hoặc bỏ qua những dấu hiệu cảnh báo sớm của cơ thể.',
+  },
+  TAI_BACH: {
+    meaning: 'Tiền tài, dòng tiền, cách kiếm tiền và khả năng tích lũy của cải',
+    beginnerGuide:
+      'Cung Tài Bạch xem nguồn tài lộc đến từ đâu, cách bạn chi tiêu và khả năng giữ tiền. Tiền bạc ở đây là tiền thực tế bạn làm ra.',
+    coreAdvice:
+      'Chi tiêu có kế hoạch, đa dạng hóa các nguồn thu nhập chính đáng và đầu tư dài hạn an toàn.',
+    challenges: 'Tránh tâm lý ham giàu nhanh vào các canh bạc đầu cơ rủi ro cao.',
+  },
+  TU_TUC: {
+    meaning: 'Con cái, đường sinh nở và sự thành đạt của thế hệ sau',
+    beginnerGuide:
+      'Cung Tử Tức phản ánh đường con cái, mức độ hiếu thảo, tính cách con trẻ và niềm vui bạn nhận được từ thế hệ tương lai.',
+    coreAdvice:
+      'Lắng nghe và làm bạn cùng con, đầu tư vào giáo dục nhân cách thay vì chỉ nuông chiều vật chất.',
+    challenges: 'Không nên áp đặt kỳ vọng của cha mẹ lên ước mơ của con cái.',
+  },
+  PHU_THE: {
+    meaning: 'Hôn nhân, tình cảm vợ chồng và phẩm hạnh người bạn đời',
+    beginnerGuide:
+      'Cung Phu Thê xem duyên nợ lứa đôi, tính cách và hoàn cảnh của người bạn đời, mức độ hòa thuận trong đời sống gia đình.',
+    coreAdvice:
+      'Tôn trọng sự khác biệt, bao dung với khuyết điểm của đối phương và duy trì sự đối thoại chân thành mỗi ngày.',
+    challenges: 'Cái tôi quá lớn dễ dẫn đến tranh cãi vặt, cần người này nóng thì người kia nên nhịn.',
+  },
+  HUYNH_DE: {
+    meaning: 'Anh chị em ruột thịt và tình cảm ruột thịt trong gia đình',
+    beginnerGuide:
+      'Cung Huynh Đệ phản ánh mối quan hệ giữa bạn và anh chị em ruột, mức độ nương tựa hỗ trợ lẫn nhau trong lúc khó khăn.',
+    coreAdvice:
+      'Gìn giữ tình cảm anh em hòa thuận, hỗ trợ lẫn nhau với tinh thần "lá lành đùm lá rách".',
+    challenges: 'Phân định rạch ròi giữa tình cảm gia đình và lợi ích tiền bạc để tránh bất hòa.',
+  },
+};

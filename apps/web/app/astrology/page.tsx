@@ -557,32 +557,41 @@ export default function AstrologyPage() {
   };
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="space-y-2">
-        <div className="flex items-center gap-2 text-accentGold font-semibold text-sm">
-          <Compass className="w-4 h-4" />
-          <span>Chiêm Tinh Học Tây Phương (Bản Đồ Sao Cá Nhân)</span>
+    <div className="space-y-8 py-2">
+      {/* Editorial Header */}
+      <div className="border-b border-borderDark pb-6 space-y-2">
+        <div className="flex items-center gap-2 text-stone text-xs font-mono tracking-widest uppercase">
+          <span className="text-accentGold">03</span>
+          <span>/</span>
+          <span>Chiêm Tinh Học Tây Phương</span>
         </div>
-        <h1 className="text-3xl font-extrabold text-white">Lập & Giải Mã Bản Đồ Sao Của Bạn</h1>
-        <p className="text-sm text-gray-400 max-w-2xl">
-          Khám phá trọn vẹn vị trí các hành tinh, cung hoàng đạo và 12 cung nhà tại thời điểm bạn chào đời. 
-          <strong> Nhấn vào Mặt Trời, Mặt Trăng, Cung Mọc hay bất kỳ hành tinh nào để mở popup luận giải chi tiết, dễ hiểu nhất cho bạn.</strong>
+        <h1 className="text-2xl sm:text-4xl font-serif text-parchment font-normal tracking-tight">
+          Bản Đồ Sao Cá Nhân & Bánh Xe 12 Cung Nhà
+        </h1>
+        <p className="text-xs sm:text-sm text-stone max-w-2xl leading-relaxed">
+          Tính toán tọa độ 10 thiên thể và 12 cung địa bàn theo hệ tọa độ Hoàng Đạo. 
+          <strong> Nhấn vào Mặt Trời, Mặt Trăng, Cung Mọc hay bất kỳ hành tinh nào để mở bảng giải nghĩa chi tiết, dễ hiểu nhất cho bạn.</strong>
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Column: Form */}
-        <div className="p-6 rounded-2xl bg-surface border border-borderDark space-y-6 h-fit">
+        <div className="lg:col-span-4 p-5 bg-surface border border-borderDark space-y-5">
+          <div className="text-xs font-mono text-accentGold uppercase tracking-wider border-b border-borderDark pb-2">
+            Nhập Dữ Liệu Bản Đồ Sao
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-gray-300 mb-1">Ngày Sinh (Dương Lịch)</label>
+              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
+                Ngày Sinh Dương Lịch
+              </label>
               <input
                 type="date"
                 value={birthDate}
                 onChange={(e) => setBirthDate(e.target.value)}
                 required
-                className="w-full px-3 py-2 rounded-xl bg-background border border-borderDark text-white text-sm focus:outline-none focus:border-accentGold"
+                className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
               />
             </div>
 
@@ -592,9 +601,9 @@ export default function AstrologyPage() {
                 id="unknownTime"
                 checked={isTimeUnknown}
                 onChange={(e) => setIsTimeUnknown(e.target.checked)}
-                className="rounded border-borderDark text-accentGold focus:ring-accentGold"
+                className="rounded-sm border-borderDark text-accentGold focus:ring-accentGold"
               />
-              <label htmlFor="unknownTime" className="text-xs text-gray-400 cursor-pointer select-none">
+              <label htmlFor="unknownTime" className="text-xs font-mono text-stone cursor-pointer select-none">
                 Chưa rõ giờ sinh chính xác (xem tổng quan)
               </label>
             </div>
@@ -602,23 +611,27 @@ export default function AstrologyPage() {
             {!isTimeUnknown && (
               <>
                 <div>
-                  <label className="block text-xs font-medium text-gray-300 mb-1">Giờ Sinh</label>
+                  <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
+                    Giờ Sinh
+                  </label>
                   <input
                     type="time"
                     step="1"
                     value={birthTime}
                     onChange={(e) => setBirthTime(e.target.value)}
                     required={!isTimeUnknown}
-                    className="w-full px-3 py-2 rounded-xl bg-background border border-borderDark text-white text-sm focus:outline-none focus:border-accentGold"
+                    className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-gray-300 mb-1">Nơi Sinh (Thành phố)</label>
+                  <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
+                    Nơi Sinh (Thành phố)
+                  </label>
                   <select
                     value={selectedCity}
                     onChange={(e) => handleCityChange(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-background border border-borderDark text-white text-sm focus:outline-none focus:border-accentGold"
+                    className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
                   >
                     {VIETNAM_CITIES.map((city) => (
                       <option key={city.name} value={city.name}>
@@ -629,25 +642,25 @@ export default function AstrologyPage() {
                 </div>
 
                 {selectedCity === 'Khác (Nhập tọa độ thủ công)' && (
-                  <div className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-background/80 border border-borderDark">
+                  <div className="grid grid-cols-2 gap-3 p-3 bg-background border border-borderDark">
                     <div>
-                      <label className="block text-[11px] font-medium text-gray-300 mb-1">Vĩ Độ (Latitude)</label>
+                      <label className="block text-[10px] font-mono text-stone mb-1 uppercase">Vĩ Độ</label>
                       <input
                         type="number"
                         step="any"
                         value={latitude}
                         onChange={(e) => setLatitude(Number(e.target.value))}
-                        className="w-full px-2.5 py-1.5 rounded-lg bg-surface border border-borderDark text-white text-xs focus:outline-none focus:border-accentGold"
+                        className="w-full px-2 py-1 bg-surface border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-medium text-gray-300 mb-1">Kinh Độ (Longitude)</label>
+                      <label className="block text-[10px] font-mono text-stone mb-1 uppercase">Kinh Độ</label>
                       <input
                         type="number"
                         step="any"
                         value={longitude}
                         onChange={(e) => setLongitude(Number(e.target.value))}
-                        className="w-full px-2.5 py-1.5 rounded-lg bg-surface border border-borderDark text-white text-xs focus:outline-none focus:border-accentGold"
+                        className="w-full px-2 py-1 bg-surface border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
                       />
                     </div>
                   </div>
@@ -658,81 +671,81 @@ export default function AstrologyPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-accentGold via-amber-400 to-amber-600 text-background font-bold text-sm shadow-xl shadow-accentGold/20 hover:opacity-95 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
+              className="w-full py-2.5 bg-accentGold text-background text-xs font-mono font-bold tracking-widest uppercase hover:bg-parchment transition-colors border border-accentGold disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
             >
               {loading ? (
                 <>
-                  <RefreshCw className="w-4 h-4 animate-spin" />
-                  Đang khởi tạo bản đồ sao...
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  Đang tính toán thiên văn...
                 </>
               ) : (
-                'Khám Phá Bản Đồ Sao Của Tôi'
+                'Thiết Lập Bản Đồ Sao →'
               )}
             </button>
           </form>
 
           {error && (
-            <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-500/40 text-rose-300 text-xs flex items-start gap-2">
-              <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+            <div className="p-3 bg-background border border-cinnabar text-cinnabar text-xs flex items-start gap-2">
+              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
 
           {/* Quick instructions for beginners */}
-          <div className="p-4 rounded-xl bg-background/60 border border-borderDark text-xs text-gray-400 space-y-2">
-            <div className="font-semibold text-gray-200 flex items-center gap-1.5">
-              <HelpCircle className="w-3.5 h-3.5 text-accentGold" />
-              Hướng Dẫn Đọc Bản Đồ Sao
+          <div className="p-3.5 bg-background border border-borderDark space-y-2 text-xs">
+            <div className="font-mono text-accentGold text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+              <HelpCircle className="w-3.5 h-3.5" />
+              <span>Hướng Dẫn Cho Người Mới</span>
             </div>
-            <p className="leading-relaxed text-[11px]">
-              Bộ ba <strong>Mặt Trời, Mặt Trăng, Cung Mọc</strong> phản ánh bản ngã, thế giới cảm xúc và phong thái đối ngoại của bạn. 
-              <strong> Nhấn vào từng thẻ</strong> để mở cửa sổ luận giải chi tiết và lời khuyên cân bằng năng lượng.
+            <p className="text-stone text-[11px] leading-relaxed">
+              Bộ ba <strong>Mặt Trời, Mặt Trăng, Cung Mọc</strong> phản ánh bản ngã cốt lõi, cảm xúc nội tâm và phong thái bên ngoài. 
+              <strong> Bạn chỉ cần nhấp vào từng thẻ</strong> để mở bảng giải nghĩa chi tiết và lời khuyên cân bằng cuộc sống.
             </p>
           </div>
         </div>
 
         {/* Right Column: Chart Results */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-8 space-y-6">
           {!result && !loading && (
-            <div className="p-16 rounded-2xl bg-surface/40 border border-borderDark/60 text-center space-y-3">
-              <Compass className="w-14 h-14 text-gray-600 mx-auto" />
-              <h3 className="text-gray-300 font-bold">Bản Đồ Sao Đang Chờ Bạn</h3>
-              <p className="text-xs text-gray-500 max-w-sm mx-auto">
+            <div className="p-16 border border-borderDark bg-surface text-center space-y-3">
+              <div className="w-10 h-10 border border-borderLight mx-auto flex items-center justify-center text-stone font-serif text-lg">
+                ✦
+              </div>
+              <h3 className="text-sm font-serif text-parchment">Bản Đồ Sao Đang Chờ Khởi Tạo</h3>
+              <p className="text-stone text-xs max-w-sm mx-auto leading-relaxed">
                 Nhập thông tin ngày sinh và nơi sinh bên trái để khởi tạo bản đồ sao cá nhân chi tiết.
               </p>
             </div>
           )}
 
           {result && (
-            <div className="space-y-6">
+            <div className="space-y-6 animate-fadeIn">
               {/* Degraded Alert if applicable */}
               {result.isDegraded && (
-                <div className="p-4 rounded-xl bg-amber-950/40 border border-amber-500/40 text-amber-200 text-xs space-y-1">
-                  <div className="flex items-center gap-2 font-semibold text-amber-400">
-                    <AlertTriangle className="w-4 h-4" />
+                <div className="p-3.5 bg-background border border-accentGold text-stone text-xs space-y-1">
+                  <div className="flex items-center gap-2 font-mono text-accentGold text-[11px] uppercase tracking-wider">
+                    <AlertTriangle className="w-3.5 h-3.5" />
                     Lưu ý: Bạn chưa nhập giờ sinh chính xác
                   </div>
-                  <p className="text-amber-300/80 leading-relaxed text-[11px]">
+                  <p className="text-stone text-[11px] leading-relaxed">
                     Hệ thống chỉ giải mã vị trí các hành tinh theo ngày sinh. Cung Mọc (Ascendant) và 12 cung nhà được ẩn đi để không tạo ra các phán đoán thiếu căn cứ.
                   </p>
                 </div>
               )}
 
               {/* Clean verification badge */}
-              <div className="p-4 rounded-xl bg-surface border border-borderDark flex flex-wrap items-center justify-between gap-3 text-xs">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                  <span className="text-gray-200 font-medium">
-                    Bản đồ sao cá nhân hóa chuẩn xác
-                  </span>
-                  <span className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-accentGold/10 text-accentGold border border-accentGold/30 text-[10px]">
-                    👉 Nhấn vào hành tinh hoặc cung nhà để xem luận giải Popup
-                  </span>
+              <div className="p-4 bg-surface border border-borderDark flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+                <div className="flex items-center gap-2 text-stone">
+                  <ShieldCheck className="w-4 h-4 text-accentGold" />
+                  <span>Bản đồ sao cá nhân hóa chuẩn xác</span>
                 </div>
+                <span className="text-[11px] text-accentGold underline">
+                  Nhấp vào hành tinh hoặc cung nhà để xem giải nghĩa chi tiết →
+                </span>
               </div>
 
               {/* THE BIG THREE SUMMARY CARDS (Clickable to open Popup) */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {/* 1. Sun Sign */}
                 <div
                   onClick={() =>
@@ -746,20 +759,24 @@ export default function AstrologyPage() {
                       advice: sunInterp.advice,
                     })
                   }
-                  className="p-5 rounded-2xl bg-surface border border-amber-500/60 space-y-2 cursor-pointer hover:scale-[1.02] hover:border-amber-400 transition-all shadow-lg shadow-amber-500/5 group"
+                  className="p-4 bg-surface border border-accentGold/80 hover:border-parchment transition-colors cursor-pointer group space-y-2 flex flex-col justify-between"
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-amber-400 flex items-center gap-1.5">
-                      <Sun className="w-3.5 h-3.5" />
-                      Mặt Trời (Sun Sign)
-                    </span>
-                    <span className="text-[10px] text-gray-400 font-mono">Bản Ngã</span>
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-xs font-mono">
+                      <span className="text-stone flex items-center gap-1.5">
+                        <Sun className="w-3.5 h-3.5 text-accentGold" />
+                        Mặt Trời
+                      </span>
+                      <span className="text-[10px] text-stone">Bản Ngã</span>
+                    </div>
+                    <div className="text-lg font-serif font-bold text-accentGold group-hover:text-parchment transition-colors">
+                      {ZODIAC_VN[sunSignKey] ?? sunSignKey}
+                    </div>
+                    <p className="text-xs text-stone line-clamp-1">{sunInterp.layman}</p>
                   </div>
-                  <div className="text-xl font-extrabold text-white group-hover:text-accentGold transition-colors">
-                    {ZODIAC_VN[sunSignKey] ?? sunSignKey}
-                  </div>
-                  <p className="text-xs text-gray-300 line-clamp-1">{sunInterp.layman}</p>
-                  <span className="text-[10px] text-accentGold block pt-1">🔍 Nhấn xem giải mã chi tiết →</span>
+                  <span className="text-[10px] font-mono text-accentGold group-hover:underline pt-2 border-t border-borderDark">
+                    Chi tiết Mặt Trời →
+                  </span>
                 </div>
 
                 {/* 2. Moon Sign */}
@@ -774,20 +791,24 @@ export default function AstrologyPage() {
                       advice: moonInterp.advice,
                     })
                   }
-                  className="p-5 rounded-2xl bg-surface border border-indigo-500/60 space-y-2 cursor-pointer hover:scale-[1.02] hover:border-indigo-400 transition-all shadow-lg shadow-indigo-500/5 group"
+                  className="p-4 bg-surface border border-borderDark hover:border-accentGold transition-colors cursor-pointer group space-y-2 flex flex-col justify-between"
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-indigo-400 flex items-center gap-1.5">
-                      <Moon className="w-3.5 h-3.5" />
-                      Mặt Trăng (Moon Sign)
-                    </span>
-                    <span className="text-[10px] text-gray-400 font-mono">Cảm Xúc</span>
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-xs font-mono">
+                      <span className="text-stone flex items-center gap-1.5">
+                        <Moon className="w-3.5 h-3.5 text-stone" />
+                        Mặt Trăng
+                      </span>
+                      <span className="text-[10px] text-stone">Cảm Xúc</span>
+                    </div>
+                    <div className="text-lg font-serif font-bold text-parchment group-hover:text-accentGold transition-colors">
+                      {ZODIAC_VN[moonSignKey] ?? moonSignKey}
+                    </div>
+                    <p className="text-xs text-stone line-clamp-1">{moonInterp.layman}</p>
                   </div>
-                  <div className="text-xl font-extrabold text-white group-hover:text-indigo-300 transition-colors">
-                    {ZODIAC_VN[moonSignKey] ?? moonSignKey}
-                  </div>
-                  <p className="text-xs text-gray-300 line-clamp-1">{moonInterp.layman}</p>
-                  <span className="text-[10px] text-indigo-400 block pt-1">🔍 Nhấn xem giải mã chi tiết →</span>
+                  <span className="text-[10px] font-mono text-accentGold group-hover:underline pt-2 border-t border-borderDark">
+                    Chi tiết Mặt Trăng →
+                  </span>
                 </div>
 
                 {/* 3. Ascendant */}
@@ -803,27 +824,31 @@ export default function AstrologyPage() {
                       advice: 'Hãy sống đúng với thần thái tự nhiên của mình, đồng thời kết nối sâu với thế giới cảm xúc nội tâm bên trong.',
                     });
                   }}
-                  className={`p-5 rounded-2xl bg-surface border space-y-2 transition-all ${
+                  className={`p-4 bg-surface border transition-colors space-y-2 flex flex-col justify-between ${
                     result.isDegraded
-                      ? 'border-borderDark opacity-60'
-                      : 'border-emerald-500/60 cursor-pointer hover:scale-[1.02] hover:border-emerald-400 shadow-lg shadow-emerald-500/5 group'
+                      ? 'border-borderDark opacity-50'
+                      : 'border-borderDark hover:border-accentGold cursor-pointer group'
                   }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5">
-                      <Compass className="w-3.5 h-3.5" />
-                      Cung Mọc (Ascendant)
-                    </span>
-                    <span className="text-[10px] text-gray-400 font-mono">Phong Thái</span>
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-xs font-mono">
+                      <span className="text-stone flex items-center gap-1.5">
+                        <Compass className="w-3.5 h-3.5 text-stone" />
+                        Cung Mọc
+                      </span>
+                      <span className="text-[10px] text-stone">Phong Thái</span>
+                    </div>
+                    <div className="text-lg font-serif font-bold text-parchment group-hover:text-accentGold transition-colors">
+                      {result.isDegraded ? 'Chưa rõ (Cần giờ sinh)' : ZODIAC_VN[ascendantSignKey] ?? ascendantSignKey}
+                    </div>
+                    <p className="text-xs text-stone line-clamp-1">
+                      {result.isDegraded ? 'Cần giờ sinh để xác định' : 'Ấn tượng ban đầu & ngoại hình'}
+                    </p>
                   </div>
-                  <div className="text-xl font-extrabold text-white group-hover:text-emerald-300 transition-colors">
-                    {result.isDegraded ? 'Chưa rõ (Cần giờ sinh)' : ZODIAC_VN[ascendantSignKey] ?? ascendantSignKey}
-                  </div>
-                  <p className="text-xs text-gray-400 line-clamp-1">
-                    {result.isDegraded ? 'Cần giờ sinh để xác định' : 'Ấn tượng ban đầu & ngoại hình'}
-                  </p>
                   {!result.isDegraded && (
-                    <span className="text-[10px] text-emerald-400 block pt-1">🔍 Nhấn xem giải mã chi tiết →</span>
+                    <span className="text-[10px] font-mono text-accentGold group-hover:underline pt-2 border-t border-borderDark">
+                      Chi tiết Cung Mọc →
+                    </span>
                   )}
                 </div>
               </div>
@@ -1233,70 +1258,63 @@ export default function AstrologyPage() {
 
       {/* POPUP / MODAL: COMPREHENSIVE ASTROLOGY ITEM INTERPRETATION */}
       {selectedAstroItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/85 backdrop-blur-md animate-fadeIn">
-          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-surface border-2 border-accentGold/50 shadow-2xl p-6 md:p-8 space-y-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 animate-fadeIn">
+          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-surface border border-borderDark p-6 md:p-8 space-y-6">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-borderDark pb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-2xl bg-accentGold/20 border border-accentGold/40 flex items-center justify-center text-accentGold">
-                  <Sparkles className="w-5 h-5" />
-                </div>
-                <div>
-                  <span className="text-xs px-2 py-0.5 rounded bg-background border border-borderDark text-accentGold font-bold uppercase">
-                    {selectedAstroItem.category}
-                  </span>
-                  <h2 className="text-xl md:text-2xl font-extrabold text-white mt-1">
-                    {selectedAstroItem.title}
-                  </h2>
-                </div>
+              <div className="space-y-1">
+                <span className="text-[10px] font-mono text-accentGold uppercase tracking-wider">
+                  {selectedAstroItem.category}
+                </span>
+                <h2 className="text-xl sm:text-2xl font-serif text-parchment">
+                  {selectedAstroItem.title}
+                </h2>
               </div>
 
               <button
                 onClick={() => setSelectedAstroItem(null)}
-                className="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-surfaceHover transition-colors"
+                className="p-1.5 text-stone hover:text-parchment hover:bg-surfaceHover transition-colors border border-borderDark"
                 title="Đóng popup"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Modal Body */}
-            <div className="space-y-6">
+            <div className="space-y-5 text-xs">
               {/* Beginner Guide */}
-              <div className="p-5 rounded-2xl bg-background/80 border border-borderDark space-y-2 text-xs">
-                <div className="font-bold text-accentGold text-sm flex items-center gap-1.5">
-                  <HelpCircle className="w-4 h-4" />
+              <div className="p-4 bg-background border border-borderDark space-y-2">
+                <div className="font-mono text-accentGold text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+                  <HelpCircle className="w-3.5 h-3.5" />
                   <span>Giải Thích Dành Cho Người Mới Bắt Đầu:</span>
                 </div>
-                <p className="text-gray-200 leading-relaxed text-sm whitespace-pre-line">
+                <p className="text-stone leading-relaxed text-xs whitespace-pre-line">
                   {selectedAstroItem.beginnerGuide}
                 </p>
                 {selectedAstroItem.degree && (
-                  <div className="pt-2 text-[11px] text-gray-400 border-t border-borderDark/40">
-                    Tọa độ: <strong className="text-white">{selectedAstroItem.degree.toFixed(2)}°</strong>
+                  <div className="pt-2 text-[11px] font-mono text-stone border-t border-borderDark">
+                    Tọa độ: <strong className="text-parchment">{selectedAstroItem.degree.toFixed(2)}°</strong>
                     {selectedAstroItem.house ? ` • Nằm tại Nhà ${selectedAstroItem.house}` : ''}
                   </div>
                 )}
               </div>
 
               {/* Core Layman Meaning */}
-              <div className="p-5 rounded-2xl bg-surface border border-accentGold/30 space-y-2">
-                <div className="font-bold text-accentGold text-sm flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4" />
-                  <span>Ý Nghĩa Thực Tế Cho Tính Cách & Cuộc Sống Của Bạn:</span>
-                </div>
-                <p className="text-gray-100 leading-relaxed text-sm whitespace-pre-line">
+              <div className="p-4 bg-background border border-borderDark space-y-1.5">
+                <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
+                  Ý Nghĩa Thực Tế Cho Tính Cách & Cuộc Sống Của Bạn:
+                </span>
+                <p className="text-parchment leading-relaxed text-xs whitespace-pre-line font-normal">
                   {selectedAstroItem.layman}
                 </p>
               </div>
 
               {/* Actionable Advice */}
-              <div className="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 space-y-2 text-xs">
-                <div className="font-bold text-emerald-300 text-sm flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                  <span>🎯 Lời Khuyên Ứng Dụng Năng Lượng Thực Tiễn:</span>
-                </div>
-                <p className="text-emerald-100 leading-relaxed text-sm">
+              <div className="p-4 bg-background border border-borderDark space-y-1.5">
+                <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
+                  🎯 Lời Khuyên Cân Bằng & Phát Huy Năng Lượng:
+                </span>
+                <p className="text-stone leading-relaxed text-xs">
                   {selectedAstroItem.advice}
                 </p>
               </div>
@@ -1306,7 +1324,7 @@ export default function AstrologyPage() {
                 <button
                   type="button"
                   onClick={() => setSelectedAstroItem(null)}
-                  className="px-6 py-2.5 rounded-xl bg-accentGold text-background font-bold text-xs hover:opacity-90 transition-opacity"
+                  className="px-5 py-2 bg-accentGold text-background font-mono text-xs uppercase tracking-wider font-bold hover:bg-parchment transition-colors border border-accentGold"
                 >
                   Đã Hiểu & Đóng Lại
                 </button>
