@@ -1091,7 +1091,7 @@ export default function NumerologyPage() {
                       <div className="w-full h-1.5 bg-background border border-borderDark overflow-hidden">
                         <div
                           className="h-full bg-accentGold transition-all duration-300"
-                          style={{ width: `${Math.min(100, pg.percentage * 4)}%` }}
+                          style={{ width: `${Math.min(100, Math.max(0, pg.percentage))}%` }}
                         />
                       </div>
                       <p className="text-[10px] text-stone leading-relaxed">{pg.description}</p>

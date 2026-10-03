@@ -709,11 +709,82 @@ export function NumerologyFullReport({
               </div>
             </div>
 
-            {/* Holland Career Recommendations */}
+            {/* 3 Planes of Expression */}
             <div className="space-y-3 pt-3 border-t border-borderDark">
+              <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
+                Phân Bổ Năng Lượng 3 Trục (Thể Chất - Cảm Xúc - Trí Tuệ):
+              </span>
+              {(() => {
+                const totalPlanes =
+                  (birthChart.planes.mental + birthChart.planes.emotional + birthChart.planes.physical) || 1;
+                const planeItems = [
+                  {
+                    name: 'Trục Thần Trí (Trí Tuệ: 3 - 6 - 9)',
+                    score: birthChart.planes.mental,
+                    pct: Math.round((birthChart.planes.mental / totalPlanes) * 100),
+                    desc: 'Năng lực tư duy logic, trí nhớ, óc phân tích và sáng tạo trừu tượng.',
+                  },
+                  {
+                    name: 'Trục Tâm Hồn (Cảm Xúc: 2 - 5 - 8)',
+                    score: birthChart.planes.emotional,
+                    pct: Math.round((birthChart.planes.emotional / totalPlanes) * 100),
+                    desc: 'Trực giác thấu cảm, sự nhạy bén tâm lý, khả năng yêu thương và tự do.',
+                  },
+                  {
+                    name: 'Trục Thể Chất (Hành Động: 1 - 4 - 7)',
+                    score: birthChart.planes.physical,
+                    pct: Math.round((birthChart.planes.physical / totalPlanes) * 100),
+                    desc: 'Tính kỷ luật, kỹ năng thực hành bằng hành động cụ thể và sức bền thực tế.',
+                  },
+                ];
+
+                return (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {planeItems.map((p, idx) => (
+                      <div key={idx} className="p-3 bg-background border border-borderDark space-y-1.5 text-xs">
+                        <div className="flex items-center justify-between font-mono text-[11px]">
+                          <span className="font-serif font-bold text-parchment">{p.name.split(' (')[0]}</span>
+                          <span className="text-accentGold font-bold">{p.score} điểm ({p.pct}%)</span>
+                        </div>
+                        <div className="w-full h-1.5 bg-surface border border-borderDark/60 overflow-hidden">
+                          <div
+                            className="h-full bg-accentGold transition-all duration-300"
+                            style={{ width: `${Math.min(100, Math.max(0, p.pct))}%` }}
+                          />
+                        </div>
+                        <p className="text-[10px] text-stone leading-relaxed">{p.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Holland Career Recommendations */}
+            <div className="space-y-4 pt-3 border-t border-borderDark">
               <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
                 Định Hướng Nghề Nghiệp Phù Hợp Tần Số Năng Lượng (Holland):
               </span>
+
+              {/* All 6 Holland Groups with Synchronized Progress Bars */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {hollandMatch.groups.map((hg) => (
+                  <div key={hg.code} className="p-3 bg-background border border-borderDark space-y-1.5 text-xs">
+                    <div className="flex items-center justify-between font-mono text-[11px]">
+                      <span className="font-serif font-bold text-parchment">{hg.nameVn.split(' (')[0]}</span>
+                      <span className="text-accentGold font-bold">{hg.percentage}%</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-surface border border-borderDark/60 overflow-hidden">
+                      <div
+                        className="h-full bg-accentGold transition-all duration-300"
+                        style={{ width: `${Math.min(100, Math.max(0, hg.percentage))}%` }}
+                      />
+                    </div>
+                    <p className="text-[10px] text-stone leading-relaxed line-clamp-2">{hg.description}</p>
+                  </div>
+                ))}
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div className="p-4 bg-background border border-borderDark space-y-2">
                   <strong className="text-parchment block">Nhóm Ngành Phù Hợp Nhất:</strong>

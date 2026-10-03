@@ -239,17 +239,25 @@ export default function RuleSimulatorPage() {
               {activeTab === 'PERSONALIZATION' && result.personalization && (
                 <div className="space-y-6 animate-fadeIn">
                   {/* Quality Audit Score Badge */}
-                  <div className="p-4 rounded-xl bg-surface border border-accentGold/40 flex items-center justify-between">
-                    <div>
-                      <div className="text-xs text-gray-400">Điểm Đảm Bảo Chất Lượng (QC Score)</div>
-                      <div className="text-2xl font-bold text-accentGold font-mono">
-                        {result.personalization.qualityAudit?.qualityScore ?? 100} / 100
+                  <div className="p-4 rounded-xl bg-surface border border-accentGold/40 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-xs text-stone">Điểm Đảm Bảo Chất Lượng (QC Score)</div>
+                        <div className="text-2xl font-bold text-accentGold font-mono">
+                          {result.personalization.qualityAudit?.qualityScore ?? 100} / 100
+                        </div>
+                      </div>
+                      <div className="text-right text-xs">
+                        <span className="px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-500/40 font-semibold">
+                          Độ Phủ Nguồn Gốc: {result.personalization.qualityAudit?.provenanceCoverage ?? 100}%
+                        </span>
                       </div>
                     </div>
-                    <div className="text-right text-xs">
-                      <span className="px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-500/40 font-semibold">
-                        Độ Phủ Nguồn Gốc: {result.personalization.qualityAudit?.provenanceCoverage ?? 100}%
-                      </span>
+                    <div className="w-full h-1.5 bg-background border border-borderDark overflow-hidden">
+                      <div
+                        className="h-full bg-accentGold transition-all duration-300"
+                        style={{ width: `${Math.min(100, Math.max(0, result.personalization.qualityAudit?.qualityScore ?? 100))}%` }}
+                      />
                     </div>
                   </div>
 
@@ -260,22 +268,33 @@ export default function RuleSimulatorPage() {
                       <span>Điểm Thiên Hướng Tính Cách ({result.personalization.traitScores?.length ?? 0})</span>
                     </h3>
                     <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
-                      {result.personalization.traitScores?.map((ts: any) => (
-                        <div key={ts.trait} className="p-2.5 rounded-xl bg-background/60 border border-borderDark/60 text-xs flex items-center justify-between">
-                          <div>
-                            <span className="font-bold text-gray-200">{ts.trait}</span>
-                            <span className="text-[10px] text-gray-500 ml-2 uppercase">({ts.domain})</span>
+                      {result.personalization.traitScores?.map((ts: any) => {
+                        const pct = Math.round(ts.normalizedScore * 100);
+                        return (
+                          <div key={ts.trait} className="p-2.5 rounded-xl bg-background/60 border border-borderDark/60 text-xs space-y-1.5">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <span className="font-bold text-gray-200">{ts.trait}</span>
+                                <span className="text-[10px] text-gray-500 ml-2 uppercase">({ts.domain})</span>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <span className="font-mono text-accentGold font-semibold">
+                                  {pct}%
+                                </span>
+                                <span className="px-2 py-0.5 rounded text-[10px] bg-surface border border-borderDark text-purple-300">
+                                  {ts.level}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="w-full h-1 bg-surface border border-borderDark/40 overflow-hidden">
+                              <div
+                                className="h-full bg-accentGold transition-all duration-300"
+                                style={{ width: `${Math.min(100, Math.max(0, pct))}%` }}
+                              />
+                            </div>
                           </div>
-                          <div className="flex items-center gap-3">
-                            <span className="font-mono text-accentGold font-semibold">
-                              {Math.round(ts.normalizedScore * 100)}%
-                            </span>
-                            <span className="px-2 py-0.5 rounded text-[10px] bg-surface border border-borderDark text-purple-300">
-                              {ts.level}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
 

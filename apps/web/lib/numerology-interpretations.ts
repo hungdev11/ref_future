@@ -139,9 +139,15 @@ export interface PersonalityGroup {
 }
 
 export function calculatePersonalityGroups(fullName: string, birthDate: string): PersonalityGroup[] {
-  // Combine all characters and digits
-  const cleanName = fullName.toLowerCase().replace(/[^a-z]/g, '');
-  const cleanDate = birthDate.replace(/[^0-9]/g, '');
+  // Normalize Vietnamese diacritics and combine all characters and digits
+  const cleanName = (fullName || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'd')
+    .toLowerCase()
+    .replace(/[^a-z]/g, '');
+  const cleanDate = (birthDate || '').replace(/[^0-9]/g, '');
 
   const counts: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
 
@@ -184,10 +190,10 @@ export function calculatePersonalityGroups(fullName: string, birthDate: string):
 
   return groupTemplates.map((g) => {
     const rawPct = Math.round(((counts[g.id] || 0) / total) * 100);
-    const percentage = Math.max(4, Math.min(45, rawPct));
+    const percentage = Math.max(0, Math.min(100, rawPct));
     let advice = 'Năng lượng đang ở mức hài hòa tự nhiên.';
-    if (percentage > 22) advice = 'Năng lượng rất mạnh; cần học cách kiểm soát để tránh rơi vào thái cực cực đoan.';
-    else if (percentage < 8) advice = 'Năng lượng còn khiêm tốn; nên chủ động rèn luyện thêm để đạt sự cân bằng toàn diện.';
+    if (percentage > 20) advice = 'Năng lượng rất mạnh; cần học cách kiểm soát để tránh rơi vào thái cực cực đoan.';
+    else if (percentage < 6) advice = 'Năng lượng còn khiêm tốn; nên chủ động rèn luyện thêm để đạt sự cân bằng toàn diện.';
 
     return {
       id: g.id,

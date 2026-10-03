@@ -345,13 +345,19 @@ export default function TuViPage() {
                                   <span className="font-serif font-bold text-sm text-parchment group-hover:text-accentGold transition-colors">
                                     {PALACE_VN[pKey] ?? pKey}
                                   </span>
-                                  <span className="text-[10px] font-mono text-stone">
+                                  <span className="text-[10px] font-mono text-accentGold font-bold">
                                     {scoreData.score}đ
                                   </span>
                                 </div>
                                 <span className="text-[11px] font-mono text-stone/80 block">
                                   {BRANCH_VN[palace.branch]} ({STEM_VN[palace.stem]})
                                 </span>
+                                <div className="w-20 h-1 bg-background border border-borderDark/40 overflow-hidden my-1">
+                                  <div
+                                    className="h-full bg-accentGold transition-all duration-300"
+                                    style={{ width: `${Math.min(100, Math.max(0, scoreData.score))}%` }}
+                                  />
+                                </div>
                               </div>
 
                               <div className="flex flex-col items-end gap-0.5">
@@ -500,6 +506,22 @@ export default function TuViPage() {
                       <h2 className="text-xl sm:text-2xl font-serif text-parchment">
                         Cung {PALACE_VN[selectedPalaceKey]} — {info.meaning}
                       </h2>
+                      {(() => {
+                        const modalScore = calculatePalaceScore(selectedPalaceKey, palace);
+                        return (
+                          <div className="flex items-center gap-3 pt-1">
+                            <span className="font-mono text-accentGold font-bold text-xs">
+                              Đánh giá: {modalScore.score}/100 ({modalScore.rank})
+                            </span>
+                            <div className="w-24 sm:w-32 h-1.5 bg-background border border-borderDark overflow-hidden">
+                              <div
+                                className="h-full bg-accentGold transition-all duration-300"
+                                style={{ width: `${Math.min(100, Math.max(0, modalScore.score))}%` }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </div>
 
                     <button

@@ -301,13 +301,21 @@ export function TuViFullReport({
                       <span>•</span>
                       <span>Đại hạn: {palace.daiHanStartAge}-{palace.daiHanEndAge} tuổi</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-accentGold font-bold text-xs">
-                        Đánh giá: {score.score}/100 ({score.rank})
-                      </span>
-                      <span className="text-accentGold text-[11px] underline">
-                        Xem popup chi tiết →
-                      </span>
+                    <div className="flex items-center gap-3">
+                      <div className="text-right">
+                        <span className="font-mono text-accentGold font-bold text-xs block">
+                          Đánh giá: {score.score}/100 ({score.rank})
+                        </span>
+                        <span className="text-stone text-[10px] underline group-hover:text-accentGold transition-colors">
+                          Xem popup chi tiết →
+                        </span>
+                      </div>
+                      <div className="w-16 sm:w-24 h-1.5 bg-surface border border-borderDark/60 overflow-hidden">
+                        <div
+                          className="h-full bg-accentGold transition-all duration-300"
+                          style={{ width: `${Math.min(100, Math.max(0, score.score))}%` }}
+                        />
+                      </div>
                     </div>
                   </div>
 
