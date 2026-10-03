@@ -656,16 +656,14 @@ export function getMinorArcanaInsight(
   rankNum: number,
   cardName: string
 ): TarotCardInsight {
-  const suitConfig: Record<string, { element: string; domain: string; theme: string }> = {
+  const suitConfig = {
     WANDS: { element: 'Hỏa (Fire)', domain: 'Đam mê, hành động, sự nghiệp & sáng tạo', theme: 'nhiệt huyết' },
     CUPS: { element: 'Thủy (Water)', domain: 'Cảm xúc, tình yêu, trực giác & mối quan hệ', theme: 'tâm hồn' },
     SWORDS: { element: 'Khí (Air)', domain: 'Tư duy, logic, sự thật & thử thách quyết định', theme: 'trí tuệ' },
     PENTACLES: { element: 'Đất (Earth)', domain: 'Tài chính, vật chất, sức khỏe & sự bền vững', theme: 'thực tiễn' },
-  };
+  } as const;
 
-  const currentSuit = suitConfig[suit] || suitConfig.WANDS;
-
-  const isCourt = rankNum >= 11;
+  const currentSuit = suitConfig[suit as keyof typeof suitConfig] ?? suitConfig.WANDS;
   const rankNames: Record<number, string> = {
     1: 'Ace (Ách)',
     2: 'Hai (Two)',
@@ -688,7 +686,7 @@ export function getMinorArcanaInsight(
   return {
     cardCode: `${suit}_${String(rankNum).padStart(2, '0')}`,
     nameVn: `${cardName} (${rankStr})`,
-    keywords: [currentSuit.domain.split(',')[0].trim(), rankStr, currentSuit.element],
+    keywords: [(currentSuit.domain.split(',')[0] ?? currentSuit.domain).trim(), rankStr, currentSuit.element],
     symbolism: `Thuộc Bộ ${suit} — Nguyên tố ${currentSuit.element}. Biểu thị các động lực liên quan mật thiết đến ${currentSuit.domain}.`,
     uprightMeaning: `Lá ${cardName} ở chiều xuôi mở ra nguồn năng lượng ${currentSuit.theme} thuận dòng. Đây là thời điểm phát huy thế mạnh của nguyên tố ${currentSuit.element} để giải quyết công việc và đời sống thực tế.`,
     reversedMeaning: `Lá ${cardName} ở chiều ngược cảnh báo sự tắc nghẽn hoặc sử dụng thái quá năng lượng ${currentSuit.theme}. Cần điều chỉnh lại nhịp điệu và kiềm chế những phản ứng bốc đồng.`,
@@ -757,3 +755,104 @@ export function getAuthenticTarotCardInsights(
     donts: isReversed ? baseInsight.donts.reversed : baseInsight.donts.upright,
   };
 }
+
+/**
+ * Deterministic synthesis analyzing narrative arc, elemental tension, progression and actionable guidance
+ */
+export function synthesizeSpreadNarrative(
+  draws: Array<{
+    positionIndex: number;
+    positionName: string;
+    card: { name: string; arcana: string; suit?: string; number: number };
+    isReversed: boolean;
+  }>,
+  _spreadCode: string
+) {
+  const suitCount: Record<string, number> = { MAJOR: 0, WANDS: 0, CUPS: 0, SWORDS: 0, PENTACLES: 0 };
+  draws.forEach((d) => {
+    const suit = d.card.arcana === 'MAJOR' ? 'MAJOR' : (d.card.suit ?? 'WANDS');
+    suitCount[suit] = (suitCount[suit] ?? 0) + 1;
+  });
+
+  const total = draws.length || 1;
+  const reversedCount = draws.filter((d) => d.isReversed).length;
+  const reversedRatio = reversedCount / total;
+
+  const sortedSuits = Object.entries(suitCount)
+    .filter(([, v]) => v > 0)
+    .sort(([, a], [, b]) => b - a);
+  const dominantSuit = sortedSuits[0]?.[0] ?? 'MAJOR';
+
+  const suitLabels: Record<string, string> = {
+    MAJOR: 'Bộ Ẩn Chính (Trọng Tâm Bài Học Trưởng Thành & Bước Ngoặt)',
+    WANDS: 'Bộ Gậy (Hành Động, Ý Chí Khởi Xướng & Đam Mê Sáng Tạo)',
+    CUPS: 'Bộ Chén (Cảm Xúc, Trực Giác & Các Mối Quan Hệ Gắn Kết)',
+    SWORDS: 'Bộ Kiếm (Tư Duy Lý Tính, Sự Thật Khách Quan & Thử Thách Trí Tuệ)',
+    PENTACLES: 'Bộ Đồng Tiền (Hiện Thực Hóa Vật Chất, Tài Chính & Kỷ Luật Vững Vàng)',
+  };
+  const dominantSuitLabel = suitLabels[dominantSuit] ?? dominantSuit;
+
+  // 1. Narrative Arc Construction
+  const firstCard = draws[0];
+  const lastCard = draws[draws.length - 1];
+  const midCard = draws.length > 2 ? draws[Math.floor(draws.length / 2)] : null;
+
+  let narrativeArc = `Trải bài mở đầu bằng năng lượng của ${firstCard?.card.name} (${firstCard?.isReversed ? 'chiều ngược' : 'chiều xuôi'}) tại ${firstCard?.positionName}. `;
+  if (midCard) {
+    narrativeArc += `Điểm giao thoa cốt lõi dịch chuyển qua ${midCard.card.name} (${midCard.isReversed ? 'chiều ngược' : 'chiều xuôi'}), biểu thị sự chuyển dịch trạng thái tâm lý trước khi hướng về kết quả. `;
+  }
+  narrativeArc += `Đích đến của dòng chảy kết tinh tại ${lastCard?.card.name} (${lastCard?.isReversed ? 'chiều ngược' : 'chiều xuôi'}), đòi hỏi sự chủ động làm chủ hoàn cảnh.`;
+
+  // 2. Tension & Contrast Analysis
+  const hasFire = (suitCount.WANDS ?? 0) > 0;
+  const hasWater = (suitCount.CUPS ?? 0) > 0;
+  const hasAir = (suitCount.SWORDS ?? 0) > 0;
+  const hasEarth = (suitCount.PENTACLES ?? 0) > 0;
+
+  let tensionAnalysis = '';
+  if (hasFire && hasWater) {
+    tensionAnalysis = 'Xuất hiện sự giằng co giữa ngọn lửa hành động quyết liệt (Lửa/Gậy) và nhu cầu cân bằng cảm xúc an toàn (Nước/Chén). Cần tránh để cảm xúc nhất thời dập tắt chí hướng ban đầu.';
+  } else if (hasAir && hasWater) {
+    tensionAnalysis = 'Có sự xung đột giữa lý trí phán xét sắc bén (Khí/Kiếm) và trực giác nội tâm (Nước/Chén). Không nên phân tích quá mức những cảm xúc tự nhiên của bạn.';
+  } else if (hasFire && hasEarth) {
+    tensionAnalysis = 'Sự kết hợp giữa khát vọng mở rộng nhanh chóng (Lửa) và đòi hỏi kỷ luật xây móng thực tế (Đất). Cần kiên nhẫn để biến đam mê thành cấu trúc bền vững.';
+  } else {
+    tensionAnalysis = 'Các nguồn năng lượng trong trải bài có tính tương đồng cao, dòng chảy diễn ra trực tiếp và ít gặp sự cản trở chéo giữa các nguyên tố.';
+  }
+
+  // 3. Core Progression
+  let coreProgression = '';
+  if (reversedRatio >= 0.6) {
+    coreProgression = 'Tiến trình đang ở giai đoạn nội quán sâu sắc. Phần lớn năng lượng hướng vào bên trong để tháo gỡ những khúc mắc vô thức trước khi bộc lộ ra thế giới bên ngoài.';
+  } else if (reversedRatio <= 0.2) {
+    coreProgression = 'Tiến trình đang diễn ra thông suốt và trực diện. Ngoại cảnh tạo điều kiện thuận lợi để bạn biến các hiểu biết thành hành động cụ thể.';
+  } else {
+    coreProgression = 'Tiến trình chuyển giao song song: một mặt bạn phải giải phóng các rào cản cũ, mặt khác sẵn sàng nắm bắt các cơ hội mới đang hiển lộ.';
+  }
+
+  // 4. Actionable Guidance (Concrete experiment)
+  let actionableGuidance = '';
+  if (dominantSuit === 'SWORDS') {
+    actionableGuidance = 'Thực nghiệm hành động trong 7 ngày: Viết rõ 3 giả định bạn đang lo lắng nhất ra giấy, kiểm chứng sự thật khách quan của từng điểm và dừng các cuộc tranh luận không dẫn tới giải pháp xây dựng.';
+  } else if (dominantSuit === 'CUPS') {
+    actionableGuidance = 'Thực nghiệm hành động trong 7 ngày: Dành 15 phút mỗi tối lắng nghe trung thực nhu cầu tình cảm của mình; chia sẻ chân thành với một người bạn tin cậy thay vì kìm nén trong lòng.';
+  } else if (dominantSuit === 'WANDS') {
+    actionableGuidance = 'Thực nghiệm hành động trong 7 ngày: Chọn 1 mục tiêu ưu tiên cao nhất đang bị trì hoãn và bắt tay thực hiện bước đầu tiên trong vòng 24 giờ tới.';
+  } else if (dominantSuit === 'PENTACLES') {
+    actionableGuidance = 'Thực nghiệm hành động trong 7 ngày: Rà soát lại ngân sách chi tiêu thực tế và lập danh sách chi tiết các công việc cần hoàn thiện dứt điểm trong tuần.';
+  } else {
+    actionableGuidance = 'Thực nghiệm hành động trong 7 ngày: Nhìn nhận hoàn cảnh hiện tại như một bài học lớn về nhân cách; giữ tâm thế điềm tĩnh, không phản ứng vội vã trước các biến động tức thời.';
+  }
+
+  return {
+    dominantSuit,
+    dominantSuitLabel,
+    elementBalance: suitCount,
+    reversedRatio,
+    narrativeArc,
+    tensionAnalysis,
+    coreProgression,
+    actionableGuidance,
+  };
+}
+

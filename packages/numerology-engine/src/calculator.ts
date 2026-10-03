@@ -159,6 +159,7 @@ export function calculateCycles(
   lifePathValue: number,
   targetDate: Date
 ): {
+  bases: { month: number; day: number; year: number };
   personalYear: NumerologySingleResult;
   personalMonth: NumerologySingleResult;
   personalDay: NumerologySingleResult;
@@ -214,6 +215,11 @@ export function calculateCycles(
   ];
 
   return {
+    bases: {
+      month: rMonth,
+      day: rDay,
+      year: rYear,
+    },
     personalYear: {
       type: NumerologyNumberType.PERSONAL_YEAR,
       value: pyRed.value,

@@ -345,19 +345,13 @@ export default function TuViPage() {
                                   <span className="font-serif font-bold text-sm text-parchment group-hover:text-accentGold transition-colors">
                                     {PALACE_VN[pKey] ?? pKey}
                                   </span>
-                                  <span className="text-[10px] font-mono text-accentGold font-bold">
-                                    {scoreData.score}đ
+                                  <span className="text-[9px] font-mono px-1.5 py-0.2 border border-borderDark text-accentGold bg-background/60">
+                                    {scoreData.rankBadge}
                                   </span>
                                 </div>
                                 <span className="text-[11px] font-mono text-stone/80 block">
                                   {BRANCH_VN[palace.branch]} ({STEM_VN[palace.stem]})
                                 </span>
-                                <div className="w-20 h-1 bg-background border border-borderDark/40 overflow-hidden my-1">
-                                  <div
-                                    className="h-full bg-accentGold transition-all duration-300"
-                                    style={{ width: `${Math.min(100, Math.max(0, scoreData.score))}%` }}
-                                  />
-                                </div>
                               </div>
 
                               <div className="flex flex-col items-end gap-0.5">
@@ -509,16 +503,14 @@ export default function TuViPage() {
                       {(() => {
                         const modalScore = calculatePalaceScore(selectedPalaceKey, palace);
                         return (
-                          <div className="flex items-center gap-3 pt-1">
-                            <span className="font-mono text-accentGold font-bold text-xs">
-                              Đánh giá: {modalScore.score}/100 ({modalScore.rank})
+                          <div className="flex flex-wrap items-center gap-2 pt-1.5 text-xs font-mono">
+                            <span className="text-stone">Khí thế cung vị:</span>
+                            <span className={`px-2 py-0.5 border border-borderDark ${modalScore.rankColor} bg-background font-bold`}>
+                              {modalScore.rankBadge} ({modalScore.rank})
                             </span>
-                            <div className="w-24 sm:w-32 h-1.5 bg-background border border-borderDark overflow-hidden">
-                              <div
-                                className="h-full bg-accentGold transition-all duration-300"
-                                style={{ width: `${Math.min(100, Math.max(0, modalScore.score))}%` }}
-                              />
-                            </div>
+                            <span className="text-[11px] text-stone hidden sm:inline">
+                              • {modalScore.summary}
+                            </span>
                           </div>
                         );
                       })()}
@@ -550,6 +542,39 @@ export default function TuViPage() {
                         <span>Địa Chi: {BRANCH_VN[palace.branch]}</span>
                       </div>
                     </div>
+
+                    {/* Khí Thế & Yếu Tố Phân Định Cát Hung */}
+                    {(() => {
+                      const scoreInfo = calculatePalaceScore(selectedPalaceKey, palace);
+                      return (
+                        <div className="p-3 bg-background border border-borderDark grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px] font-mono">
+                          <div>
+                            <span className="text-accentGold block mb-1 font-bold">✦ Yếu Tố Cát Lành ({scoreInfo.auspiciousFactors.length}):</span>
+                            {scoreInfo.auspiciousFactors.length > 0 ? (
+                              <ul className="space-y-1 text-parchment/90">
+                                {scoreInfo.auspiciousFactors.map((f, i) => (
+                                  <li key={i}>• {f}</li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <span className="text-stone">Không hội tụ trung tinh cát diệu lớn</span>
+                            )}
+                          </div>
+                          <div>
+                            <span className="text-cinnabar block mb-1 font-bold">▲ Thử Thách & Sát Diệu ({scoreInfo.challengingFactors.length}):</span>
+                            {scoreInfo.challengingFactors.length > 0 ? (
+                              <ul className="space-y-1 text-stone">
+                                {scoreInfo.challengingFactors.map((f, i) => (
+                                  <li key={i}>• {f}</li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <span className="text-stone">Thanh bình, không bị sát tinh hạng nặng xâm phạm</span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })()}
 
                     {/* Main Stars Detail */}
                     {mainStars.length > 0 && (

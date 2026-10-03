@@ -6,66 +6,15 @@ import {
   X,
   HelpCircle,
   RefreshCw,
-  Sparkles,
   ChevronDown,
   ChevronUp,
   Layers,
 } from 'lucide-react';
 import { getTarotCardImageUrl } from '../../lib/tarot-images';
-
-interface CardDetailedInsights {
-  beginnerGuide: string;
-  arcanaMeaning: string;
-  orientationGuide: string;
-  coreSummary: string;
-  careerFinance: string;
-  loveRelationship: string;
-  dos: string;
-  donts: string;
-}
-
-function getDetailedCardInsights(
-  cardName: string,
-  arcana: string,
-  positionName: string,
-  isReversed: boolean
-): CardDetailedInsights {
-  const isMajor = arcana === 'MAJOR';
-
-  const arcanaMeaning = isMajor
-    ? 'Bộ Ẩn Chính (Major Arcana) phản ánh các bài học định mệnh lớn, bước ngoặt tâm lý quan trọng và những quy luật tinh thần chi phối đường đời của bạn.'
-    : 'Bộ Ẩn Phụ (Minor Arcana) phản ánh các sự kiện đời thường, hoạt động công việc, cảm xúc cụ thể và những tương tác hàng ngày.';
-
-  const orientationGuide = isReversed
-    ? 'Lá bài ở chiều NGƯỢC (Reversed): Trong Tarot, lá bài ngược không phải là điềm xấu. Nó chỉ ra rằng nguồn năng lượng của lá bài này đang bị cản trở, bị phóng đại quá mức, hoặc đang diễn ra âm thầm trong nội tâm bạn mà bên ngoài chưa thấy rõ.'
-    : 'Lá bài ở chiều XUÔI (Upright): Nguồn năng lượng biểu đạt tự nhiên, thuận dòng và rõ ràng nhất. Các yếu tố khách quan đang tương thích tốt với hướng đi hiện tại của bạn.';
-
-  const beginnerGuide = `Tại vị trí "${positionName}": Vị trí này đóng vai trò như một chiếc gương soi chiếu chính xác hoàn cảnh, cảm xúc hoặc động lực thúc đẩy của bạn tại thời điểm này.`;
-
-  if (isReversed) {
-    return {
-      beginnerGuide,
-      arcanaMeaning,
-      orientationGuide,
-      coreSummary: `Lá ${cardName} xuất hiện ở vị trí Ngược nhắc nhở bạn rằng đang có một sự tắc nghẽn hoặc do dự trong hành động. Bạn có thể đang quá cầu toàn, lo sợ thất bại hoặc chưa chịu buông bỏ định kiến cũ. Đây là lúc tạm dừng lại 1 nhịp để cân chỉnh lại năng lượng nội tại trước khi đưa ra các quyết định hệ trọng.`,
-      careerFinance: `Trong công việc, tiến độ có thể bị chậm lại do thiếu thông tin hoặc chưa có tiếng nói chung với đồng nghiệp. Về tài chính, tránh tâm lý nôn nóng hoặc đầu tư vào những kế hoạch chưa được kiểm chứng rõ ràng. Hãy kiểm soát chi tiêu và hoàn thiện các chi tiết nhỏ.`,
-      loveRelationship: `Có thể xuất hiện cảm giác xa cách hoặc hiểu lầm do đôi bên ngại chia sẻ thẳng thắn suy nghĩ thật của mình. Hãy dẹp bỏ cái tôi, chủ động lắng nghe với sự bao dung và không vội vàng phán xét đối phương.`,
-      dos: 'Dành thời gian tĩnh tâm tự nhìn nhận lại bản thân; kiên nhẫn lắng nghe lời khuyên từ người có kinh nghiệm; rà soát lại kế hoạch từng bước một.',
-      donts: 'Tránh hấp tấp ép buộc người khác phải làm theo ý mình; không nên đưa ra quyết định tài chính quan trọng trong trạng thái lo âu.',
-    };
-  }
-
-  return {
-    beginnerGuide,
-    arcanaMeaning,
-    orientationGuide,
-    coreSummary: `Lá ${cardName} ở chiều Xuôi mở ra nguồn năng lượng tích cực, sự hanh thông và cơ hội chuyển mình rõ rệt. Lá bài này khích lệ bạn tiến bước với lòng tin son sắt, phát huy trọn vẹn sự tự chủ và sự chủ động để hiện thực hóa các mong muốn.`,
-    careerFinance: `Công việc đang ở chu kỳ thuận lợi để triển khai sáng kiến mới, mở rộng quan hệ hợp tác hoặc đề xuất nâng cao trách nhiệm. Về tài chính, đây là thời điểm tốt để tích lũy hoặc đầu tư nâng cấp kỹ năng chuyên môn dài hạn.`,
-    loveRelationship: `Tình cảm hài hòa, ấm áp và có sự đồng điệu sâu sắc về tư tưởng. Nếu đang độc thân, bạn toát ra sức hút tự nhiên rất lớn; nếu đã có đôi, hai bạn cùng nhau xây đắp những mục tiêu tương lai chung vững chắc.`,
-    dos: 'Nắm bắt thời cơ khi cơ hội xuất hiện; giữ vững sự chính trực và phong thái tự tin; kết nối cởi mở và chân thành với mọi người.',
-    donts: 'Tránh chủ quan ngủ quên trên kết quả ban đầu; không nên vì quá hăng say mà bỏ bê việc chăm sóc sức khỏe và giấc ngủ.',
-  };
-}
+import {
+  getAuthenticTarotCardInsights,
+  synthesizeSpreadNarrative,
+} from '@mystic/tarot-engine';
 
 export default function TarotPage() {
   const [spreadCode, setSpreadCode] = useState('SPREAD_3_PPF');
@@ -308,27 +257,15 @@ export default function TarotPage() {
           </button>
           {showSynthesis && (() => {
             const draws = result.facts.draws;
-            // Suit distribution
-            const suitCount: Record<string, number> = { MAJOR: 0, WANDS: 0, CUPS: 0, SWORDS: 0, PENTACLES: 0 };
-            draws.forEach((d: any) => {
-              const suit = d.card.arcana === 'MAJOR' ? 'MAJOR' : (d.card.suit ?? 'WANDS');
-              suitCount[suit] = (suitCount[suit] ?? 0) + 1;
-            });
+            const synthesis = result.facts.synthesis || synthesizeSpreadNarrative(draws, result.facts.spreadCode);
+            const suitCount = synthesis.elementBalance;
             const reversedCount = draws.filter((d: any) => d.isReversed).length;
-            const total = draws.length;
-            // Dominant energy
-            const sortedSuits = Object.entries(suitCount)
+            const total = draws.length || 1;
+
+            const sortedSuits = Object.entries(suitCount as Record<string, number>)
               .filter(([, v]) => v > 0)
               .sort(([, a], [, b]) => b - a);
-            const dominant = sortedSuits[0]?.[0] ?? 'MAJOR';
-            const suitNames: Record<string, string> = {
-              MAJOR: 'Bộ Ẩn Chính (Arcana Lớn)',
-              WANDS: 'Gậy — Hành Động & Đam Mê',
-              CUPS: 'Chén — Cảm Xúc & Quan Hệ',
-              SWORDS: 'Kiếm — Tư Duy & Xung Đột',
-              PENTACLES: 'Đồng Tiền — Tài Chính & Vật Chất',
-            };
-            const dominantLabel = suitNames[dominant] ?? dominant;
+
             const suitColors: Record<string, string> = {
               MAJOR: 'text-accentGold',
               WANDS: 'text-orange-400',
@@ -336,34 +273,21 @@ export default function TarotPage() {
               SWORDS: 'text-stone',
               PENTACLES: 'text-emerald-400',
             };
-            // Narrative thread
-            const positions = draws.map((d: any) => d.position?.name ?? '').filter(Boolean);
-            const cardNames = draws.map((d: any) => d.card.namePrimary ?? d.card.name ?? '');
-            const reversedRatio = reversedCount / total;
-            let narrativeTone = '';
-            if (reversedRatio >= 0.6) {
-              narrativeTone = 'Tỷ lệ lá ngược cao cho thấy năng lượng đang bị chặn hoặc trì hoãn. Đây không phải điềm xấu — mà là tín hiệu để dừng lại, nhìn vào và điều chỉnh hướng đi trước khi tiến thêm.';
-            } else if (reversedRatio <= 0.2) {
-              narrativeTone = 'Phần lớn lá bài xuôi, năng lượng đang chảy thông suốt. Đây là thời điểm thuận lợi để hành động theo những thông điệp mà bộ bài đang chỉ ra.';
-            } else {
-              narrativeTone = 'Sự pha trộn giữa lá xuôi và lá ngược phản ánh một tình huống đang chuyển đổi — có những cánh cửa đang mở, có những phần vẫn cần thêm công sức để giải phóng.';
-            }
-            const energyDiagnosis = dominant === 'MAJOR'
-              ? 'Bộ Ẩn Chính chiếm ưu thế: tình huống của bạn đang bị tác động bởi những lực lượng lớn hơn — giai đoạn biến đổi căn bản về nhân sinh và số phận, không chỉ là vấn đề hàng ngày.'
-              : dominant === 'CUPS'
-              ? 'Bộ Chén chiếm ưu thế: lõi của tình huống này là cảm xúc, quan hệ và thế giới nội tâm. Câu trả lời cần được tìm kiếm ở cấp độ cảm giác, không chỉ hành động.'
-              : dominant === 'WANDS'
-              ? 'Bộ Gậy chiếm ưu thế: năng lượng hành động và đam mê đang mạnh. Bạn đang trong giai đoạn khởi xướng — hãy để cảm hứng dẫn đường nhưng đừng để nó vượt quá kiểm soát.'
-              : dominant === 'SWORDS'
-              ? 'Bộ Kiếm chiếm ưu thế: tư duy, xung đột và quyết định đang ở trung tâm. Câu hỏi quan trọng là: bạn đang chiến đấu với hoàn cảnh bên ngoài, hay với chính mình?'
-              : 'Bộ Đồng Tiền chiếm ưu thế: tài chính, sức khỏe và các nhu cầu vật chất đang là trọng tâm. Đây là lúc nhìn vào những gì cụ thể và hữu hình trong cuộc sống.';
+
+            const suitNames: Record<string, string> = {
+              MAJOR: 'Bộ Ẩn Chính (Arcana Lớn)',
+              WANDS: 'Gậy (Lửa & Hành Động)',
+              CUPS: 'Chén (Nước & Cảm Xúc)',
+              SWORDS: 'Kiếm (Khí & Lý Trí)',
+              PENTACLES: 'Đồng Tiền (Đất & Vật Chất)',
+            };
 
             return (
               <div className="p-5 space-y-6 bg-background border-t border-accentGold/30">
-                {/* Suit Distribution */}
+                {/* Suit & Element Distribution */}
                 <div className="space-y-3">
                   <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
-                    Phân Bổ Năng Lượng
+                    Cân Bằng Nguyên Tố & Bộ Ẩn
                   </span>
                   <div className="flex flex-wrap gap-2">
                     {sortedSuits.map(([suit, count]) => (
@@ -377,40 +301,47 @@ export default function TarotPage() {
                       </span>
                     )}
                   </div>
-                  <p className="text-stone text-[11px] leading-relaxed">{energyDiagnosis}</p>
+                  <div className="p-3 bg-surface border border-accentGold/20 space-y-1">
+                    <span className="font-mono text-accentGold text-[10px] uppercase tracking-wider block">Năng Lượng Trọng Tâm</span>
+                    <p className={`text-[11px] font-mono ${suitColors[synthesis.dominantSuit] ?? 'text-stone'}`}>{synthesis.dominantSuitLabel}</p>
+                  </div>
                 </div>
 
-                {/* Narrative Thread */}
+                {/* Narrative Arc */}
                 <div className="space-y-3">
                   <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
-                    Mạch Câu Chuyện Xuyên Suốt
+                    Tiến Trình Tự Sự & Dòng Chảy Năng Lượng
                   </span>
-                  <div className="p-3 bg-surface border border-borderDark">
-                    <p className="text-stone text-[11px] leading-relaxed">{narrativeTone}</p>
-                  </div>
-                  <div className="p-3 bg-surface border border-accentGold/20 space-y-1">
-                    <span className="font-mono text-accentGold text-[10px] uppercase tracking-wider block">Năng Lượng Chủ Đạo</span>
-                    <p className={`text-[11px] font-mono ${suitColors[dominant] ?? 'text-stone'}`}>{dominantLabel}</p>
+                  <div className="p-3 bg-surface border border-borderDark space-y-2">
+                    <p className="text-stone text-[11px] leading-relaxed">{synthesis.narrativeArc}</p>
+                    <p className="text-parchment text-[11px] leading-relaxed pt-2 border-t border-borderDark">
+                      <strong>Xung lực & Thách thức:</strong> {synthesis.tensionAnalysis}
+                    </p>
                   </div>
                 </div>
 
-                {/* Strategy */}
+                {/* Core Progression */}
+                <div className="space-y-3">
+                  <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
+                    Trọng Tâm Chuyển Hóa
+                  </span>
+                  <div className="p-3 bg-surface border border-borderDark">
+                    <p className="text-stone text-[11px] leading-relaxed">{synthesis.coreProgression}</p>
+                  </div>
+                </div>
+
+                {/* Actionable Guidance (No Fortune-telling, Concrete Experiment) */}
                 <div className="space-y-2">
                   <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
-                    Thông Điệp Hành Động
+                    Chỉ Dẫn Hành Động Thực Tế (Actionable Guidance)
                   </span>
-                  <div className="p-3.5 bg-surface border border-borderDark">
-                    <p className="text-stone text-[11px] leading-relaxed">
-                      Bộ bài này không cho bạn câu trả lời — nó giúp bạn nhìn thấy những gì đang thực sự xảy ra bên trong
-                      và bên ngoài mình. Các lá bài {positions.length > 0 ? `ở vị trí ${positions.slice(0, 3).join(', ')}` : 'trong trải bài này'} đang
-                      phác thảo một bức tranh nhất quán: hãy chú ý đến lá bài mà bạn phản ứng mạnh nhất — đó thường là
-                      nơi câu trả lời thật sự đang ẩn.
+                  <div className="p-3.5 bg-surface border border-accentGold/40 space-y-2">
+                    <p className="text-parchment text-[11px] leading-relaxed">
+                      {synthesis.actionableGuidance}
                     </p>
-                  </div>
-                  <div className="p-3 bg-surface border border-accentGold/40 text-center">
-                    <p className="text-parchment text-[11px] italic">
-                      "Tarot không tiên đoán tương lai — nó chiếu sáng những gì bạn đang mang trong mình."
-                    </p>
+                    <div className="pt-2 border-t border-borderDark text-stone text-[10px] italic">
+                      Quy tắc Mysticos: Tarot không phải là lời tiên tri bất di bất dịch, mà là tấm gương phản chiếu tâm lý giúp bạn đưa ra lựa chọn sáng suốt và có trách nhiệm.
+                    </div>
                   </div>
                 </div>
               </div>
@@ -456,7 +387,8 @@ export default function TarotPage() {
 
             {/* Modal Body */}
             {(() => {
-              const insights = getDetailedCardInsights(
+              const insights = getAuthenticTarotCardInsights(
+                selectedDraw.card.cardCode,
                 selectedDraw.card.name,
                 selectedDraw.card.arcana,
                 selectedDraw.positionName,
@@ -494,6 +426,11 @@ export default function TarotPage() {
                         <p>
                           <strong className="text-parchment">Chiều xuôi / ngược:</strong> {insights.orientationGuide}
                         </p>
+                        {insights.symbolism && (
+                          <p>
+                            <strong className="text-accentGold">Biểu tượng & Cổ mẫu:</strong> {insights.symbolism}
+                          </p>
+                        )}
                       </div>
 
                       {/* Keywords */}

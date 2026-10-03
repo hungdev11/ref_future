@@ -9,6 +9,7 @@ import {
 } from '@mystic/core';
 import { buildRWSStandardDeck } from './deck.js';
 import { STANDARD_SPREADS, SpreadDefinition } from './spreads.js';
+import { synthesizeSpreadNarrative } from './interpretations.js';
 
 export interface TarotConfig {
   configVersion: string;
@@ -107,11 +108,14 @@ export class RiderWaiteTarotEngine
       });
     }
 
+    const synthesis = synthesizeSpreadNarrative(draws, spread.code);
+
     const facts: TarotFacts = {
       deckCode: config.deckCode,
       spreadCode: spread.code,
       seed,
       draws,
+      synthesis,
     };
 
     // 5. Flatten to dot-notated facts for Rule Engine

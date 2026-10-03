@@ -217,7 +217,7 @@ export function calculateHollandCareerMatch(
   expression: number,
   soulUrge: number
 ): CareerMatchResult {
-  const scores: Record<string, number> = {
+  const scores = {
     QUAN_LY: 20,
     KY_THUAT: 15,
     XA_HOI: 15,
@@ -938,7 +938,7 @@ export function generateNumerologyHolisticSynthesis(
   expression: number,
   soulUrge: number,
   personalYear: number,
-  birthDateStr: string,
+  _birthDateStr: string,
   cyclesData?: { pinnacles?: Array<{ number: number; label: string }>; challenges?: Array<{ number: number; label: string }> }
 ): NumerologyHolisticSynthesis {
   // 1. Core Triangle — Life Path vs Expression
@@ -995,8 +995,10 @@ export function generateNumerologyHolisticSynthesis(
     confluenceNote = `Năm Cá Nhân ${personalYear} là năm hành động và khởi xướng. Đây là thời điểm tốt để kích hoạt tiềm năng của Đỉnh Cao hiện tại, đặc biệt trong lĩnh vực ${lpVsExpr.pattern === 'HARMONY' ? 'nghề nghiệp và quan hệ' : 'cá nhân và định hướng lại'}.`;
   } else if (pyGroupB.includes(personalYear)) {
     confluenceNote = `Năm Cá Nhân ${personalYear} là năm xây nền và củng cố. Tập trung hoàn thiện hệ thống, quan hệ và tài chính thay vì mở rộng quá nhiều mặt trận.`;
-  } else {
+  } else if (pyGroupC.includes(personalYear)) {
     confluenceNote = `Năm Cá Nhân ${personalYear} là năm hướng vào nội tâm và biểu đạt sáng tạo. Thích hợp để học hỏi, viết lách, hoặc các hoạt động đòi hỏi tư duy sâu.`;
+  } else {
+    confluenceNote = `Năm Cá Nhân ${personalYear} là thời điểm chuyển tiếp, đòi hỏi bạn giữ sự định tĩnh và quan sát nhịp điệu tự nhiên của hoàn cảnh.`;
   }
 
   // 3. Action Plan
@@ -1280,4 +1282,106 @@ export const PERSONAL_YEAR_INTERPRETATIONS: Record<
       'Học cách buông bỏ những điều không còn phục vụ sự phát triển của bạn; tham gia các hoạt động thiện nguyện; tha thứ và biết ơn.',
   },
 };
+
+export const PINNACLE_INTERPRETATIONS: Record<
+  number,
+  {
+    theme: string;
+    layman: string;
+    details: string;
+    strengths: string;
+    challenges: string;
+    advice: string;
+  }
+> = {
+  1: {
+    theme: 'Đỉnh Cao Khởi Xướng & Độc Lập Tự Thân',
+    layman: 'Giai đoạn bạn buộc phải đứng vững trên đôi chân của mình, tự quyết định hướng đi và không dựa dẫm vào người khác.',
+    details: 'Rung động số 1 tôi luyện bản lĩnh người mở đường. Bạn được trao cơ hội đứng mũi chịu sào, khởi xướng các công trình hay con đường mới.',
+    strengths: 'Ý chí độc lập, dũng cảm đối mặt nghịch cảnh, khả năng tự lực cánh sinh.',
+    challenges: 'Dễ rơi vào thế cô đơn hoặc độc đoán nếu không biết lắng nghe đồng sự.',
+    advice: 'Chủ động nắm bắt cơ hội, rèn luyện tính quyết đoán; áp dụng nguyên tắc hành động dứt khoát không trì hoãn.',
+  },
+  2: {
+    theme: 'Đỉnh Cao Hợp Tác & Kiên Nhẫn Ngoại Giao',
+    layman: 'Giai đoạn học cách hòa hợp, làm việc nhóm, xây dựng các liên minh bền chặt và rèn luyện sự khéo léo.',
+    details: 'Rung động số 2 đòi hỏi sự nhạy cảm và thấu hiểu. Thành công lớn nhất trong giai đoạn này đến từ tài ngoại giao và liên kết lòng người.',
+    strengths: 'Trực giác tinh tế, khả năng hòa giải mâu thuẫn, xây dựng lòng tin tập thể.',
+    challenges: 'Dễ trở nên quá nhạy cảm trước lời phê bình hoặc thiếu quyết đoán khi phải tranh chấp.',
+    advice: 'Tìm kiếm đối tác có chung hệ giá trị; học cách đặt ranh giới cá nhân rõ ràng trong mọi thỏa thuận hợp tác.',
+  },
+  3: {
+    theme: 'Đỉnh Cao Sáng Tạo & Lan Tỏa Xã Hội',
+    layman: 'Thời kỳ tài năng biểu đạt, nghệ thuật, giao tiếp và uy tín cá nhân của bạn nở rộ rực rỡ nhất.',
+    details: 'Rung động số 3 kích hoạt ngọn lửa sáng tạo và khả năng kết nối đại chúng. Bạn có nhiều cơ hội xuất hiện trước đám đông.',
+    strengths: 'Tư duy biểu đạt phong phú, khiếu thẩm mỹ, sự hoạt bát truyền cảm hứng.',
+    challenges: 'Dễ bị phân tán vào quá nhiều dự án hào nhoáng bề nổi mà thiếu chiều sâu hoàn thiện.',
+    advice: 'Chọn lọc một lĩnh vực chuyên môn cụ thể để đào sâu; chuyển hóa ý tưởng thành sản phẩm hoàn chỉnh.',
+  },
+  4: {
+    theme: 'Đỉnh Cao Xây Nền Đắp Móng & Kỷ Luật Vững Vàng',
+    layman: 'Giai đoạn lao động nghiêm túc để kiến tạo gia sản, tích lũy tài sản và đặt nền móng chắc chắn cho tương lai.',
+    details: 'Rung động số 4 đại diện cho cấu trúc kim tự tháp vững chãi. Bạn cần sự tỉ mỉ, kiên nhẫn và tuân thủ chặt chẽ các quy trình chuẩn mực.',
+    strengths: 'Kỷ luật thép, tư duy thực tế, tính tổ chức và năng lực tích lũy tài chính bài bản.',
+    challenges: 'Áp lực công việc đè nặng dễ sinh bảo thủ, cứng nhắc hoặc kiệt sức.',
+    advice: 'Lập kế hoạch tài chính và sự nghiệp 5 năm; kiên định thực thi từng tuần và bảo vệ sức khỏe thể chất.',
+  },
+  5: {
+    theme: 'Đỉnh Cao Bứt Phá & Mở Rộng Trải Nghiệm',
+    layman: 'Thời kỳ bạn thoát khỏi lối mòn cũ, thích ứng với nhiều biến động và mở rộng tầm nhìn cuộc sống.',
+    details: 'Rung động số 5 mang đến những chuyến đi, sự đổi mới công việc hoặc mở rộng địa bàn hoạt động. Đây là lúc tư duy linh hoạt giúp bạn chiến thắng.',
+    strengths: 'Khả năng thích ứng siêu việt, tư duy đổi mới, mở rộng mạng lưới giao lưu đa dạng.',
+    challenges: 'Dễ bị cám dỗ bởi sự bốc đồng, thay đổi liên tục dẫn đến thiếu sự bền vững.',
+    advice: 'Tận dụng sự đổi mới để bứt phá nhưng phải giữ vững các nguyên tắc đạo đức và an toàn tài chính cốt lõi.',
+  },
+  6: {
+    theme: 'Đỉnh Cao Trách Nhiệm Gia Đình & Phụng Sự Xã Hội',
+    layman: 'Thời kỳ năng lượng yêu thương, chăm sóc gia đình, cống hiến cho cộng đồng và gánh vác trách nhiệm lớn.',
+    details: 'Rung động số 6 đưa trọng tâm về mái ấm, tổ chức và sự hàn gắn. Bạn trở thành chỗ dựa tinh thần và vật chất vững chắc cho người khác.',
+    strengths: 'Lòng trắc ẩn bao dung, khiếu thẩm mỹ, khả năng quy tụ và bảo bọc tập thể.',
+    challenges: 'Gánh nặng trách nhiệm người khác dễ gây áp lực tinh thần và mệt mỏi nội tâm.',
+    advice: 'Chăm sóc bản thân trước khi gánh vác việc người khác; học cách nói không với những đòi hỏi vô lý.',
+  },
+  7: {
+    theme: 'Đỉnh Cao Chiêm Nghiệm & Trí Tuệ Chiều Sâu',
+    layman: 'Giai đoạn đúc kết kinh nghiệm sống, học hỏi tri thức sâu sắc và tìm kiếm ý nghĩa chân thực của bản thân.',
+    details: 'Rung động số 7 của trục thể chất và tâm trí thúc đẩy bạn nhìn sâu vào bản chất sự vật. Đây là lúc nghiên cứu, chuyên môn hóa đỉnh cao.',
+    strengths: 'Tư duy triết lý sâu sắc, trực giác bén nhạy, sự độc lập và năng lực tự học phi thường.',
+    challenges: 'Xu hướng cô lập bản thân, hoài nghi quá mức hoặc xa rời thực tế đời thường.',
+    advice: 'Dành không gian yên tĩnh để nâng cao chuyên môn; ghi chép nhật ký chiêm nghiệm và chia sẻ tri thức cho thế hệ sau.',
+  },
+  8: {
+    theme: 'Đỉnh Cao Thành Tựu Vật Chất & Khẳng Định Vị Thế',
+    layman: 'Thời kỳ thu hoạch tài chính lớn, nắm giữ quyền quản trị và khẳng định quyền lực thực tiễn trong xã hội.',
+    details: 'Rung động số 8 đưa bạn lên vị trí điều hành, làm chủ dòng tiền và quy mô tổ chức. Thành quả đạt được tương xứng với nỗ lực bền bỉ trước đó.',
+    strengths: 'Tư duy thương mại lớn, năng lực phán đoán thị trường, khả năng quản trị con người và tài sản.',
+    challenges: 'Tham vọng quá mức dễ dẫn đến căng thẳng, bất đồng quyền lợi hoặc đánh đổi các giá trị tinh thần.',
+    advice: 'Sử dụng uy tín và nguồn lực tài chính để kiến tạo giá trị nhân văn bền vững; giữ chữ tín làm kim chỉ nam.',
+  },
+  9: {
+    theme: 'Đỉnh Cao Nhân Đạo & Hoàn Tất Sứ Mệnh Lớn',
+    layman: 'Thời kỳ bao dung rộng lượng, cống hiến vì đại chúng, hoàn tất một giai đoạn lịch sử của đời bạn.',
+    details: 'Rung động số 9 mang tầm vóc toàn cầu và lòng vị tha. Bạn được trao cơ hội lan tỏa giá trị tích cực đến số đông người trong xã hội.',
+    strengths: 'Tầm nhìn bao quát, tâm thế phụng sự, uy tín đạo đức và lòng trắc ẩn không biên giới.',
+    challenges: 'Khó khăn trong việc buông bỏ những kỳ vọng cũ hoặc người thân cận không cùng chí hướng.',
+    advice: 'Sẵn sàng khép lại các chương cũ không còn phù hợp; tham gia các dự án vì cộng đồng với sự tỉnh táo.',
+  },
+  11: {
+    theme: 'Đỉnh Cao Trực Giác Master & Khai Sáng Tâm Trí',
+    layman: 'Giai đoạn thức tỉnh tiềm năng tâm lý, trực giác phi thường và truyền cảm hứng mạnh mẽ cho cộng đồng.',
+    details: 'Số Master 11/2 khuếch đại sự nhạy bén và nhận thức tinh thần. Bạn trở thành ngọn đèn chỉ đường cho những người đang tìm kiếm hướng đi.',
+    strengths: 'Trực giác thấu thị, tầm nhìn tâm lý sâu rộng, sức lan tỏa tinh thần tự nhiên.',
+    challenges: 'Sự nhạy cảm thần kinh cao dễ gây căng thẳng, mất ngủ nếu môi trường xung quanh nhiều tiêu cực.',
+    advice: 'Thực hành các phương pháp tĩnh tâm, rèn luyện thân thể vững chãi và giữ cho tâm trí luôn thanh tịnh.',
+  },
+  22: {
+    theme: 'Đỉnh Cao Nhà Kiến Tạo Vĩ Mô (Master Builder)',
+    layman: 'Giai đoạn bạn có đủ tầm nhìn lớn và bàn tay thực tế để xây dựng những công trình, tổ chức tầm cỡ để đời.',
+    details: 'Số Master 22/4 kết tinh lý tưởng cao đẹp vào cấu trúc vật chất thực tiễn. Cơ hội để lại di sản dài hạn cho thế hệ mai sau.',
+    strengths: 'Tầm nhìn chiến lược phi thường, khả năng biến ý tưởng trừu tượng thành công trình cụ thể vĩ đại.',
+    challenges: 'Gánh nặng sứ mệnh và kỳ vọng cực lớn dễ khiến bạn kiệt quệ nếu ôm đồm một mình.',
+    advice: 'Xây dựng đội ngũ kế thừa tài năng; phân quyền thông minh và kiên trì từng bước vững chắc.',
+  },
+};
+
 

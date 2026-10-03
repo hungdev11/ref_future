@@ -46,12 +46,12 @@ export function placeAllStars(
   const tuViIdx = locateTuVi(cucNumber, lunarDay);
 
   const tuViStars = [
-    { name: 'Tử Vi', offset: 0, element: FiveElements.THO },
-    { name: 'Thiên Cơ', offset: -1, element: FiveElements.MOC },
-    { name: 'Thái Dương', offset: -3, element: FiveElements.HOA },
-    { name: 'Vũ Khúc', offset: -4, element: FiveElements.KIM },
-    { name: 'Thiên Đồng', offset: -5, element: FiveElements.THUY },
-    { name: 'Liêm Trinh', offset: -8, element: FiveElements.HOA },
+    { code: 'TU_VI', name: 'Tử Vi', offset: 0, element: FiveElements.THO },
+    { code: 'THIEN_CO', name: 'Thiên Cơ', offset: -1, element: FiveElements.MOC },
+    { code: 'THAI_DUONG', name: 'Thái Dương', offset: -3, element: FiveElements.HOA },
+    { code: 'VU_KHUC', name: 'Vũ Khúc', offset: -4, element: FiveElements.KIM },
+    { code: 'THIEN_DONG', name: 'Thiên Đồng', offset: -5, element: FiveElements.THUY },
+    { code: 'LIEM_TRINH', name: 'Liêm Trinh', offset: -8, element: FiveElements.HOA },
   ];
 
   for (const s of tuViStars) {
@@ -59,7 +59,7 @@ export function placeAllStars(
     placements.push({
       branchIndex: idx,
       star: {
-        code: s.name.toUpperCase().replace(/\s+/g, '_'),
+        code: s.code,
         name: s.name,
         element: s.element,
         isMain: true,
@@ -72,14 +72,14 @@ export function placeAllStars(
   const thienPhuIdx = (4 - tuViIdx + 12) % 12;
 
   const thienPhuStars = [
-    { name: 'Thiên Phủ', offset: 0, element: FiveElements.THO },
-    { name: 'Thái Âm', offset: 1, element: FiveElements.THUY },
-    { name: 'Tham Lang', offset: 2, element: FiveElements.THUY },
-    { name: 'Cự Môn', offset: 3, element: FiveElements.THUY },
-    { name: 'Thiên Tướng', offset: 4, element: FiveElements.THUY },
-    { name: 'Thiên Lương', offset: 5, element: FiveElements.MOC },
-    { name: 'Thất Sát', offset: 6, element: FiveElements.KIM },
-    { name: 'Phá Quân', offset: 10, element: FiveElements.THUY },
+    { code: 'THIEN_PHU', name: 'Thiên Phủ', offset: 0, element: FiveElements.THO },
+    { code: 'THAI_AM', name: 'Thái Âm', offset: 1, element: FiveElements.THUY },
+    { code: 'THAM_LANG', name: 'Tham Lang', offset: 2, element: FiveElements.THUY },
+    { code: 'CU_MON', name: 'Cự Môn', offset: 3, element: FiveElements.THUY },
+    { code: 'THIEN_TUONG', name: 'Thiên Tướng', offset: 4, element: FiveElements.THUY },
+    { code: 'THIEN_LUONG', name: 'Thiên Lương', offset: 5, element: FiveElements.MOC },
+    { code: 'THAT_SAT', name: 'Thất Sát', offset: 6, element: FiveElements.KIM },
+    { code: 'PHA_QUAN', name: 'Phá Quân', offset: 10, element: FiveElements.THUY },
   ];
 
   for (const s of thienPhuStars) {
@@ -87,7 +87,7 @@ export function placeAllStars(
     placements.push({
       branchIndex: idx,
       star: {
-        code: s.name.toUpperCase().replace(/\s+/g, '_'),
+        code: s.code,
         name: s.name,
         element: s.element,
         isMain: true,

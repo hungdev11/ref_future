@@ -6,3 +6,4 @@ export * from './interaction-engine.js';
 export * from './synthesis-engine.js';
 export * from './narrative-planner.js';
 export * from './quality-control.js';
+export * from './compatibility-engine.js';

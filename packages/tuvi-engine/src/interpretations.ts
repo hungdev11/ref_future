@@ -4,8 +4,6 @@
  * 100% Free, Public, Unlocked.
  */
 
-import { EarthlyBranch, HeavenlyStem, PalaceName } from '@mystic/core';
-
 // 1. LỤC THẬP HOA GIÁP NẠP ÂM (60 CAN CHI)
 export interface NapAmInfo {
   menh: string; // Tên nạp âm (ví dụ: Lộ Bàng Thổ)
@@ -358,16 +356,22 @@ export function evaluateMenhCucRelation(
   };
 }
 
-// 6. THUẬT TOÁN ĐÁNH GIÁ ĐIỂM SỐ 12 CUNG (0 - 100 ĐIỂM & XẾP LOẠI)
+// 6. PHẨM CẤP & KHÍ THẾ 12 CUNG THEO CÁT TINH / SÁT TINH
 export interface PalaceScoreResult {
   score: number;
   rank: 'CỰC TỐT' | 'TỐT' | 'BÌNH HÒA' | 'CẦN LƯU TÂM';
+  rankBadge: 'Đắc Cách' | 'Cát Hội' | 'Bình Hòa' | 'Thử Thách';
   rankColor: string;
   summary: string;
+  auspiciousFactors: string[];
+  challengingFactors: string[];
+  evidence: string;
 }
 
-export function calculatePalaceScore(palaceKey: string, palaceData: any): PalaceScoreResult {
-  let score = 65; // Base score
+export function calculatePalaceScore(_palaceKey: string, palaceData: any): PalaceScoreResult {
+  let score = 65; // Điểm quy chuẩn cơ sở
+  const auspiciousFactors: string[] = [];
+  const challengingFactors: string[] = [];
 
   const stars = palaceData.stars || [];
   const mainStars = stars.filter((s: any) => s.isMain);
@@ -375,58 +379,103 @@ export function calculatePalaceScore(palaceKey: string, palaceData: any): Palace
   // Main stars bonus/penalty
   for (const ms of mainStars) {
     const code = ms.code.toUpperCase();
+    const starName = ms.name || code;
     if (['TU_VI', 'THIEN_PHU', 'THAI_DUONG', 'THAI_AM', 'VU_KHUC'].includes(code)) {
       score += 15;
+      auspiciousFactors.push(`Chính tinh đế vương/tài tinh: ${starName}`);
     } else if (['THIEN_TUONG', 'THIEN_LUONG', 'THIEN_DONG', 'THIEN_CO'].includes(code)) {
       score += 10;
+      auspiciousFactors.push(`Chính tinh trợ tinh thiện lương: ${starName}`);
     } else if (['THAT_SAT', 'PHA_QUAN', 'THAM_LANG', 'LIEM_TRINH'].includes(code)) {
-      score += 8; // Powerful but turbulent
+      score += 8;
+      auspiciousFactors.push(`Chính tinh võ nghiệp/biến động can trường: ${starName}`);
     } else {
       score += 6;
+      auspiciousFactors.push(`Chính tinh: ${starName}`);
     }
+  }
+
+  if (mainStars.length === 0) {
+    challengingFactors.push('Cung Vô Chính Diệu (cần xét cung xung chiếu & tam hợp)');
   }
 
   // Lucky stars (Khoa Quyền Lộc, Khôi Việt, Xương Khúc, Tả Hữu, Đào Hồng)
   for (const s of stars) {
     const c = s.code.toUpperCase();
-    if (['HOA_LOC', 'HOA_QUYEN', 'HOA_KHOA', 'LOC_TON'].includes(c)) score += 8;
-    if (['THIEN_KHOI', 'THIEN_VIET', 'TA_PHU', 'HUU_BAT'].includes(c)) score += 6;
-    if (['VAN_XUONG', 'VAN_KHUC', 'LONG_TRI', 'PHUONG_CAC'].includes(c)) score += 4;
-    if (['THIEN_HY', 'DAO_HOA', 'HONG_LOAN'].includes(c)) score += 4;
+    const name = s.name || c;
+    if (['HOA_LOC', 'HOA_QUYEN', 'HOA_KHOA', 'LOC_TON'].includes(c)) {
+      score += 8;
+      auspiciousFactors.push(`Hóa tinh/Lộc tinh cát tường: ${name}`);
+    }
+    if (['THIEN_KHOI', 'THIEN_VIET', 'TA_PHU', 'HUU_BAT'].includes(c)) {
+      score += 6;
+      auspiciousFactors.push(`Quý tinh phò tá: ${name}`);
+    }
+    if (['VAN_XUONG', 'VAN_KHUC', 'LONG_TRI', 'PHUONG_CAC'].includes(c)) {
+      score += 4;
+      auspiciousFactors.push(`Văn tinh thông tuệ: ${name}`);
+    }
+    if (['THIEN_HY', 'DAO_HOA', 'HONG_LOAN'].includes(c)) {
+      score += 4;
+      auspiciousFactors.push(`Hỷ tinh/Đào hoa duyên phận: ${name}`);
+    }
 
     // Sát tinh (Kình Đà Không Kiếp Hỏa Linh, Hóa Kỵ)
-    if (['DIA_KHONG', 'DIA_KIEP'].includes(c)) score -= 12;
-    if (['KINH_DUONG', 'DA_LA'].includes(c)) score -= 8;
-    if (['HOA_TINH', 'LINH_TINH'].includes(c)) score -= 6;
-    if (c === 'HOA_KY') score -= 8;
+    if (['DIA_KHONG', 'DIA_KIEP'].includes(c)) {
+      score -= 12;
+      challengingFactors.push(`Đại sát tinh: ${name} (thăng trầm, biến động đột ngột)`);
+    }
+    if (['KINH_DUONG', 'DA_LA'].includes(c)) {
+      score -= 8;
+      challengingFactors.push(`Kình Đà sát diệu: ${name} (trở ngại, thử thách tính kiên nhẫn)`);
+    }
+    if (['HOA_TINH', 'LINH_TINH'].includes(c)) {
+      score -= 6;
+      challengingFactors.push(`Hỏa Linh sát diệu: ${name} (bốc đồng, hao tổn tâm lực)`);
+    }
+    if (c === 'HOA_KY') {
+      score -= 8;
+      challengingFactors.push(`Hóa Kỵ ám tinh (thị phi, hiểu lầm cần giữ mình)`);
+    }
   }
 
   // Tuần Triệt effect
-  if (palaceData.isTriet) score = Math.max(45, score - 6);
-  if (palaceData.isTuan) score = Math.max(50, score - 4);
+  if (palaceData.isTriet) {
+    score = Math.max(45, score - 6);
+    challengingFactors.push('Triệt Không án ngữ (chặn bớt lực sao, thử thách tiền vận)');
+  }
+  if (palaceData.isTuan) {
+    score = Math.max(50, score - 4);
+    challengingFactors.push('Tuần Trung Không Vong (bao bọc, làm chậm nhịp độ)');
+  }
 
-  // Clamp 35 to 98
   score = Math.max(35, Math.min(98, score));
 
   let rank: 'CỰC TỐT' | 'TỐT' | 'BÌNH HÒA' | 'CẦN LƯU TÂM' = 'BÌNH HÒA';
-  let rankColor = 'text-amber-400';
-  let summary = 'Cung vị ở mức độ hài hòa, cát hung đan xen, cần chủ động nỗ lực để đạt thành quả tốt nhất.';
+  let rankBadge: 'Đắc Cách' | 'Cát Hội' | 'Bình Hòa' | 'Thử Thách' = 'Bình Hòa';
+  let rankColor = 'text-accentGold';
+  let summary = 'Cung vị ở thế quân bình cát hung, có trợ lực của quý tinh nhưng cũng có chướng ngại thử thách, cần nỗ lực bền bỉ.';
 
-  if (score >= 85) {
+  if (score >= 82) {
     rank = 'CỰC TỐT';
-    rankColor = 'text-emerald-400';
-    summary = 'Cung vị hội tụ nhiều cát tinh tôn quý, vận khí hưng thịnh rực rỡ, đón nhận nhiều cơ hội vàng.';
-  } else if (score >= 70) {
+    rankBadge = 'Đắc Cách';
+    rankColor = 'text-accentGold';
+    summary = 'Cung vị đắc cách hội tụ tinh diệu tôn quý, khí thế hưng vượng, nền tảng phát triển vô cùng vững chắc.';
+  } else if (score >= 68) {
     rank = 'TỐT';
-    rankColor = 'text-teal-300';
-    summary = 'Cung vị có nền tảng vững vàng, được hỗ trợ bởi các tinh diệu tốt lành, phát triển thuận lợi.';
+    rankBadge = 'Cát Hội';
+    rankColor = 'text-parchment';
+    summary = 'Cung vị có nền móng cát lành, các yếu tố hỗ trợ vượt trội hơn chướng ngại, mưu sự thuận lợi.';
   } else if (score < 55) {
     rank = 'CẦN LƯU TÂM';
-    rankColor = 'text-rose-400';
-    summary = 'Cung vị chịu áp lực từ các hung sát tinh, cần đề phòng bất trắc và chú trọng tu tâm tích phúc để chuyển hóa.';
+    rankBadge = 'Thử Thách';
+    rankColor = 'text-cinnabar';
+    summary = 'Cung vị chịu áp lực từ sát tinh hoặc không vong án ngữ, cần lấy sự cẩn trọng và tu dưỡng bản lĩnh làm trọng.';
   }
 
-  return { score, rank, rankColor, summary };
+  const evidence = `Chính tinh: ${mainStars.length > 0 ? mainStars.map((s: any) => s.name).join(', ') : 'Vô Chính Diệu'} | Cát tinh: ${auspiciousFactors.length} yếu tố | Sát tinh/chướng ngại: ${challengingFactors.length} yếu tố`;
+
+  return { score, rank, rankBadge, rankColor, summary, auspiciousFactors, challengingFactors, evidence };
 }
 
 // 7. LUẬN GIẢI CHI TIẾT TỪNG SAO CHỦ ĐẠO
@@ -886,7 +935,8 @@ export function generateTuViHolisticSynthesis(result: any): TuViHolisticSynthesi
   const menhCucData = evaluateMenhCucRelation(facts.cuc || 'Thổ ngũ cục', napAmInfo.elementVn);
 
   // 4. Tìm vị trí Tứ Hóa
-  const canRules = TU_HOA_TABLE[yearStem] || TU_HOA_TABLE.GIAP;
+  const defaultCanRules = { loc: 'LIEM_TRINH', quyen: 'PHA_QUAN', khoa: 'VU_KHUC', ky: 'THAI_DUONG' };
+  const canRules = TU_HOA_TABLE[yearStem] ?? defaultCanRules;
   const findPalaceWithStar = (starCode: string): { key: string; name: string } => {
     for (const [pKey, pData] of Object.entries(palaces) as [string, any][]) {
       const hasStar = (pData.stars || []).some((s: any) => s.code?.toUpperCase() === starCode);
@@ -949,7 +999,7 @@ export function generateTuViHolisticSynthesis(result: any): TuViHolisticSynthesi
   }
 
   // 6. Action Blueprint
-  const primaryLeverage = `Tận dụng đòn bẩy Cách Cục ${cachCuc.name.split('—')[0].trim()} kết hợp Hóa Lộc tại Cung ${locPalace.name}. Hãy tập trung 80% thời gian và nguồn lực vào việc phát huy chuyên môn mũi nhọn này thay vì dàn trải sức lực.`;
+  const primaryLeverage = `Tận dụng đòn bẩy Cách Cục ${(cachCuc.name.split('—')[0] ?? cachCuc.name).trim()} kết hợp Hóa Lộc tại Cung ${locPalace.name}. Hãy tập trung 80% thời gian và nguồn lực vào việc phát huy chuyên môn mũi nhọn này thay vì dàn trải sức lực.`;
   const criticalBlindspot = `Hóa Kỵ đóng tại Cung ${kyPalace.name} là bài học then chốt. Cần tuyệt đối minh bạch, tránh suy diễn tiêu cực hoặc nóng vội ở lĩnh vực này. Khi gặp khúc mắc, hãy dùng sự điềm đạm và chữ tín để hóa giải.`;
   const masterPrinciple = `Thời gian từ nay đến mốc ${transitionAge} tuổi là chặng đường bản lề chuyển dịch từ Mệnh sang Thân (${thanPalaceName}). Tuân thủ đạo trung dung, lấy đức độ làm gốc thì tiền vận dù có sóng gió, hậu vận tất hưởng quả ngọt bền lâu.`;
 

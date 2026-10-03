@@ -25,6 +25,7 @@ import {
   evaluateLifePathSoulHarmony,
   LIFE_PATH_INTERPRETATIONS,
   PERSONAL_YEAR_INTERPRETATIONS,
+  PINNACLE_INTERPRETATIONS,
 } from '@mystic/numerology-engine';
 import { NumerologyFullReport } from './NumerologyFullReport';
 import { TermTag } from '@/components/TermTag';
@@ -78,9 +79,9 @@ export default function NumerologyPage() {
   const soulUrgeVal = Number(result?.facts?.core?.SOUL_URGE?.value ?? 0);
   const personalityVal = Number(result?.facts?.core?.PERSONALITY?.value ?? 0);
   const maturityVal = Number(result?.facts?.core?.MATURITY?.value ?? 0);
-  const personalYearVal = Number(result?.facts?.cycles?.PERSONAL_YEAR?.value ?? 0);
-  const personalMonthVal = Number(result?.facts?.cycles?.PERSONAL_MONTH?.value ?? 0);
-  const personalDayVal = Number(result?.facts?.cycles?.PERSONAL_DAY?.value ?? 0);
+  const personalYearVal = Number(result?.facts?.cycles?.personalYear?.value ?? result?.facts?.core?.PERSONAL_YEAR?.value ?? 0);
+  const personalMonthVal = Number(result?.facts?.cycles?.personalMonth?.value ?? result?.facts?.core?.PERSONAL_MONTH?.value ?? 0);
+  const personalDayVal = Number(result?.facts?.cycles?.personalDay?.value ?? result?.facts?.core?.PERSONAL_DAY?.value ?? 0);
   const birthdayVal = Number(result?.facts?.core?.BIRTHDAY?.value ?? 0);
 
   const birthDateStr = result?.facts?.birthDateIso || birthDate;
@@ -462,120 +463,144 @@ export default function NumerologyPage() {
               </div>
 
               {/* 2. Four Pinnacles Pyramid Mountain */}
-              {result.facts.cycles?.PINNACLES && (
-                <div className="p-5 bg-surface border border-borderDark space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-borderDark pb-3 gap-2">
-                    <div>
-                      <h3 className="font-serif text-base text-parchment">
-                        Bản Đồ 4 Đỉnh Cao Cuộc Đời (Kim Tự Tháp Pythagoras)
-                      </h3>
-                      <p className="text-xs text-stone">
-                        4 cột mốc nở rộ thành tựu lớn nhất trong đời bạn. Nhấp vào đỉnh để xem chi tiết bài học.
-                      </p>
+              {(() => {
+                const pinnaclesData = result?.facts?.cycles?.PINNACLES || (result?.facts?.pinnacles && result.facts.pinnacles.length >= 4 ? {
+                  bases: result.facts.cycles?.bases ?? {
+                    month: Number(birthDateStr.split('-')[1]) || 1,
+                    day: Number(birthDateStr.split('-')[2]) || 1,
+                    year: Number(birthDateStr.split('-')[0]) || 1990,
+                  },
+                  pinnacle1: result.facts.pinnacles[0],
+                  pinnacle2: result.facts.pinnacles[1],
+                  pinnacle3: result.facts.pinnacles[2],
+                  pinnacle4: result.facts.pinnacles[3],
+                } : null);
+
+                if (!pinnaclesData) return null;
+
+                return (
+                  <div className="p-5 bg-surface border border-borderDark space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-borderDark pb-3 gap-2">
+                      <div>
+                        <h3 className="font-serif text-base text-parchment">
+                          Bản Đồ 4 Đỉnh Cao Cuộc Đời (Kim Tự Tháp Pythagoras)
+                        </h3>
+                        <p className="text-xs text-stone">
+                          4 cột mốc nở rộ thành tựu lớn nhất trong đời bạn. Nhấp vào đỉnh để xem chi tiết bài học.
+                        </p>
+                      </div>
+                      <span className="text-xs font-mono text-accentGold">Chu Kỳ 27 Năm</span>
                     </div>
-                    <span className="text-xs font-mono text-accentGold">Chu Kỳ 27 Năm</span>
-                  </div>
 
-                  {/* SVG Pyramid */}
-                  <div className="bg-background border border-borderDark p-4 overflow-x-auto flex justify-center">
-                    <svg viewBox="0 0 600 240" className="w-full max-w-xl h-auto">
-                      <polygon points="120,200 240,110 360,200" fill="none" stroke="#282724" strokeWidth="1.5" />
-                      <polygon points="240,200 360,110 480,200" fill="none" stroke="#282724" strokeWidth="1.5" />
-                      <line x1="240" y1="110" x2="360" y2="50" stroke="#3D3B35" strokeWidth="1.5" />
-                      <line x1="360" y1="110" x2="360" y2="50" stroke="#3D3B35" strokeWidth="1.5" />
-                      <line x1="120" y1="200" x2="360" y2="10" stroke="#BFA15F" strokeWidth="1.5" strokeDasharray="3 3" />
-                      <line x1="480" y1="200" x2="360" y2="10" stroke="#BFA15F" strokeWidth="1.5" strokeDasharray="3 3" />
+                    {/* SVG Pyramid */}
+                    <div className="bg-background border border-borderDark p-4 overflow-x-auto flex justify-center">
+                      <svg viewBox="0 0 600 240" className="w-full max-w-xl h-auto">
+                        <polygon points="120,200 240,110 360,200" fill="none" stroke="#282724" strokeWidth="1.5" />
+                        <polygon points="240,200 360,110 480,200" fill="none" stroke="#282724" strokeWidth="1.5" />
+                        <line x1="240" y1="110" x2="360" y2="50" stroke="#3D3B35" strokeWidth="1.5" />
+                        <line x1="360" y1="110" x2="360" y2="50" stroke="#3D3B35" strokeWidth="1.5" />
+                        <line x1="120" y1="200" x2="360" y2="10" stroke="#BFA15F" strokeWidth="1.5" strokeDasharray="3 3" />
+                        <line x1="480" y1="200" x2="360" y2="10" stroke="#BFA15F" strokeWidth="1.5" strokeDasharray="3 3" />
 
-                      {/* Base nodes */}
-                      <circle cx="120" cy="200" r="14" fill="#161614" stroke="#282724" strokeWidth="1.5" />
-                      <text x="120" y="204" textAnchor="middle" fill="#9E9B91" fontSize="10" fontFamily="monospace">
-                        {result.facts.cycles.PINNACLES.bases?.month ?? 11}
-                      </text>
+                        {/* Base nodes */}
+                        <circle cx="120" cy="200" r="14" fill="#161614" stroke="#282724" strokeWidth="1.5" />
+                        <text x="120" y="204" textAnchor="middle" fill="#9E9B91" fontSize="10" fontFamily="monospace">
+                          {pinnaclesData.bases?.month}
+                        </text>
 
-                      <circle cx="240" cy="200" r="14" fill="#161614" stroke="#282724" strokeWidth="1.5" />
-                      <text x="240" y="204" textAnchor="middle" fill="#9E9B91" fontSize="10" fontFamily="monospace">
-                        {result.facts.cycles.PINNACLES.bases?.day ?? 2}
-                      </text>
+                        <circle cx="240" cy="200" r="14" fill="#161614" stroke="#282724" strokeWidth="1.5" />
+                        <text x="240" y="204" textAnchor="middle" fill="#9E9B91" fontSize="10" fontFamily="monospace">
+                          {pinnaclesData.bases?.day}
+                        </text>
 
-                      <circle cx="360" cy="200" r="14" fill="#161614" stroke="#282724" strokeWidth="1.5" />
-                      <text x="360" y="204" textAnchor="middle" fill="#9E9B91" fontSize="10" fontFamily="monospace">
-                        {result.facts.cycles.PINNACLES.bases?.year ?? 1}
-                      </text>
+                        <circle cx="360" cy="200" r="14" fill="#161614" stroke="#282724" strokeWidth="1.5" />
+                        <text x="360" y="204" textAnchor="middle" fill="#9E9B91" fontSize="10" fontFamily="monospace">
+                          {pinnaclesData.bases?.year}
+                        </text>
 
-                      {/* Peak 1 */}
-                      <circle cx="240" cy="110" r="16" fill="#161614" stroke="#BFA15F" strokeWidth="1.5" />
-                      <text x="240" y="115" textAnchor="middle" fill="#EDEAE2" fontSize="13" fontWeight="bold" fontFamily="serif">
-                        {result.facts.cycles.PINNACLES.pinnacle1?.value ?? 4}
-                      </text>
+                        {/* Peak 1 */}
+                        <circle cx="240" cy="110" r="16" fill="#161614" stroke="#BFA15F" strokeWidth="1.5" />
+                        <text x="240" y="115" textAnchor="middle" fill="#EDEAE2" fontSize="13" fontWeight="bold" fontFamily="serif">
+                          {pinnaclesData.pinnacle1?.value}
+                        </text>
 
-                      {/* Peak 2 */}
-                      <circle cx="360" cy="110" r="16" fill="#161614" stroke="#BFA15F" strokeWidth="1.5" />
-                      <text x="360" y="115" textAnchor="middle" fill="#EDEAE2" fontSize="13" fontWeight="bold" fontFamily="serif">
-                        {result.facts.cycles.PINNACLES.pinnacle2?.value ?? 3}
-                      </text>
+                        {/* Peak 2 */}
+                        <circle cx="360" cy="110" r="16" fill="#161614" stroke="#BFA15F" strokeWidth="1.5" />
+                        <text x="360" y="115" textAnchor="middle" fill="#EDEAE2" fontSize="13" fontWeight="bold" fontFamily="serif">
+                          {pinnaclesData.pinnacle2?.value}
+                        </text>
 
-                      {/* Peak 3 */}
-                      <circle cx="360" cy="50" r="16" fill="#161614" stroke="#BFA15F" strokeWidth="2" />
-                      <text x="360" y="55" textAnchor="middle" fill="#BFA15F" fontSize="13" fontWeight="bold" fontFamily="serif">
-                        {result.facts.cycles.PINNACLES.pinnacle3?.value ?? 7}
-                      </text>
+                        {/* Peak 3 */}
+                        <circle cx="360" cy="50" r="16" fill="#161614" stroke="#BFA15F" strokeWidth="2" />
+                        <text x="360" y="55" textAnchor="middle" fill="#BFA15F" fontSize="13" fontWeight="bold" fontFamily="serif">
+                          {pinnaclesData.pinnacle3?.value}
+                        </text>
 
-                      {/* Peak 4 */}
-                      <circle cx="360" cy="10" r="16" fill="#161614" stroke="#BFA15F" strokeWidth="2" />
-                      <text x="360" y="15" textAnchor="middle" fill="#EDEAE2" fontSize="13" fontWeight="bold" fontFamily="serif">
-                        {result.facts.cycles.PINNACLES.pinnacle4?.value ?? 3}
-                      </text>
-                    </svg>
-                  </div>
+                        {/* Peak 4 */}
+                        <circle cx="360" cy="10" r="16" fill="#161614" stroke="#BFA15F" strokeWidth="2" />
+                        <text x="360" y="15" textAnchor="middle" fill="#EDEAE2" fontSize="13" fontWeight="bold" fontFamily="serif">
+                          {pinnaclesData.pinnacle4?.value}
+                        </text>
+                      </svg>
+                    </div>
 
-                  {/* 4 Peak Cards */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-                    {[
-                      result.facts.cycles.PINNACLES.pinnacle1,
-                      result.facts.cycles.PINNACLES.pinnacle2,
-                      result.facts.cycles.PINNACLES.pinnacle3,
-                      result.facts.cycles.PINNACLES.pinnacle4,
-                    ].map((p: any) => {
-                      if (!p) return null;
-                      const ageDesc =
-                        p.endAge === 99
-                          ? `${p.startAge}t trở đi`
-                          : `${p.startAge} - ${p.endAge} tuổi`;
+                    {/* 4 Peak Cards */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                      {[
+                        pinnaclesData.pinnacle1,
+                        pinnaclesData.pinnacle2,
+                        pinnaclesData.pinnacle3,
+                        pinnaclesData.pinnacle4,
+                      ].map((p: any) => {
+                        if (!p) return null;
+                        const ageDesc =
+                          p.endAge === 99
+                            ? `${p.startAge}t trở đi`
+                            : `${p.startAge} - ${p.endAge} tuổi`;
 
-                      return (
-                        <div
-                          key={p.pinnacleNumber}
-                          onClick={() =>
-                            setSelectedItem({
-                              category: `ĐỈNH CAO SỐ ${p.pinnacleNumber} (${ageDesc})`,
-                              title: `Đỉnh Cao Số ${p.value}: Cột Mốc Thành Tựu`,
-                              value: p.value,
-                              beginnerGuide:
-                                'Mỗi đỉnh cao kéo dài khoảng 9 năm, mang lại những cơ hội và bài học đặc thù để hoàn thiện nhân cách và tích lũy thành quả.',
-                              details: `Trong giai đoạn này, bạn đón nhận tần số rung động của số ${p.value}. Đây là lúc vũ trụ tạo điều kiện cho bạn tỏa sáng ở lĩnh vực này.`,
-                              advice: 'Kiên trì theo đuổi các mục tiêu dài hạn; tránh nôn nóng bỏ dở giữa chừng.',
-                              strengths: 'Cơ hội thăng tiến, mở rộng tầm ảnh hưởng.',
-                              challenges: 'Cần vượt qua sức ì tâm lý và các biến động ngoại cảnh.',
-                            })
-                          }
-                          className="p-3 bg-background border border-borderDark hover:border-accentGold transition-colors cursor-pointer group space-y-1.5"
-                        >
-                          <div className="flex items-center justify-between text-[11px] font-mono">
-                            <span className="text-accentGold">Đỉnh {p.pinnacleNumber}</span>
-                            <span className="text-stone">{ageDesc}</span>
+                        const pInterp = PINNACLE_INTERPRETATIONS[p.value] ?? {
+                          theme: `Đỉnh Cao Số ${p.value}`,
+                          layman: `Giai đoạn đón nhận tần số rung động của số ${p.value}.`,
+                          details: `Trong chu kỳ này, bạn đón nhận năng lượng của số ${p.value} để hoàn thiện bản lĩnh.`,
+                          strengths: 'Cơ hội thăng tiến, mở rộng tầm ảnh hưởng.',
+                          challenges: 'Cần vượt qua sức ì tâm lý và các biến động ngoại cảnh.',
+                          advice: 'Kiên trì theo đuổi các mục tiêu dài hạn; tránh nôn nóng.',
+                        };
+
+                        return (
+                          <div
+                            key={p.pinnacleNumber}
+                            onClick={() =>
+                              setSelectedItem({
+                                category: `ĐỈNH CAO SỐ ${p.pinnacleNumber} (${ageDesc})`,
+                                title: `${pInterp.theme} (Số ${p.value})`,
+                                value: p.value,
+                                beginnerGuide: pInterp.layman,
+                                details: pInterp.details,
+                                strengths: pInterp.strengths,
+                                challenges: pInterp.challenges,
+                                advice: pInterp.advice,
+                              })
+                            }
+                            className="p-3 bg-background border border-borderDark hover:border-accentGold transition-colors cursor-pointer group space-y-1.5"
+                          >
+                            <div className="flex items-center justify-between text-[11px] font-mono">
+                              <span className="text-accentGold">Đỉnh {p.pinnacleNumber}</span>
+                              <span className="text-stone">{ageDesc}</span>
+                            </div>
+                            <div className="text-2xl font-serif font-bold text-parchment group-hover:text-accentGold transition-colors">
+                              {p.value}
+                            </div>
+                            <span className="text-[10px] font-mono text-accentGold group-hover:underline block pt-1 border-t border-borderDark">
+                              Xem luận giải →
+                            </span>
                           </div>
-                          <div className="text-2xl font-serif font-bold text-parchment group-hover:text-accentGold transition-colors">
-                            {p.value}
-                          </div>
-                          <span className="text-[10px] font-mono text-accentGold group-hover:underline block pt-1 border-t border-borderDark">
-                            Xem luận giải →
-                          </span>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
 
               {/* 3. Time Cycles & 9-Year Wave */}
               <div className="p-5 bg-surface border border-borderDark space-y-4">
