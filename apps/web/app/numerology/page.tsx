@@ -8,6 +8,8 @@ import {
   ArrowRight,
   TrendingUp,
   ShieldCheck,
+  Layers,
+  FileText,
 } from 'lucide-react';
 import {
   PERSONAL_YEAR_ASPECTS,
@@ -22,6 +24,8 @@ import {
   evaluateLifePathExpressionHarmony,
   evaluateLifePathSoulHarmony,
 } from '@/lib/numerology-interpretations';
+import { NumerologyFullReport } from './NumerologyFullReport';
+import { TermTag } from '@/components/TermTag';
 
 const LIFE_PATH_INTERPRETATIONS: Record<
   number,
@@ -269,6 +273,7 @@ export default function NumerologyPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'dashboard' | 'fullReport'>('dashboard');
 
   // Modal State for clicked items
   const [selectedItem, setSelectedItem] = useState<{
@@ -455,9 +460,54 @@ export default function NumerologyPage() {
                 </span>
               </div>
 
-              {/* 1. Core Numbers Grid */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-xs font-mono text-stone border-b border-borderDark pb-2">
+              {/* View Mode Switcher */}
+              <div className="flex flex-wrap items-center gap-2 border-b border-borderDark pb-3">
+                <button
+                  type="button"
+                  onClick={() => setViewMode('dashboard')}
+                  className={`px-3.5 py-1.5 text-xs font-mono border transition-colors flex items-center gap-1.5 ${
+                    viewMode === 'dashboard'
+                      ? 'bg-accentGold text-background font-bold border-accentGold'
+                      : 'bg-surface text-stone border-borderDark hover:text-parchment'
+                  }`}
+                >
+                  <Layers className="w-3.5 h-3.5" />
+                  <span>Bàn Chỉ Số & Kim Tự Tháp</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode('fullReport')}
+                  className={`px-3.5 py-1.5 text-xs font-mono border transition-colors flex items-center gap-1.5 ${
+                    viewMode === 'fullReport'
+                      ? 'bg-accentGold text-background font-bold border-accentGold'
+                      : 'bg-surface text-stone border-borderDark hover:text-parchment'
+                  }`}
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>Báo Cáo Toàn Diện 5 Phần (100% Miễn Phí)</span>
+                </button>
+              </div>
+
+              {viewMode === 'fullReport' ? (
+                <NumerologyFullReport
+                  result={result}
+                  lifePathVal={lifePathVal}
+                  expressionVal={expressionVal}
+                  soulUrgeVal={soulUrgeVal}
+                  personalityVal={personalityVal}
+                  maturityVal={maturityVal}
+                  personalYearVal={personalYearVal}
+                  birthDateStr={birthDateStr}
+                  fullNameStr={fullNameStr}
+                  lifePathInterp={lifePathInterp}
+                  personalYearInterp={personalYearInterp}
+                  onSelectItem={setSelectedItem}
+                />
+              ) : (
+                <>
+                  {/* 1. Core Numbers Grid */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between text-xs font-mono text-stone border-b border-borderDark pb-2">
                   <span className="text-parchment font-semibold">Bộ Sáu Chỉ Số Cốt Lõi</span>
                   <span className="text-accentGold text-[11px]">Nhấp xem chi tiết</span>
                 </div>
@@ -1049,10 +1099,12 @@ export default function NumerologyPage() {
                   ))}
                 </div>
               </div>
-            </div>
+            </>
           )}
         </div>
+      )}
       </div>
+    </div>
 
       {/* POPUP / MODAL: DETAILED NUMEROLOGY INTERPRETATION */}
       {selectedItem && (

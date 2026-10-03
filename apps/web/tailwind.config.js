@@ -31,6 +31,11 @@ module.exports = {
         '3xl': '8px',
         full: '4px', // Eliminate bloated pills, keep restrained geometry
       },
+      fontFamily: {
+        serif: ['Lora', 'Georgia', 'Cambria', 'serif'],
+        sans: ['"Be Vietnam Pro"', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+      },
     },
   },
   plugins: [],

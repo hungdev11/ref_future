@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { GlobalTermToggle } from './TermTag';
 
 export function Navbar() {
   const pathname = usePathname();
@@ -54,12 +55,9 @@ export function Navbar() {
           })}
         </nav>
 
-        {/* Free access status */}
-        <div className="flex items-center">
-          <div className="px-2.5 py-1 border border-borderLight text-stone text-[11px] tracking-wider uppercase flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-olive"></span>
-            <span>Miễn Phí • Không Đăng Ký</span>
-          </div>
+        {/* Right tools*/}
+        <div className="flex items-center gap-3">
+          <GlobalTermToggle />
         </div>
       </div>
     </header>

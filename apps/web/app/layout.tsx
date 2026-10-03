@@ -2,6 +2,7 @@ import React from 'react';
 import type { Metadata } from 'next';
 import './globals.css';
 import { Navbar } from '../components/Navbar';
+import { TerminologyProvider } from '@/lib/terminology-context';
 
 export const metadata: Metadata = {
   title: 'Mysticos — Khảo Cứu Vận Mệnh Cổ Điển & Đương Đại',
@@ -16,12 +17,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="vi" className="dark">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
       <body className="antialiased selection:bg-accentGold/20 selection:text-parchment bg-background text-parchment min-h-screen flex flex-col justify-between font-sans">
-        <div>
-          <Navbar />
-          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</main>
-        </div>
-        <footer className="mt-20 border-t border-borderDark py-10 text-center text-xs text-stone space-y-2">
+        <TerminologyProvider>
+          <div>
+            <Navbar />
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</main>
+          </div>
+          <footer className="mt-20 border-t border-borderDark py-10 text-center text-xs text-stone space-y-2">
           <div className="flex items-center justify-center gap-4 text-[11px] font-mono tracking-widest uppercase text-stone/80">
             <span>Thần Số Học</span>
             <span>•</span>
@@ -38,6 +44,7 @@ export default function RootLayout({
             Không thu phí, không yêu cầu đăng ký, hoàn toàn bảo mật và tôn trọng dữ liệu người dùng.
           </p>
         </footer>
+        </TerminologyProvider>
       </body>
     </html>
   );

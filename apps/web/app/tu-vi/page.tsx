@@ -6,6 +6,8 @@ import {
   HelpCircle,
   X,
   Compass,
+  Layers,
+  FileText,
 } from 'lucide-react';
 import {
   STEM_VN,
@@ -21,6 +23,8 @@ import {
   evaluateMenhCucRelation,
   STAR_DETAILED_READINGS,
 } from '@/lib/tuvi-interpretations';
+import { TuViFullReport } from './TuViFullReport';
+import { TermTag } from '@/components/TermTag';
 
 export default function TuViPage() {
   const [solarDate, setSolarDate] = useState('1990-11-29');
@@ -30,6 +34,9 @@ export default function TuViPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // View Mode: 'matrix' (interactive 4x4 chart) or 'fullReport' (comprehensive 14-section report)
+  const [viewMode, setViewMode] = useState<'matrix' | 'fullReport'>('matrix');
 
   // Modal State for clicked palace & Thien Ban
   const [selectedPalaceKey, setSelectedPalaceKey] = useState<string | null>(null);
@@ -269,8 +276,44 @@ export default function TuViPage() {
                   </div>
                 </div>
 
-                {/* 12 Palaces Matrix */}
-                <div className="space-y-3">
+                {/* View Mode Switcher */}
+                <div className="flex flex-wrap items-center gap-2 border-b border-borderDark pb-3">
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('matrix')}
+                    className={`px-3.5 py-1.5 text-xs font-mono border transition-colors flex items-center gap-1.5 ${
+                      viewMode === 'matrix'
+                        ? 'bg-accentGold text-background font-bold border-accentGold'
+                        : 'bg-surface text-stone border-borderDark hover:text-parchment'
+                    }`}
+                  >
+                    <Layers className="w-3.5 h-3.5" />
+                    <span>Bản Đồ 12 Cung & Thiên Bàn</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('fullReport')}
+                    className={`px-3.5 py-1.5 text-xs font-mono border transition-colors flex items-center gap-1.5 ${
+                      viewMode === 'fullReport'
+                        ? 'bg-accentGold text-background font-bold border-accentGold'
+                        : 'bg-surface text-stone border-borderDark hover:text-parchment'
+                    }`}
+                  >
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>Báo Cáo Luận Giải Toàn Diện (14 Mục Chuyên Sâu)</span>
+                  </button>
+                </div>
+
+                {viewMode === 'fullReport' ? (
+                  <TuViFullReport
+                    result={result}
+                    onSelectPalace={(pKey) => setSelectedPalaceKey(pKey)}
+                    onOpenThienBan={() => setShowThienBanModal(true)}
+                  />
+                ) : (
+                  <>
+                    {/* 12 Palaces Matrix */}
+                    <div className="space-y-3">
                   <div className="flex items-center justify-between text-xs font-mono text-stone border-b border-borderDark pb-2">
                     <span className="text-parchment font-semibold">Ma Trận 12 Cung Chức</span>
                     <span className="text-accentGold text-[11px]">Nhấp vào cung để mở luận giải</span>
@@ -400,7 +443,9 @@ export default function TuViPage() {
                     ))}
                   </div>
                 </div>
-              </div>
+              </>
+            )}
+          </div>
             );
           })()}
         </div>
