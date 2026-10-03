@@ -1,7 +1,20 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Cpu, Play, CheckCircle2, XCircle, AlertCircle, ShieldCheck, RefreshCw, Code2 } from 'lucide-react';
+import {
+  Cpu,
+  Play,
+  CheckCircle2,
+  XCircle,
+  AlertCircle,
+  ShieldCheck,
+  RefreshCw,
+  Code2,
+  Sparkles,
+  BarChart3,
+  Layers,
+  Scale,
+} from 'lucide-react';
 
 const SAMPLE_FACTS = {
   "astrology.planets.sun.sign": "LEO",
@@ -22,6 +35,7 @@ export default function RuleSimulatorPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'RULES' | 'PERSONALIZATION'>('RULES');
 
   const handleSimulate = async () => {
     setLoading(true);
@@ -54,11 +68,11 @@ export default function RuleSimulatorPage() {
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-purple-400 font-semibold text-sm">
           <Cpu className="w-4 h-4" />
-          <span>Rule Engine Simulator & Conflict Resolver</span>
+          <span>Rule Engine & Personalization Simulator</span>
         </div>
         <h1 className="text-3xl font-extrabold text-white">Trình Giả Lập & Kiểm Tra Quy Tắc (Admin Simulator)</h1>
-        <p className="text-sm text-gray-400 max-w-2xl">
-          Kiểm thử việc so khớp quy tắc (Rule Matching), tính điểm đặc thù (Specificity Scoring), và giải quyết xung đột (Conflict Resolution) trong môi trường an toàn trước khi kích hoạt trên hệ thống thực.
+        <p className="text-sm text-gray-400 max-w-3xl">
+          Kiểm thử việc so khớp quy tắc (Rule Matching), trích xuất bằng chứng (Evidence Extraction), tính toán thiên hướng (Trait Aggregation), tổng hợp mâu thuẫn nội tâm (Synthesis Engine), và kiểm toán chất lượng (Quality Control).
         </p>
       </div>
 
@@ -125,72 +139,170 @@ export default function RuleSimulatorPage() {
 
           {result && (
             <div className="space-y-6">
-              {/* Stat badges */}
-              <div className="grid grid-cols-3 gap-3">
-                <div className="p-4 rounded-xl bg-surface border border-borderDark text-center">
-                  <div className="text-xs text-gray-400">Tổng Đánh Giá</div>
-                  <div className="text-2xl font-bold text-white font-mono">{result.totalRulesEvaluated}</div>
-                </div>
-                <div className="p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/40 text-center">
-                  <div className="text-xs text-emerald-400 font-semibold">Khớp (Matched)</div>
-                  <div className="text-2xl font-bold text-emerald-300 font-mono">{result.matchedCount}</div>
-                </div>
-                <div className="p-4 rounded-xl bg-gray-900/50 border border-borderDark text-center">
-                  <div className="text-xs text-gray-400">Bỏ Qua (Skipped)</div>
-                  <div className="text-2xl font-bold text-gray-400 font-mono">{result.skippedCount}</div>
-                </div>
+              {/* Tab Selector */}
+              <div className="flex items-center gap-2 p-1.5 rounded-xl bg-surface border border-borderDark text-xs font-semibold">
+                <button
+                  onClick={() => setActiveTab('RULES')}
+                  className={`flex-1 py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-colors ${
+                    activeTab === 'RULES'
+                      ? 'bg-purple-600 text-white shadow-sm'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <Layers className="w-4 h-4" />
+                  <span>Quy Tắc & Traces ({result.matchedCount})</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('PERSONALIZATION')}
+                  className={`flex-1 py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-colors ${
+                    activeTab === 'PERSONALIZATION'
+                      ? 'bg-accentGold text-background font-bold shadow-sm'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <BarChart3 className="w-4 h-4" />
+                  <span>Cá Nhân Hóa & Bằng Chứng</span>
+                </button>
               </div>
 
-              {/* Matched Rules List */}
-              <div className="p-5 rounded-2xl bg-surface border border-borderDark space-y-4">
-                <h3 className="text-sm font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>Quy Tắc Đã Kích Hoạt ({result.matchedRules.length})</span>
-                </h3>
+              {activeTab === 'RULES' && (
+                <div className="space-y-6 animate-fadeIn">
+                  {/* Stat badges */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="p-4 rounded-xl bg-surface border border-borderDark text-center">
+                      <div className="text-xs text-gray-400">Tổng Đánh Giá</div>
+                      <div className="text-2xl font-bold text-white font-mono">{result.totalRulesEvaluated}</div>
+                    </div>
+                    <div className="p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/40 text-center">
+                      <div className="text-xs text-emerald-400 font-semibold">Khớp (Matched)</div>
+                      <div className="text-2xl font-bold text-emerald-300 font-mono">{result.matchedCount}</div>
+                    </div>
+                    <div className="p-4 rounded-xl bg-gray-900/50 border border-borderDark text-center">
+                      <div className="text-xs text-gray-400">Bỏ Qua (Skipped)</div>
+                      <div className="text-2xl font-bold text-gray-400 font-mono">{result.skippedCount}</div>
+                    </div>
+                  </div>
 
-                <div className="space-y-3">
-                  {result.matchedRules.map((r: any) => (
-                    <div key={r.ruleCode} className="p-3.5 rounded-xl bg-background/60 border border-emerald-500/30 space-y-2 text-xs">
-                      <div className="flex items-center justify-between">
-                        <span className="font-mono font-bold text-emerald-400">{r.ruleCode}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="px-2 py-0.5 rounded bg-surface border border-borderDark text-gray-300 font-mono text-[11px]">
-                            Priority: {r.priority}
-                          </span>
-                          <span className="px-2 py-0.5 rounded bg-purple-950/60 border border-purple-500/40 text-purple-300 font-mono text-[11px]">
-                            Specificity: {r.specificity}
-                          </span>
+                  {/* Matched Rules List */}
+                  <div className="p-5 rounded-2xl bg-surface border border-borderDark space-y-4">
+                    <h3 className="text-sm font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>Quy Tắc Đã Kích Hoạt ({result.matchedRules.length})</span>
+                    </h3>
+
+                    <div className="space-y-3">
+                      {result.matchedRules.map((r: any) => (
+                        <div key={r.ruleCode} className="p-3.5 rounded-xl bg-background/60 border border-emerald-500/30 space-y-2 text-xs">
+                          <div className="flex items-center justify-between">
+                            <span className="font-mono font-bold text-emerald-400">{r.ruleCode}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="px-2 py-0.5 rounded bg-surface border border-borderDark text-gray-300 font-mono text-[11px]">
+                                Priority: {r.priority}
+                              </span>
+                              <span className="px-2 py-0.5 rounded bg-purple-950/60 border border-purple-500/40 text-purple-300 font-mono text-[11px]">
+                                Specificity: {r.specificity}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="text-gray-400">
+                            Target Interpretation: <span className="text-accentGold font-mono">{r.targetInterpretationId}</span> ({r.domain})
+                          </div>
                         </div>
-                      </div>
-                      <div className="text-gray-400">
-                        Target Interpretation: <span className="text-accentGold font-mono">{r.targetInterpretationId}</span> ({r.domain})
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Skipped Rules List */}
+                  <div className="p-5 rounded-2xl bg-surface border border-borderDark space-y-4">
+                    <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                      <XCircle className="w-4 h-4 text-gray-500" />
+                      <span>Quy Tắc Bị Bỏ Qua ({result.skippedRules.length})</span>
+                    </h3>
+
+                    <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
+                      {result.skippedRules.map((s: any) => (
+                        <div key={s.ruleCode} className="p-3 rounded-xl bg-background/40 border border-borderDark/60 space-y-1 text-xs">
+                          <div className="flex items-center justify-between">
+                            <span className="font-mono text-gray-300">{s.ruleCode}</span>
+                            <span className="text-[10px] text-gray-500 font-mono">P: {s.priority} | S: {s.specificity}</span>
+                          </div>
+                          <div className="text-gray-500 text-[11px]">
+                            Lý do: <span className="text-gray-400">{s.reason}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'PERSONALIZATION' && result.personalization && (
+                <div className="space-y-6 animate-fadeIn">
+                  {/* Quality Audit Score Badge */}
+                  <div className="p-4 rounded-xl bg-surface border border-accentGold/40 flex items-center justify-between">
+                    <div>
+                      <div className="text-xs text-gray-400">Điểm Đảm Bảo Chất Lượng (QC Score)</div>
+                      <div className="text-2xl font-bold text-accentGold font-mono">
+                        {result.personalization.qualityAudit?.qualityScore ?? 100} / 100
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Skipped Rules List */}
-              <div className="p-5 rounded-2xl bg-surface border border-borderDark space-y-4">
-                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                  <XCircle className="w-4 h-4 text-gray-500" />
-                  <span>Quy Tắc Bị Bỏ Qua ({result.skippedRules.length})</span>
-                </h3>
-
-                <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
-                  {result.skippedRules.map((s: any) => (
-                    <div key={s.ruleCode} className="p-3 rounded-xl bg-background/40 border border-borderDark/60 space-y-1 text-xs">
-                      <div className="flex items-center justify-between">
-                        <span className="font-mono text-gray-300">{s.ruleCode}</span>
-                        <span className="text-[10px] text-gray-500 font-mono">P: {s.priority} | S: {s.specificity}</span>
-                      </div>
-                      <div className="text-gray-500 text-[11px]">
-                        Lý do: <span className="text-gray-400">{s.reason}</span>
-                      </div>
+                    <div className="text-right text-xs">
+                      <span className="px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-500/40 font-semibold">
+                        Độ Phủ Nguồn Gốc: {result.personalization.qualityAudit?.provenanceCoverage ?? 100}%
+                      </span>
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Calculated Traits */}
+                  <div className="p-5 rounded-2xl bg-surface border border-borderDark space-y-3">
+                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                      <BarChart3 className="w-4 h-4 text-accentGold" />
+                      <span>Điểm Thiên Hướng Tính Cách ({result.personalization.traitScores?.length ?? 0})</span>
+                    </h3>
+                    <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                      {result.personalization.traitScores?.map((ts: any) => (
+                        <div key={ts.trait} className="p-2.5 rounded-xl bg-background/60 border border-borderDark/60 text-xs flex items-center justify-between">
+                          <div>
+                            <span className="font-bold text-gray-200">{ts.trait}</span>
+                            <span className="text-[10px] text-gray-500 ml-2 uppercase">({ts.domain})</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className="font-mono text-accentGold font-semibold">
+                              {Math.round(ts.normalizedScore * 100)}%
+                            </span>
+                            <span className="px-2 py-0.5 rounded text-[10px] bg-surface border border-borderDark text-purple-300">
+                              {ts.level}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Active Syntheses & Contradictions */}
+                  <div className="p-5 rounded-2xl bg-surface border border-borderDark space-y-3">
+                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                      <Scale className="w-4 h-4 text-indigo-400" />
+                      <span>Xung Đột Đã Dung Hòa (Syntheses) ({result.personalization.syntheses?.length ?? 0})</span>
+                    </h3>
+                    {result.personalization.syntheses?.length === 0 ? (
+                      <p className="text-xs text-gray-500 italic">Không có xung đột tính cách đối lập vượt ngưỡng.</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {result.personalization.syntheses.map((syn: any) => (
+                          <div key={syn.contradictionId} className="p-3 rounded-xl bg-indigo-950/20 border border-indigo-500/30 text-xs space-y-1">
+                            <div className="font-semibold text-indigo-300">{syn.synthesisTitle}</div>
+                            <div className="text-[11px] text-gray-400">{syn.synthesisDescription}</div>
+                            <div className="text-[11px] text-emerald-300/90 pt-1">
+                              <strong>Hành động:</strong> {syn.advice}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
         </div>

@@ -1,3 +1,5 @@
+import { TraitScore, TraitProfile, ContradictionItem, EvidenceItem } from './rules.js';
+
 export enum ReadingDomain {
   OVERVIEW = 'OVERVIEW',
   STRENGTHS = 'STRENGTHS',
@@ -7,6 +9,17 @@ export enum ReadingDomain {
   FINANCE = 'FINANCE',
   SOCIAL = 'SOCIAL',
   REFLECTION = 'REFLECTION',
+}
+
+export interface ParagraphProvenance {
+  paragraphId: string;
+  interpretationId: string;
+  theme: string;
+  evidenceIds: string[];
+  sourceRuleCodes: string[];
+  canonicalFactKeys: string[];
+  intensity: 'HIGH' | 'MEDIUM' | 'MODERATE' | 'CAUTIOUS';
+  explanationWhy?: string;
 }
 
 export interface ReadingSectionData {
@@ -22,6 +35,7 @@ export interface ReadingSectionData {
   explanation?: string;
   sourceReference?: string;
   laymanSummary?: string;
+  provenanceTraces?: ParagraphProvenance[];
 }
 
 export interface ConditionEvaluationTrace {
@@ -52,5 +66,11 @@ export interface ReadingOutput {
   degradationWarnings: string[];
   sections: ReadingSectionData[];
   ruleTraces: RuleEvaluationTrace[];
+  traitScores?: TraitScore[];
+  traitProfile?: TraitProfile;
+  activeSyntheses?: ContradictionItem[];
+  evidenceItems?: EvidenceItem[];
+  qualityScore?: number;
   createdAt: string;
 }
+
