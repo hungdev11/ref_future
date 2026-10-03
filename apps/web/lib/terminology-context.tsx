@@ -287,7 +287,7 @@ export function TerminologyProvider({ children }: { children: React.ReactNode })
             <div className="space-y-3 text-xs leading-relaxed text-stone">
               <div className="p-3 bg-background border border-borderDark space-y-1">
                 <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
-                  Giải Thích Bình Dân (Người Mới Cần Biết)
+                  Giải Thích
                 </span>
                 <p className="text-parchment">{activeTerm.simpleExplanation}</p>
               </div>

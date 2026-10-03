@@ -38,10 +38,7 @@ export default function RootLayout({
             <span>Tarot Cổ Điển</span>
           </div>
           <p className="text-stone">
-            © 2026 Mysticos. Nền tảng khảo cứu và giải mã dữ liệu cá nhân theo nguyên lý cổ điển.
-          </p>
-          <p className="text-[11px] text-stone/60">
-            Không thu phí, không yêu cầu đăng ký, hoàn toàn bảo mật và tôn trọng dữ liệu người dùng.
+            © 2026 Mysticos. Tôn trọng và cổ điển.
           </p>
         </footer>
         </TerminologyProvider>
