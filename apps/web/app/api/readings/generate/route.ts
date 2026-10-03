@@ -14,11 +14,17 @@ export async function POST(request: Request) {
       degradationWarnings,
     } = body;
 
+    // Tự động suy luận độ sâu phù hợp nhất dựa trên mức độ dữ liệu và tính khả dụng
+    let resolvedDepth = depth;
+    if (!resolvedDepth) {
+      resolvedDepth = isDegraded ? 'MEDIUM' : 'DETAILED';
+    }
+
     const result = ReadingResultComposer.compose({
       readingType: readingType ?? 'COMPREHENSIVE_READING',
       dotNotatedFacts: dotNotatedFacts ?? {},
       inputSnapshot: inputSnapshot ?? {},
-      depth: depth ?? 'DETAILED',
+      depth: resolvedDepth,
       seed: seed ?? undefined,
       isDegraded: isDegraded ?? false,
       degradationWarnings: degradationWarnings ?? [],

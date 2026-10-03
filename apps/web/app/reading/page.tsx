@@ -7,20 +7,14 @@ import {
   ShieldCheck,
   AlertTriangle,
   RefreshCw,
-  Search,
-  BookOpen,
   Compass,
   Moon,
   Hash,
+  BookOpen,
   X,
-  CheckCircle2,
-  Code2,
-  Database,
-  ArrowRight,
   Info,
   BarChart3,
   Scale,
-  Brain,
   Zap,
 } from 'lucide-react';
 
@@ -33,16 +27,13 @@ export default function ComprehensiveReadingPage() {
   const [latitude, setLatitude] = useState(21.0285);
   const [longitude, setLongitude] = useState(105.8542);
   const [timezoneOffset, setTimezoneOffset] = useState(420);
-  const [depth, setDepth] = useState<'SHORT' | 'MEDIUM' | 'DETAILED' | 'DEEP'>('DETAILED');
 
   const [loading, setLoading] = useState(false);
   const [readingResult, setReadingResult] = useState<any>(null);
   const [calcFacts, setCalcFacts] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Inspector modal state
-  const [selectedSection, setSelectedSection] = useState<any>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // Section popup modal state
   const [activeSectionModal, setActiveSectionModal] = useState<any>(null);
 
   const handleGenerate = async (e: React.FormEvent) => {
@@ -96,11 +87,11 @@ export default function ComprehensiveReadingPage() {
         }).then((r) => r.json());
       } else {
         degradationWarnings.push(
-          'Thiếu giờ sinh chính xác: Các cung Tử Vi và Cung Mệnh không được tính toán để đảm bảo tính chuẩn xác.'
+          'Thiếu giờ sinh chính xác: Cung Mệnh và 12 cung Tử Vi được lược bỏ để đảm bảo độ tin cậy tuyệt đối.'
         );
       }
 
-      // 4. Run Tarot Draw (Daily Guidance 1 card with deterministic seed)
+      // 4. Run Tarot Draw
       const tarotSeed = `seed_${fullName}_${birthDate}`;
       const tarotRes = await fetch('/api/tarot/draw', {
         method: 'POST',
@@ -111,7 +102,6 @@ export default function ComprehensiveReadingPage() {
         }),
       }).then((r) => r.json());
 
-      // Extract Tarot dynamic name & orientation
       const drawnCard = tarotRes.facts?.positions?.[0];
       const cardName = drawnCard?.card?.name ?? 'The Fool';
       const cardOrientation = drawnCard?.isReversed ? 'Ngược (Reversed)' : 'Xuôi (Upright)';
@@ -139,6 +129,13 @@ export default function ComprehensiveReadingPage() {
         aggregatedFacts,
       });
 
+      // Tự động suy luận độ sâu phù hợp nhất dựa trên mức độ đầy đủ của thông tin
+      const inferredDepth = isTimeUnknown
+        ? 'MEDIUM'
+        : Boolean(latitude && longitude && birthTime)
+        ? 'DEEP'
+        : 'DETAILED';
+
       // 6. Generate Reading via Interpretation Engine
       const readingRes = await fetch('/api/readings/generate', {
         method: 'POST',
@@ -153,7 +150,7 @@ export default function ComprehensiveReadingPage() {
             gender,
             isTimeUnknown,
           },
-          depth,
+          depth: inferredDepth,
           isDegraded: isTimeUnknown || astroRes.isDegraded,
           degradationWarnings: [
             ...(astroRes.degradationReasons ?? []),
@@ -171,23 +168,18 @@ export default function ComprehensiveReadingPage() {
     }
   };
 
-  const openInspector = (section: any) => {
-    setSelectedSection(section);
-    setIsModalOpen(true);
-  };
-
   return (
     <div className="space-y-8">
       {/* Header */}
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-accentGold font-semibold text-sm">
           <Sparkles className="w-4 h-4" />
-          <span>Multi-Engine Synthesized Reading • 100% Deterministic Rule Engine</span>
+          <span>Luận Giải Vận Mệnh Cá Nhân Hóa Đa Phương Pháp</span>
         </div>
-        <h1 className="text-3xl font-extrabold text-white">Báo Cáo Luận Giải Toàn Diện Đa Hệ Thống</h1>
+        <h1 className="text-3xl font-extrabold text-white">Báo Cáo Tổng Hợp Vận Mệnh Toàn Diện</h1>
         <p className="text-sm text-gray-400 max-w-3xl">
-          Tích hợp 4 trụ cột: Chiêm Tinh Tây Phương, Tử Vi Đẩu Số, Thần Số Học Pythagoras và Tarot. Mọi câu chữ đều được
-          tổng hợp từ Rule Engine chuẩn mực, bóc tách thiên hướng tính cách, giải quyết mâu thuẫn nội tâm và minh giải nguồn gốc (Traceability) 100%.
+          Tổng hợp tinh hoa 4 môn phái: Chiêm Tinh Tây Phương, Tử Vi Đẩu Số, Thần Số Học và Tarot.
+          Mỗi thông điệp được cá nhân hóa riêng biệt cho lá số của bạn với ngôn từ mạch lạc, dễ hiểu và thực tế.
         </p>
       </div>
 
@@ -224,8 +216,8 @@ export default function ComprehensiveReadingPage() {
                 onChange={(e) => setGender(e.target.value as any)}
                 className="w-full px-3 py-2 rounded-xl bg-background border border-borderDark text-white text-sm focus:outline-none focus:border-accentGold"
               >
-                <option value="MALE">Nam (Dương Nam / Âm Nam)</option>
-                <option value="FEMALE">Nữ (Âm Nữ / Dương Nữ)</option>
+                <option value="MALE">Nam</option>
+                <option value="FEMALE">Nữ</option>
               </select>
             </div>
           </div>
@@ -290,33 +282,6 @@ export default function ComprehensiveReadingPage() {
             </div>
           </div>
 
-          {/* Depth Selector */}
-          <div className="pt-2 border-t border-borderDark/60 space-y-2">
-            <label className="block text-xs font-semibold text-gray-300">Độ Sâu Luận Giải (Reading Depth)</label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {[
-                { id: 'SHORT', label: 'Tóm Tắt', desc: '4 phần cốt lõi nhanh' },
-                { id: 'MEDIUM', label: 'Cân Bằng', desc: '6 phần bao quát' },
-                { id: 'DETAILED', label: 'Toàn Diện', desc: '8 phần + mâu thuẫn' },
-                { id: 'DEEP', label: 'Chuyên Sâu', desc: 'Toàn bộ trace & đa chiều' },
-              ].map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setDepth(item.id as any)}
-                  className={`p-3 rounded-xl border text-left transition-all ${
-                    depth === item.id
-                      ? 'bg-accentGold/10 border-accentGold text-accentGold'
-                      : 'bg-background/60 border-borderDark text-gray-400 hover:text-white hover:border-gray-600'
-                  }`}
-                >
-                  <div className="text-xs font-bold">{item.label}</div>
-                  <div className="text-[10px] text-gray-400">{item.desc}</div>
-                </button>
-              ))}
-            </div>
-          </div>
-
           <div className="flex justify-center pt-2">
             <button
               type="submit"
@@ -326,12 +291,12 @@ export default function ComprehensiveReadingPage() {
               {loading ? (
                 <>
                   <RefreshCw className="w-5 h-5 animate-spin" />
-                  Đang khởi chạy 4 Engines & Tổng Hợp Quy Tắc...
+                  Đang khởi tạo báo cáo đa hệ thống...
                 </>
               ) : (
                 <>
                   <Sparkles className="w-5 h-5" />
-                  Khởi Tạo Báo Cáo Luận Giải Toàn Diện
+                  Xem Luận Giải Chi Tiết Cho Tôi
                 </>
               )}
             </button>
@@ -354,19 +319,11 @@ export default function ComprehensiveReadingPage() {
             <div className="p-4 rounded-2xl bg-amber-950/40 border border-amber-500/40 text-amber-200 text-xs space-y-1.5">
               <div className="flex items-center gap-2 font-bold text-amber-400 text-sm">
                 <AlertTriangle className="w-4 h-4" />
-                Báo cáo ở Chế Độ Thoái Hóa An Toàn (Degraded Mode)
+                Lưu ý: Báo cáo vận hành theo chế độ bảo vệ dữ liệu (Không có giờ sinh)
               </div>
               <p className="text-amber-300/90 leading-relaxed">
-                Do không có giờ sinh chính xác, hệ thống chỉ kích hoạt các quy tắc dựa trên vị trí hành tinh, thần số học
-                và bài Tarot. Ascendant, hệ thống nhà và lá số Tử Vi được loại trừ để không đưa ra suy diễn tùy tiện.
+                Hệ thống chỉ tổng hợp các yếu tố ngày sinh độc lập (Hành tinh, Thần số học và Bài Tarot). Cung Mọc và Lá số Tử Vi được ẩn đi để không tạo ra các luận giải sai lệch.
               </p>
-              {readingResult.degradationWarnings?.length > 0 && (
-                <ul className="list-disc list-inside text-amber-400/80 pt-1 space-y-0.5 pl-1">
-                  {readingResult.degradationWarnings.map((w: string, idx: number) => (
-                    <li key={idx}>{w}</li>
-                  ))}
-                </ul>
-              )}
             </div>
           )}
 
@@ -376,11 +333,11 @@ export default function ComprehensiveReadingPage() {
               <div className="flex items-center gap-4 flex-wrap text-xs">
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300">
                   <Compass className="w-3.5 h-3.5" />
-                  <span>Mặt Trời (Sun): <strong>{calcFacts.astrology?.facts?.bodies?.SUN?.sign ?? calcFacts.astrology?.facts?.bodies?.sun?.sign ?? '—'}</strong></span>
+                  <span>Mặt Trời: <strong>{calcFacts.astrology?.facts?.bodies?.SUN?.sign ?? calcFacts.astrology?.facts?.bodies?.sun?.sign ?? '—'}</strong></span>
                 </div>
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-300">
                   <Moon className="w-3.5 h-3.5" />
-                  <span>Mặt Trăng (Moon): <strong>{calcFacts.astrology?.facts?.bodies?.MOON?.sign ?? calcFacts.astrology?.facts?.bodies?.moon?.sign ?? '—'}</strong></span>
+                  <span>Mặt Trăng: <strong>{calcFacts.astrology?.facts?.bodies?.MOON?.sign ?? calcFacts.astrology?.facts?.bodies?.moon?.sign ?? '—'}</strong></span>
                 </div>
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300">
                   <Hash className="w-3.5 h-3.5" />
@@ -388,18 +345,13 @@ export default function ComprehensiveReadingPage() {
                 </div>
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300">
                   <BookOpen className="w-3.5 h-3.5" />
-                  <span>Lá Bài Tarot: <strong>{calcFacts.tarot?.facts?.positions?.[0]?.card?.name ?? '—'}</strong></span>
+                  <span>Lá Bài Duyên Khởi: <strong>{calcFacts.tarot?.facts?.positions?.[0]?.card?.name ?? '—'}</strong></span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 text-xs">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>100% Deterministic</span>
-                </div>
-                <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-purple-950/40 border border-purple-500/30 text-purple-300 text-xs font-mono">
-                  <span>QC: {readingResult.qualityScore ?? 100}/100</span>
-                </div>
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 text-xs">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Cá nhân hóa chuẩn xác</span>
               </div>
             </div>
           )}
@@ -410,10 +362,10 @@ export default function ComprehensiveReadingPage() {
               <div className="flex items-center justify-between border-b border-borderDark/60 pb-3">
                 <div className="flex items-center gap-2 text-white font-bold text-base">
                   <BarChart3 className="w-5 h-5 text-accentGold" />
-                  <span>Hồ Sơ Năng Lượng & Thiên Hướng Tính Cách Cá Nhân Hóa</span>
+                  <span>Biểu Đồ Năng Lượng & Thiên Hướng Tính Cách Nổi Bật</span>
                 </div>
                 <span className="text-xs text-gray-400">
-                  Được tổng hợp từ {readingResult.evidenceItems?.length ?? 0} bằng chứng định lượng
+                  Điểm số tổng hợp từ lá số thực tế của bạn
                 </span>
               </div>
 
@@ -456,7 +408,7 @@ export default function ComprehensiveReadingPage() {
                       </div>
 
                       <div className="flex items-center justify-between text-[11px] text-gray-400">
-                        <span className="capitalize">Miền: {ts.domain}</span>
+                        <span className="capitalize">Phương diện: {ts.domain}</span>
                         <span className="font-mono font-semibold text-white">{pct}%</span>
                       </div>
                     </div>
@@ -471,10 +423,10 @@ export default function ComprehensiveReadingPage() {
             <div className="p-6 rounded-2xl bg-gradient-to-br from-indigo-950/30 via-surface to-surface border border-indigo-500/30 space-y-4">
               <div className="flex items-center gap-2 text-indigo-300 font-bold text-base">
                 <Scale className="w-5 h-5 text-indigo-400" />
-                <span>Nghịch Lý Nội Tâm & Điểm Giằng Xé Độc Bản (Synthesis Engine)</span>
+                <span>Nghịch Lý Nội Tâm & Chìa Khóa Cân Bằng Của Riêng Bạn</span>
               </div>
               <p className="text-xs text-gray-300 leading-relaxed">
-                Hệ thống nhận diện những nét tính cách đối lập song song tồn tại trong bạn. Đây không phải khuyết điểm, mà là chìa khóa mở rộng dung lượng nội tâm khi bạn biết cách chuyển hóa.
+                Những nét tính cách tưởng chừng đối lập song song tồn tại trong con người bạn. Thấu hiểu điều này giúp bạn làm chủ cảm xúc và đưa ra quyết định sáng suốt hơn.
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
@@ -491,7 +443,7 @@ export default function ComprehensiveReadingPage() {
                       {syn.synthesisDescription}
                     </p>
                     <div className="p-2.5 rounded-lg bg-emerald-950/30 border border-emerald-500/30 text-[11px] text-emerald-200">
-                      <strong>💡 Chìa khóa dung hòa:</strong> {syn.advice}
+                      <strong>💡 Lời khuyên chuyển hóa:</strong> {syn.advice}
                     </div>
                   </div>
                 ))}
@@ -504,17 +456,17 @@ export default function ComprehensiveReadingPage() {
             <div className="flex items-center justify-between border-b border-borderDark pb-4">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
                 <FileText className="w-5 h-5 text-accentGold" />
-                Các Mục Luận Giải Chuẩn Mực Chi Tiết
+                Các Mục Luận Giải Toàn Diện
               </h2>
-              <span className="text-xs text-gray-400 font-mono">
-                {readingResult.sections.length} khối nội dung kích hoạt
+              <span className="text-xs text-gray-400">
+                Nhấn vào từng mục bên dưới để đọc toàn văn luận giải
               </span>
             </div>
 
             {readingResult.sections.length === 0 ? (
               <div className="p-8 rounded-2xl bg-surface text-center space-y-2 text-gray-400">
                 <Info className="w-8 h-8 mx-auto text-gray-500" />
-                <p>Không có quy tắc nào khớp với tập dữ liệu hiện tại.</p>
+                <p>Không có nội dung luận giải phù hợp với thông tin đã nhập.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -529,8 +481,8 @@ export default function ComprehensiveReadingPage() {
                         <span className="px-2.5 py-0.5 rounded-md bg-accentGold/10 border border-accentGold/30 text-accentGold text-[11px] font-bold uppercase tracking-wider">
                           {section.domain}
                         </span>
-                        <span className="text-[11px] text-gray-500 font-mono">
-                          Mục #{section.sectionOrder}
+                        <span className="text-[11px] text-gray-500">
+                          Phần #{section.sectionOrder}
                         </span>
                       </div>
 
@@ -538,26 +490,17 @@ export default function ComprehensiveReadingPage() {
                         {section.title}
                       </h3>
 
-                      <p className="text-xs text-gray-300 leading-relaxed line-clamp-3">
-                        {section.laymanSummary ?? section.renderedText}
+                      {/* Outside Card: Clean, concise 1-2 sentence preview only */}
+                      <p className="text-xs text-gray-300 leading-relaxed line-clamp-2">
+                        {section.laymanSummary ?? section.renderedText.split('.')[0] + '.'}
                       </p>
                     </div>
 
-                    <div className="pt-2 border-t border-borderDark/40 flex items-center justify-between">
-                      <span className="text-xs text-accentGold font-semibold flex items-center gap-1">
+                    <div className="pt-3 border-t border-borderDark/40 flex items-center justify-between">
+                      <span className="text-xs text-accentGold font-semibold flex items-center gap-1.5 group-hover:translate-x-1 transition-transform">
                         <Sparkles className="w-3.5 h-3.5" />
-                        Mở Luận Giải Chi Tiết →
+                        Đọc toàn bộ luận giải chi tiết →
                       </span>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openInspector(section);
-                        }}
-                        className="px-2.5 py-1 rounded-lg bg-surfaceHover border border-borderDark text-[11px] text-gray-300 hover:text-accentGold hover:border-accentGold/50 flex items-center gap-1 transition-colors"
-                      >
-                        <Search className="w-3 h-3 text-accentGold" /> Vì sao luận vậy?
-                      </button>
                     </div>
                   </div>
                 ))}
@@ -589,188 +532,31 @@ export default function ComprehensiveReadingPage() {
             </div>
 
             <div className="space-y-5">
-              {/* Full Personalized Text */}
-              <p className="text-sm text-gray-200 leading-relaxed whitespace-pre-line">
+              {/* Full Personalized Narrative Text (NO duplicate layman box here!) */}
+              <div className="text-sm text-gray-200 leading-relaxed whitespace-pre-line space-y-3">
                 {activeSectionModal.renderedText}
-              </p>
+              </div>
 
-              {/* Layman Summary */}
-              {activeSectionModal.laymanSummary && (
-                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-1.5">
-                  <div className="font-semibold text-amber-300 flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>Ý Nghĩa Thực Tế Cho Bạn (Dành Cho Người Không Chuyên)</span>
-                  </div>
-                  <p className="text-gray-200 leading-relaxed pl-5">{activeSectionModal.laymanSummary}</p>
-                </div>
-              )}
-
-              {/* Mechanism */}
-              {activeSectionModal.explanation && (
-                <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-xs space-y-1.5">
-                  <div className="font-semibold text-indigo-300 flex items-center gap-1.5">
-                    <Compass className="w-4 h-4 text-indigo-400 shrink-0" />
-                    <span>Bản Chất & Cơ Chế Vận Hành</span>
-                  </div>
-                  <p className="text-gray-300 leading-relaxed pl-5">{activeSectionModal.explanation}</p>
-                </div>
-              )}
-
-              {/* Actionable Advice */}
+              {/* Actionable Advice (Practical takeaway for layman) */}
               {activeSectionModal.actionableAdvice && (
                 <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs space-y-1.5">
                   <div className="font-semibold text-emerald-300 flex items-center gap-1.5">
                     <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span>Gợi Ý Hành Động Thực Tiễn</span>
+                    <span>Lời Khuyên Thực Tiễn Dành Cho Bạn</span>
                   </div>
                   <p className="text-emerald-100 leading-relaxed pl-5">{activeSectionModal.actionableAdvice}</p>
                 </div>
               )}
 
-              <div className="pt-2 flex items-center justify-between border-t border-borderDark/60">
-                <button
-                  type="button"
-                  onClick={() => {
-                    openInspector(activeSectionModal);
-                    setActiveSectionModal(null);
-                  }}
-                  className="text-xs text-accentGold hover:underline flex items-center gap-1.5"
-                >
-                  <Search className="w-3.5 h-3.5" />
-                  🔍 Vì sao hệ thống luận như vậy? (Traceability)
-                </button>
-
+              <div className="pt-2 flex justify-end border-t border-borderDark/60">
                 <button
                   type="button"
                   onClick={() => setActiveSectionModal(null)}
-                  className="px-6 py-2.5 rounded-xl bg-accentGold text-background font-bold text-xs hover:opacity-90"
+                  className="px-6 py-2.5 rounded-xl bg-accentGold text-background font-bold text-xs hover:opacity-90 transition-opacity"
                 >
                   Đã Hiểu & Đóng Lại
                 </button>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* "Why this result?" Inspector Modal */}
-      {isModalOpen && selectedSection && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-fadeIn">
-          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-surface border-2 border-accentGold/50 shadow-2xl p-6 space-y-6">
-            <div className="flex items-center justify-between border-b border-borderDark pb-4">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-accentGold/20 border border-accentGold/40 flex items-center justify-center text-accentGold">
-                  <Database className="w-4 h-4" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-white">Vì Sao Hệ Thống Luận Như Vậy? (Traceability)</h3>
-                  <p className="text-xs text-gray-400">Minh giải chuỗi logic toán học và dữ kiện thực tế</p>
-                </div>
-              </div>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-surfaceHover transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="space-y-4 text-xs">
-              {/* Provenance trace explanation if available */}
-              {selectedSection.provenanceTraces && selectedSection.provenanceTraces.length > 0 && (
-                <div className="p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/30 space-y-2">
-                  <div className="font-semibold text-emerald-300 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>Nguồn Gốc Đoạn Văn & Lý Do Kích Hoạt</span>
-                  </div>
-                  <p className="text-gray-200 leading-relaxed">
-                    {selectedSection.provenanceTraces[0].explanationWhy}
-                  </p>
-                  <div className="text-[11px] text-gray-400 font-mono pt-1">
-                    Cường độ xác lập (Intensity):{' '}
-                    <span className="text-accentGold font-bold">
-                      {selectedSection.provenanceTraces[0].intensity}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {/* Rule Identifiers */}
-              <div className="p-4 rounded-xl bg-background/60 border border-borderDark space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Quy Tắc Đã Khớp (Matched Rule):</span>
-                  <span className="font-mono font-bold text-accentGold">{selectedSection.sourceRuleCode}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Mã Luận Giải (Interpretation ID):</span>
-                  <span className="font-mono text-purple-300">{selectedSection.interpretationId}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Lĩnh Vực (Domain):</span>
-                  <span className="font-semibold text-white uppercase">{selectedSection.domain}</span>
-                </div>
-              </div>
-
-              {/* Matched Trace info if found */}
-              {readingResult?.ruleTraces && (
-                <div className="space-y-3">
-                  <h4 className="font-semibold text-white uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>Điều Kiện AST Đã Thỏa Mãn Trong Dữ Liệu Của Bạn</span>
-                  </h4>
-
-                  {(() => {
-                    const trace = readingResult.ruleTraces.find(
-                      (t: any) => t.ruleCode === selectedSection.sourceRuleCode
-                    );
-                    if (!trace || !trace.conditionsEvaluated) {
-                      return <p className="text-gray-500">Quy tắc khớp theo cấu trúc cơ sở hoặc tổng hợp đa chiều.</p>;
-                    }
-                    return (
-                      <div className="space-y-2">
-                        {trace.conditionsEvaluated.map((cond: any, idx: number) => (
-                          <div
-                            key={idx}
-                            className="p-3 rounded-xl bg-surfaceHover border border-borderDark space-y-1 font-mono text-[11px]"
-                          >
-                            <div className="flex items-center justify-between">
-                              <span className="text-emerald-400">{cond.field}</span>
-                              <span className="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-500/30 text-[10px]">
-                                {cond.matched ? 'MATCHED' : 'UNMET'}
-                              </span>
-                            </div>
-                            <div className="text-gray-400">
-                              Toán tử: <span className="text-white">{cond.operator}</span> | Kỳ vọng: <span className="text-accentGold">{JSON.stringify(cond.expectedValue)}</span>
-                            </div>
-                            <div className="text-gray-400">
-                              Giá trị thực tế trong hồ sơ của bạn: <span className="text-accentGold font-bold">{JSON.stringify(cond.actualValue)}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    );
-                  })()}
-                </div>
-              )}
-
-              {/* Engine & Integrity Metadata */}
-              <div className="p-4 rounded-xl bg-background/60 border border-borderDark space-y-1.5 text-[11px] font-mono text-gray-400">
-                <div className="text-gray-300 font-semibold mb-1">Tính Toàn Vẹn & Kiểm Toán (Auditing):</div>
-                <div>Engine Version: <span className="text-white">{readingResult?.engineVersion}</span></div>
-                <div>Ruleset Version: <span className="text-white">{readingResult?.rulesetVersion}</span></div>
-                <div>Input SHA-256: <span className="text-accentGold">{readingResult?.inputHash}</span></div>
-                <div>Chỉ số kiểm toán chất lượng: <span className="text-emerald-400 font-bold">{readingResult?.qualityScore ?? 100}/100</span></div>
-                <div>Tái lập (Reproducibility): <span className="text-emerald-400">100% Deterministic Guarantee</span></div>
-              </div>
-            </div>
-
-            <div className="flex justify-end pt-2 border-t border-borderDark">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="px-5 py-2 rounded-xl bg-surfaceHover border border-borderDark text-white text-xs font-semibold hover:bg-surface transition-colors"
-              >
-                Đóng Cửa Sổ Minh Giải
-              </button>
             </div>
           </div>
         </div>
