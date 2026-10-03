@@ -4,13 +4,14 @@
   "private": true,
   "scripts": {
     "clean": "node -e \"try { fs.rmSync('.next', { recursive: true, force: true }); } catch (e) {}\"",
-    "dev": "node -e \"try { fs.rmSync('.next', { recursive: true, force: true }); } catch (e) {}\" && next dev -p 3000",
-    "build": "next build",
-    "start": "next start -p 3000"
+    "dev": "node -e \"try { fs.rmSync('.next', { recursive: true, force: true }); } catch (e) {}\" && node run-next.js dev -p 3000",
+    "build": "node -e \"try { fs.rmSync('.next', { recursive: true, force: true }); } catch (e) {}\" && node run-next.js build",
+    "start": "node run-next.js start -p 3000"
   },
   "dependencies": {
     "@mystic/astrology-engine": "*",
     "@mystic/core": "*",
+    "@mystic/database": "*",
     "@mystic/interpretation-engine": "*",
     "@mystic/numerology-engine": "*",
     "@mystic/rule-engine": "*",
