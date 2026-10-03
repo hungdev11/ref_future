@@ -17,7 +17,32 @@ import {
   CheckCircle2,
   Layers,
   ArrowRight,
+  Heart,
+  Briefcase,
+  DollarSign,
+  Users,
+  GraduationCap,
+  Home,
+  TrendingUp,
+  Grid,
+  Target,
+  Star,
+  FileText,
+  Check,
 } from 'lucide-react';
+import {
+  PERSONAL_YEAR_ASPECTS,
+  calculatePersonalityGroups,
+  calculateHollandCareerMatch,
+  LIFE_PATH_EXTENDED_INFO,
+  calculateBirthChart,
+  detectKarmicDebts,
+  detectMissingKarmicLessons,
+  calculateAttitudeNumber,
+  ATTITUDE_INTERPRETATIONS,
+  evaluateLifePathExpressionHarmony,
+  evaluateLifePathSoulHarmony,
+} from '@/lib/numerology-interpretations';
 
 const LIFE_PATH_INTERPRETATIONS: Record<
   number,
@@ -441,12 +466,32 @@ export default function NumerologyPage() {
     }
   };
 
+  const [viewMode, setViewMode] = useState<'dashboard' | 'fullReport'>('dashboard');
+
   const lifePathVal = Number(result?.facts?.core?.LIFE_PATH?.value ?? 0);
   const expressionVal = Number(result?.facts?.core?.EXPRESSION?.value ?? 0);
   const soulUrgeVal = Number(result?.facts?.core?.SOUL_URGE?.value ?? 0);
   const personalityVal = Number(result?.facts?.core?.PERSONALITY?.value ?? 0);
   const maturityVal = Number(result?.facts?.core?.MATURITY?.value ?? 0);
   const personalYearVal = Number(result?.facts?.cycles?.PERSONAL_YEAR?.value ?? 0);
+  const personalMonthVal = Number(result?.facts?.cycles?.PERSONAL_MONTH?.value ?? 0);
+  const personalDayVal = Number(result?.facts?.cycles?.PERSONAL_DAY?.value ?? 0);
+  const birthdayVal = Number(result?.facts?.core?.BIRTHDAY?.value ?? 0);
+
+  const birthDateStr = result?.facts?.birthDateIso || birthDate;
+  const fullNameStr = result?.facts?.normalizedName || fullName;
+
+  const personalityGroups = calculatePersonalityGroups(fullNameStr, birthDateStr);
+  const hollandMatch = calculateHollandCareerMatch(lifePathVal, expressionVal, soulUrgeVal);
+  const lifePathExtended = LIFE_PATH_EXTENDED_INFO[lifePathVal] || LIFE_PATH_EXTENDED_INFO[1];
+  const birthChart = calculateBirthChart(birthDateStr);
+  const karmicDebts = detectKarmicDebts(birthDateStr, lifePathVal);
+  const karmicLessons = detectMissingKarmicLessons(fullNameStr);
+  const attitudeNum = calculateAttitudeNumber(birthDateStr);
+  const attitudeInterp = ATTITUDE_INTERPRETATIONS[attitudeNum] || ATTITUDE_INTERPRETATIONS[1];
+  const lifePathExprHarmony = evaluateLifePathExpressionHarmony(lifePathVal, expressionVal);
+  const lifePathSoulHarmony = evaluateLifePathSoulHarmony(lifePathVal, soulUrgeVal);
+  const yearAspects = PERSONAL_YEAR_ASPECTS[personalYearVal] || PERSONAL_YEAR_ASPECTS[1];
 
   const lifePathInterp = LIFE_PATH_INTERPRETATIONS[lifePathVal] ?? {
     title: `Con Số Chủ Đạo ${lifePathVal}`,
@@ -586,8 +631,44 @@ export default function NumerologyPage() {
                 </div>
               )}
 
-              {/* Core Numbers Cards (Clickable to open Popup) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {/* View Mode Switcher */}
+              <div className="flex flex-wrap items-center justify-between gap-3 p-2 rounded-2xl bg-surface/80 border border-borderDark">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('dashboard')}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                      viewMode === 'dashboard'
+                        ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-600/20'
+                        : 'text-gray-400 hover:text-white hover:bg-surfaceHover'
+                    }`}
+                  >
+                    <Layers className="w-4 h-4" />
+                    <span>Bàn Chỉ Số & Kim Tự Tháp</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('fullReport')}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                      viewMode === 'fullReport'
+                        ? 'bg-gradient-to-r from-accentGold to-amber-500 text-background shadow-lg shadow-amber-500/20'
+                        : 'text-gray-400 hover:text-white hover:bg-surfaceHover'
+                    }`}
+                  >
+                    <FileText className="w-4 h-4" />
+                    <span>Báo Cáo Toàn Diện 5 Phần (Chuẩn VIP 100% Free)</span>
+                  </button>
+                </div>
+                <div className="text-[11px] text-accentGold font-medium flex items-center gap-1">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>100% Đầy Đủ • Mở Khóa Trọn Vẹn • Không Cần Nạp Tiền</span>
+                </div>
+              </div>
+
+              {viewMode === 'dashboard' ? (
+                <>
+                  {/* Core Numbers Cards (Clickable to open Popup) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {/* 1. Life Path */}
                 <div
                   onClick={() =>
@@ -1084,6 +1165,771 @@ export default function NumerologyPage() {
                         </div>
                       );
                     })}
+                  </div>
+                </div>
+              )}
+                </>
+              ) : (
+                <div className="space-y-8 animate-fadeIn">
+                  {/* PHẦN A. PHÂN TÍCH TỔNG QUAN */}
+                  <div className="p-6 md:p-8 rounded-3xl bg-surface border border-emerald-500/30 space-y-6 shadow-xl">
+                    <div className="border-b border-borderDark pb-4 space-y-1">
+                      <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider">
+                        <Sparkles className="w-4 h-4" />
+                        <span>Phần A • Tổng Quan Vận Số & Xu Hướng Tương Lai</span>
+                      </div>
+                      <h2 className="text-2xl font-extrabold text-white">PHẦN A. PHÂN TÍCH TỔNG QUAN</h2>
+                    </div>
+
+                    {/* 1. CHU KỲ VẬN SỐ CỦA BẠN */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 text-accentGold font-bold text-base border-b border-borderDark/60 pb-2">
+                        <TrendingUp className="w-5 h-5 text-accentGold" />
+                        <span>1. CHU KỲ VẬN SỐ 9 NĂM CỦA BẠN</span>
+                      </div>
+                      <p className="text-xs text-gray-300 leading-relaxed">
+                        Theo Thần số học Pythagoras, chu kỳ phát triển của đời người lặp lại mỗi 9 năm như một làn sóng hình sin. Với mỗi năm có số cá nhân là 1, cuộc đời lại bắt đầu một chu kỳ mới với xuất phát điểm cao hơn chu kỳ trước. Đoạn biểu đồ đi lên cho thấy giai đoạn cuộc sống có nhiều cơ hội, bứt phá mở rộng từ bên ngoài; đoạn đi xuống là lúc nên tập trung nâng cao trí tuệ, củng cố nội lực và chiêm nghiệm sâu sắc.
+                      </p>
+
+                      {/* 9-year cycle visual wave */}
+                      <div className="p-4 rounded-2xl bg-background/80 border border-borderDark space-y-3">
+                        <div className="text-xs font-semibold text-gray-300">
+                          Vị Trí Hiện Tại Của Bạn Trong Chu Kỳ 9 Năm (Năm 2026 mang Vận Số {personalYearVal}):
+                        </div>
+                        <div className="grid grid-cols-3 sm:grid-cols-9 gap-2 text-center">
+                          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((yr) => {
+                            const isCurrent = yr === personalYearVal;
+                            return (
+                              <div
+                                key={yr}
+                                className={`p-3 rounded-xl border transition-all ${
+                                  isCurrent
+                                    ? 'bg-emerald-500/20 border-emerald-400 text-white ring-2 ring-emerald-400/50 shadow-lg shadow-emerald-500/20'
+                                    : 'bg-surface border-borderDark/80 text-gray-400'
+                                }`}
+                              >
+                                <div className="text-xs text-gray-400 font-mono">Năm {2026 + (yr - personalYearVal)}</div>
+                                <div className={`text-2xl font-extrabold my-1 ${isCurrent ? 'text-accentGold' : 'text-white'}`}>
+                                  {yr}
+                                </div>
+                                <div className="text-[10px] line-clamp-1">
+                                  {yr === 1 && 'Khởi Đầu'}
+                                  {yr === 2 && 'Hợp Tác'}
+                                  {yr === 3 && 'Sáng Tạo'}
+                                  {yr === 4 && 'Kỷ Luật'}
+                                  {yr === 5 && 'Bứt Phá'}
+                                  {yr === 6 && 'Gia Đình'}
+                                  {yr === 7 && 'Trí Tuệ'}
+                                  {yr === 8 && 'Thành Quả'}
+                                  {yr === 9 && 'Tổng Kết'}
+                                </div>
+                                {isCurrent && (
+                                  <span className="inline-block mt-1 px-1.5 py-0.5 rounded bg-emerald-500 text-background text-[9px] font-bold">
+                                    HIỆN TẠI
+                                  </span>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* 1.1 Luận giải 6 khía cạnh trong năm 2026 */}
+                      <div className="space-y-3 pt-2">
+                        <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 text-emerald-400" />
+                          <span>1.1. Luận Giải Chi Tiết Vận Số Năm 2026 (Năm Cá Nhân Số {personalYearVal}: {yearAspects.theme})</span>
+                        </h3>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                          <div className="p-4 rounded-xl bg-surface border border-rose-500/30 space-y-1.5">
+                            <div className="flex items-center gap-1.5 text-rose-400 font-bold">
+                              <Heart className="w-4 h-4" />
+                              <span>Tình Yêu Của Bạn Trong Năm 2026:</span>
+                            </div>
+                            <p className="text-gray-200 leading-relaxed">{yearAspects.love}</p>
+                          </div>
+
+                          <div className="p-4 rounded-xl bg-surface border border-blue-500/30 space-y-1.5">
+                            <div className="flex items-center gap-1.5 text-blue-400 font-bold">
+                              <Briefcase className="w-4 h-4" />
+                              <span>Sự Nghiệp & Công Việc Trong Năm 2026:</span>
+                            </div>
+                            <p className="text-gray-200 leading-relaxed">{yearAspects.career}</p>
+                          </div>
+
+                          <div className="p-4 rounded-xl bg-surface border border-amber-500/30 space-y-1.5">
+                            <div className="flex items-center gap-1.5 text-amber-400 font-bold">
+                              <DollarSign className="w-4 h-4" />
+                              <span>Tài Chính & Dòng Tiền Trong Năm 2026:</span>
+                            </div>
+                            <p className="text-gray-200 leading-relaxed">{yearAspects.finance}</p>
+                          </div>
+
+                          <div className="p-4 rounded-xl bg-surface border border-teal-500/30 space-y-1.5">
+                            <div className="flex items-center gap-1.5 text-teal-400 font-bold">
+                              <Users className="w-4 h-4" />
+                              <span>Giao Tiếp Xã Hội & Kết Nối Trong Năm 2026:</span>
+                            </div>
+                            <p className="text-gray-200 leading-relaxed">{yearAspects.social}</p>
+                          </div>
+
+                          <div className="p-4 rounded-xl bg-surface border border-indigo-500/30 space-y-1.5">
+                            <div className="flex items-center gap-1.5 text-indigo-400 font-bold">
+                              <GraduationCap className="w-4 h-4" />
+                              <span>Học Tập & Rèn Luyện Bản Thân:</span>
+                            </div>
+                            <p className="text-gray-200 leading-relaxed">{yearAspects.learning}</p>
+                          </div>
+
+                          <div className="p-4 rounded-xl bg-surface border border-emerald-500/30 space-y-1.5">
+                            <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
+                              <Home className="w-4 h-4" />
+                              <span>Hôn Nhân & Gia Đạo Trong Năm 2026:</span>
+                            </div>
+                            <p className="text-gray-200 leading-relaxed">{yearAspects.family}</p>
+                          </div>
+                        </div>
+
+                        {/* Preview 2 năm tiếp theo */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 text-xs">
+                          <div className="p-4 rounded-xl bg-background/90 border border-borderDark space-y-1">
+                            <div className="font-bold text-gray-200 flex items-center gap-1.5">
+                              <ArrowRight className="w-3.5 h-3.5 text-accentGold" />
+                              <span>1.2. Dự Báo Năm 2027 (Vận Số {(personalYearVal % 9) + 1}):</span>
+                            </div>
+                            <p className="text-gray-400 leading-relaxed">{yearAspects.nextYearPreview}</p>
+                          </div>
+
+                          <div className="p-4 rounded-xl bg-background/90 border border-borderDark space-y-1">
+                            <div className="font-bold text-gray-200 flex items-center gap-1.5">
+                              <ArrowRight className="w-3.5 h-3.5 text-accentGold" />
+                              <span>1.3. Dự Báo Năm 2028 (Vận Số {((personalYearVal + 1) % 9) + 1}):</span>
+                            </div>
+                            <p className="text-gray-400 leading-relaxed">{yearAspects.afterNextYearPreview}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 2. NHÓM TÍNH CÁCH THEO BẢN NGÃ */}
+                    <div className="space-y-4 pt-4 border-t border-borderDark/60">
+                      <div className="flex items-center gap-2 text-accentGold font-bold text-base border-b border-borderDark/60 pb-2">
+                        <User className="w-5 h-5 text-accentGold" />
+                        <span>2. NHÓM TÍNH CÁCH THEO BẢN NGÃ CỦA BẠN (CÓ THỂ LUYỆN TẬP ĐỂ CÂN BẰNG)</span>
+                      </div>
+                      <p className="text-xs text-gray-300 leading-relaxed">
+                        Dưới đây là 9 nhóm tính cách có trong bản ngã bẩm sinh của bạn được tổng hợp từ họ tên và ngày sinh. Dao động tính cách đẹp nhất khi các chỉ số % ở mức tương đối đồng đều (khoảng 10-15%). Bạn nên tập trung rèn luyện những nhóm có % thấp và kiểm soát những nhóm có % quá cao.
+                      </p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                        {personalityGroups.map((grp) => (
+                          <div key={grp.id} className="p-3.5 rounded-xl bg-surface border border-borderDark space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold text-white">
+                                {grp.id}. {grp.name}
+                              </span>
+                              <span className={`font-mono font-extrabold ${grp.percentage > 22 ? 'text-accentGold' : grp.percentage < 8 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                                {grp.percentage}%
+                              </span>
+                            </div>
+                            <div className="w-full bg-background rounded-full h-2 overflow-hidden border border-borderDark">
+                              <div
+                                className={`h-full rounded-full transition-all duration-500 ${
+                                  grp.percentage > 22
+                                    ? 'bg-gradient-to-r from-accentGold to-amber-500'
+                                    : grp.percentage < 8
+                                    ? 'bg-gradient-to-r from-rose-500 to-amber-500'
+                                    : 'bg-gradient-to-r from-emerald-500 to-teal-400'
+                                }`}
+                                style={{ width: `${Math.min(100, grp.percentage * 2.5)}%` }}
+                              />
+                            </div>
+                            <p className="text-gray-400 text-[11px] leading-relaxed">{grp.description}</p>
+                            <div className="text-[10px] text-emerald-300 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">
+                              💡 {grp.advice}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 3. TỈ LỆ NHÓM NGÀNH PHÙ HỢP HOLLAND */}
+                    <div className="space-y-4 pt-4 border-t border-borderDark/60">
+                      <div className="flex items-center gap-2 text-accentGold font-bold text-base border-b border-borderDark/60 pb-2">
+                        <Briefcase className="w-5 h-5 text-accentGold" />
+                        <span>3. TỈ LỆ NHÓM NGÀNH PHÙ HỢP THEO MÔ HÌNH NGHỀ NGHIỆP HOLLAND (RIASEC)</span>
+                      </div>
+                      <p className="text-xs text-gray-300 leading-relaxed">
+                        Hệ thống phân tích tương quan giữa 3 chỉ số cốt lõi (Đường Đời {lifePathVal}, Sứ Mệnh {expressionVal}, Linh Hồn {soulUrgeVal}) cùng 6 nhóm ngành nghiên cứu nghề nghiệp của Tiến sĩ John Lewis Holland.
+                      </p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                        {hollandMatch.groups.map((hg, idx) => (
+                          <div
+                            key={hg.code}
+                            className={`p-4 rounded-xl border space-y-2 ${
+                              idx < 2
+                                ? 'bg-emerald-500/10 border-emerald-500/40 text-white'
+                                : 'bg-surface border-borderDark text-gray-300'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold text-sm text-white">{hg.nameVn}</span>
+                              <span className="font-mono text-base font-extrabold text-accentGold">{hg.percentage}%</span>
+                            </div>
+                            <div className="w-full bg-background rounded-full h-1.5 overflow-hidden">
+                              <div
+                                className={`h-full rounded-full ${idx < 2 ? 'bg-accentGold' : 'bg-gray-500'}`}
+                                style={{ width: `${Math.min(100, hg.percentage * 3)}%` }}
+                              />
+                            </div>
+                            <p className="text-[11px] text-gray-400 leading-relaxed">{hg.description}</p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Recommended Jobs Box */}
+                      <div className="p-4 rounded-2xl bg-background/90 border border-emerald-500/40 space-y-2 text-xs">
+                        <div className="font-bold text-emerald-400 flex items-center gap-1.5">
+                          <CheckCircle2 className="w-4 h-4" />
+                          <span>2 Nhóm Ngành Phù Hợp Nhất & Danh Sách Nghề Nghiệp Khuyến Nghị:</span>
+                        </div>
+                        <p className="text-gray-300">
+                          Bạn phù hợp nhất với <strong>{hollandMatch.topGroups.join(' & ')}</strong>. Các công việc phát huy tối đa sở trường của bạn bao gồm:
+                        </p>
+                        <div className="flex flex-wrap gap-2 pt-1">
+                          {hollandMatch.recommendedCareers.map((c, i) => (
+                            <span
+                              key={i}
+                              className="px-3 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-200 font-medium text-xs flex items-center gap-1"
+                            >
+                              <Check className="w-3 h-3 text-accentGold" />
+                              {c}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* PHẦN B. PHÂN TÍCH ĐƯỜNG ĐỜI (SỐ CHỦ ĐẠO) */}
+                  <div className="p-6 md:p-8 rounded-3xl bg-surface border border-accentGold/30 space-y-6 shadow-xl">
+                    <div className="border-b border-borderDark pb-4 space-y-1">
+                      <div className="flex items-center gap-2 text-accentGold font-bold text-xs uppercase tracking-wider">
+                        <Compass className="w-4 h-4" />
+                        <span>Phần B • Con Đường Đời & Vận Trình Phát Triển</span>
+                      </div>
+                      <h2 className="text-2xl font-extrabold text-white">PHẦN B. PHÂN TÍCH ĐƯỜNG ĐỜI</h2>
+                    </div>
+
+                    {/* 4. CHỈ SỐ ĐƯỜNG ĐỜI */}
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between border-b border-borderDark/60 pb-2">
+                        <div className="flex items-center gap-2 text-accentGold font-bold text-base">
+                          <Star className="w-5 h-5 text-accentGold" />
+                          <span>4. CHỈ SỐ ĐƯỜNG ĐỜI (SỐ CHỦ ĐẠO): SỐ {lifePathVal} - {lifePathInterp.title}</span>
+                        </div>
+                        <span className="text-3xl font-extrabold text-accentGold">{lifePathVal}</span>
+                      </div>
+
+                      <p className="text-xs text-gray-200 leading-relaxed font-medium">
+                        {lifePathInterp.meaning} {lifePathInterp.layman}
+                      </p>
+
+                      {/* Strengths & Weaknesses */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-1.5">
+                          <span className="font-bold text-emerald-300 block">✨ Điểm Mạnh Vượt Trội Của Bạn:</span>
+                          <p className="text-emerald-100 leading-relaxed">{lifePathInterp.strengths}</p>
+                        </div>
+
+                        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-1.5">
+                          <span className="font-bold text-amber-300 block">⚠️ Điểm Cần Cân Bằng & Vượt Qua:</span>
+                          <p className="text-amber-100 leading-relaxed">{lifePathInterp.challenges}</p>
+                        </div>
+                      </div>
+
+                      {/* Celebrities */}
+                      <div className="p-4 rounded-xl bg-background/80 border border-borderDark text-xs space-y-2">
+                        <span className="font-bold text-accentGold block">🌟 Những Người Nổi Tiếng Thế Giới Có Cùng Số Chủ Đạo {lifePathVal}:</span>
+                        <div className="flex flex-wrap gap-2">
+                          {lifePathExtended.celebrities.map((celeb, idx) => (
+                            <span key={idx} className="px-2.5 py-1 rounded bg-surface border border-borderDark text-gray-200">
+                              {celeb}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Compatibility in Relationships */}
+                      <div className="space-y-3 pt-2">
+                        <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                          <Heart className="w-4 h-4 text-rose-400" />
+                          <span>Mối Quan Hệ Tương Thích Trong Đời Sống & Công Việc:</span>
+                        </h3>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                          <div className="p-4 rounded-xl bg-surface border border-emerald-500/30 space-y-2">
+                            <span className="font-bold text-emerald-300 block">
+                              💚 Những Số Tương Thích Nhất: {lifePathExtended.compatibleNumbers.map((c) => `Số ${c.num}`).join(', ')}
+                            </span>
+                            <div className="space-y-2">
+                              {lifePathExtended.compatibleNumbers.map((c) => (
+                                <div key={c.num} className="text-gray-300 leading-relaxed">
+                                  <strong className="text-emerald-200">• Số {c.num}:</strong> {c.reason}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="p-4 rounded-xl bg-surface border border-rose-500/30 space-y-2">
+                            <span className="font-bold text-rose-300 block">
+                              💔 Những Số Cần Cẩn Trọng / Ít Tương Thích: {lifePathExtended.incompatibleNumbers.map((c) => `Số ${c.num}`).join(', ')}
+                            </span>
+                            <div className="space-y-2">
+                              {lifePathExtended.incompatibleNumbers.map((c) => (
+                                <div key={c.num} className="text-gray-300 leading-relaxed">
+                                  <strong className="text-rose-200">• Số {c.num}:</strong> {c.reason}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Love Style */}
+                        <div className="p-4 rounded-xl bg-rose-950/20 border border-rose-500/30 text-xs space-y-1">
+                          <span className="font-bold text-rose-300 block">💍 Tình Duyên & Phong Cách Yêu Của Bạn:</span>
+                          <p className="text-gray-200 leading-relaxed">{lifePathExtended.loveStyle}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 5. CHU KỲ ĐƯỜNG ĐỜI (3 GIAI ĐOẠN) */}
+                    <div className="space-y-4 pt-4 border-t border-borderDark/60">
+                      <div className="flex items-center gap-2 text-accentGold font-bold text-base border-b border-borderDark/60 pb-2">
+                        <Calendar className="w-5 h-5 text-accentGold" />
+                        <span>5. CHU KỲ ĐƯỜNG ĐỜI (3 GIAI ĐOẠN LỚN CỦA ĐỜI NGƯỜI)</span>
+                      </div>
+                      <p className="text-xs text-gray-300 leading-relaxed">
+                        Cuộc đời mỗi người được chia thành 3 chu kỳ lớn tượng trưng cho quá trình tiến hóa của hạt mầm: Gieo Hạt, Chín và Thu Hoạch.
+                      </p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                        <div className="p-4 rounded-xl bg-surface border border-borderDark space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-emerald-400 font-bold uppercase text-[11px]">Chu Kỳ 1: GIEO HẠT</span>
+                            <span className="text-gray-400 font-mono text-[10px]">Đầu đời - 32 tuổi</span>
+                          </div>
+                          <div className="font-bold text-white text-sm">{lifePathExtended.cycle1Title}</div>
+                          <p className="text-gray-300 leading-relaxed text-[11px]">{lifePathExtended.cycle1Meaning}</p>
+                        </div>
+
+                        <div className="p-4 rounded-xl bg-surface border border-borderDark space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-accentGold font-bold uppercase text-[11px]">Chu Kỳ 2: CHÍN</span>
+                            <span className="text-gray-400 font-mono text-[10px]">33 - 59 tuổi</span>
+                          </div>
+                          <div className="font-bold text-white text-sm">{lifePathExtended.cycle2Title}</div>
+                          <p className="text-gray-300 leading-relaxed text-[11px]">{lifePathExtended.cycle2Meaning}</p>
+                        </div>
+
+                        <div className="p-4 rounded-xl bg-surface border border-borderDark space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-indigo-400 font-bold uppercase text-[11px]">Chu Kỳ 3: THU HOẠCH</span>
+                            <span className="text-gray-400 font-mono text-[10px]">60 tuổi trở về sau</span>
+                          </div>
+                          <div className="font-bold text-white text-sm">{lifePathExtended.cycle3Title}</div>
+                          <p className="text-gray-300 leading-relaxed text-[11px]">{lifePathExtended.cycle3Meaning}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 6. KIM TỰ THÁP 4 ĐỈNH CAO & 4 THỬ THÁCH */}
+                    <div className="space-y-4 pt-4 border-t border-borderDark/60">
+                      <div className="flex items-center gap-2 text-accentGold font-bold text-base border-b border-borderDark/60 pb-2">
+                        <Award className="w-5 h-5 text-accentGold" />
+                        <span>6. KIM TỰ THÁP 4 ĐỈNH CAO & 4 THỬ THÁCH CUỘC ĐỜI</span>
+                      </div>
+                      <p className="text-xs text-gray-300 leading-relaxed">
+                        Kim tự tháp Pythagoras tiết lộ 4 mốc đỉnh cao thành tựu nở rộ và 4 bài học thử thách mà cuộc đời trao gửi để bạn rèn luyện bản lĩnh.
+                      </p>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                        {result.facts.pinnacles?.map((p: any, idx: number) => {
+                          const ch = result.facts.challenges?.[idx];
+                          const ageDesc = p.endAge === 99 ? `${p.startAge}t trở đi` : `${p.startAge} - ${p.endAge} tuổi`;
+                          return (
+                            <div key={p.pinnacleNumber} className="p-4 rounded-xl bg-background/90 border border-borderDark space-y-2">
+                              <div className="flex items-center justify-between">
+                                <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 font-bold border border-emerald-500/20 text-[10px]">
+                                  Đỉnh {p.pinnacleNumber}
+                                </span>
+                                <span className="text-gray-400 font-mono text-[10px]">{ageDesc}</span>
+                              </div>
+                              <div className="flex items-baseline gap-2">
+                                <span className="text-3xl font-extrabold text-accentGold">{p.value}</span>
+                                <span className="text-[11px] text-gray-300">Đỉnh Cao Năng Lượng</span>
+                              </div>
+                              {ch && (
+                                <div className="text-[11px] text-amber-300 bg-amber-500/10 px-2 py-1 rounded border border-amber-500/20">
+                                  Thử Thách: Số {ch.value}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* 7. CHỈ SỐ NĂM VÀ THÁNG HIỆN TẠI */}
+                    <div className="space-y-4 pt-4 border-t border-borderDark/60">
+                      <div className="flex items-center gap-2 text-accentGold font-bold text-base border-b border-borderDark/60 pb-2">
+                        <Calendar className="w-5 h-5 text-accentGold" />
+                        <span>7. CHỈ SỐ NĂM VÀ THÁNG HIỆN TẠI</span>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <div className="p-4 rounded-xl bg-surface border border-borderDark space-y-1">
+                          <span className="font-bold text-white block">Năm Cá Nhân Hiện Tại: Số {personalYearVal}</span>
+                          <p className="text-gray-300 leading-relaxed">{personalYearInterp.meaning}</p>
+                          <span className="text-accentGold block pt-1 font-semibold">Lời khuyên: {personalYearInterp.advice}</span>
+                        </div>
+                        <div className="p-4 rounded-xl bg-surface border border-borderDark space-y-1">
+                          <span className="font-bold text-white block">Tháng Cá Nhân Hiện Tại: Số {personalMonthVal}</span>
+                          <p className="text-gray-300 leading-relaxed">
+                            Năng lượng tháng {personalMonthVal} cộng hưởng cùng năm {personalYearVal}, nhắc nhở bạn chủ động sắp xếp công việc và giữ nhịp sinh hoạt hài hòa.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* PHẦN C. PHÂN TÍCH SỐ MỆNH & NĂNG LƯỢNG NỘI TÂM */}
+                  <div className="p-6 md:p-8 rounded-3xl bg-surface border border-indigo-500/30 space-y-6 shadow-xl">
+                    <div className="border-b border-borderDark pb-4 space-y-1">
+                      <div className="flex items-center gap-2 text-indigo-400 font-bold text-xs uppercase tracking-wider">
+                        <Sparkles className="w-4 h-4" />
+                        <span>Phần C • Sứ Mệnh Cuộc Đời & Căn Cốt Tâm Linh</span>
+                      </div>
+                      <h2 className="text-2xl font-extrabold text-white">PHẦN C. PHÂN TÍCH SỐ MỆNH</h2>
+                    </div>
+
+                    {/* 8. SỨ MỆNH & TƯƠNG QUAN ĐƯỜNG ĐỜI - SỨ MỆNH */}
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between border-b border-borderDark/60 pb-2">
+                        <div className="flex items-center gap-2 text-accentGold font-bold text-base">
+                          <Target className="w-5 h-5 text-accentGold" />
+                          <span>8. CHỈ SỐ SỨ MỆNH (EXPRESSION): SỐ {expressionVal}</span>
+                        </div>
+                        <span className="text-3xl font-extrabold text-emerald-400">{expressionVal}</span>
+                      </div>
+                      <p className="text-xs text-gray-300 leading-relaxed">
+                        Chỉ số Sứ Mệnh biểu thị những công cụ, năng khiếu bẩm sinh và cách thức bạn thể hiện bản thân ra với thế giới để hoàn thành sứ mệnh đường đời.
+                      </p>
+
+                      {/* Tương quan Đường Đời - Sứ Mệnh */}
+                      <div className="p-4 rounded-xl bg-background/90 border border-indigo-500/40 space-y-2 text-xs">
+                        <div className="font-bold text-indigo-300 flex items-center gap-1.5">
+                          <Compass className="w-4 h-4" />
+                          <span>Tương Quan Đường Đời ({lifePathVal}) - Sứ Mệnh ({expressionVal}): {lifePathExprHarmony.title}</span>
+                        </div>
+                        <p className="text-gray-200 leading-relaxed">{lifePathExprHarmony.description}</p>
+                        <div className="text-[11px] text-accentGold pt-1">
+                          💡 <strong>Lời khuyên hóa giải & bổ trợ:</strong> {lifePathExprHarmony.advice}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 9. LINH HỒN & TƯƠNG QUAN ĐƯỜNG ĐỜI - LINH HỒN */}
+                    <div className="space-y-4 pt-4 border-t border-borderDark/60">
+                      <div className="flex items-center justify-between border-b border-borderDark/60 pb-2">
+                        <div className="flex items-center gap-2 text-accentGold font-bold text-base">
+                          <Heart className="w-5 h-5 text-rose-400" />
+                          <span>9. CHỈ SỐ LINH HỒN (SOUL URGE): SỐ {soulUrgeVal}</span>
+                        </div>
+                        <span className="text-3xl font-extrabold text-indigo-400">{soulUrgeVal}</span>
+                      </div>
+                      <p className="text-xs text-gray-300 leading-relaxed">
+                        Chỉ số Linh Hồn đại diện cho tiếng nói nội tâm sâu kín nhất — điều thực sự khiến bạn cảm thấy hạnh phúc, thỏa mãn và bình yên trong tâm hồn.
+                      </p>
+
+                      {/* Tương quan Đường Đời - Linh Hồn */}
+                      <div className="p-4 rounded-xl bg-background/90 border border-indigo-500/40 space-y-2 text-xs">
+                        <div className="font-bold text-indigo-300 flex items-center gap-1.5">
+                          <Sparkles className="w-4 h-4" />
+                          <span>Tương Quan Đường Đời ({lifePathVal}) - Linh Hồn ({soulUrgeVal}): {lifePathSoulHarmony.title}</span>
+                        </div>
+                        <p className="text-gray-200 leading-relaxed">{lifePathSoulHarmony.description}</p>
+                        <div className="text-[11px] text-accentGold pt-1">
+                          💡 <strong>Lời khuyên nuôi dưỡng tâm hồn:</strong> {lifePathSoulHarmony.advice}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 10. NHÂN CÁCH & TRƯỞNG THÀNH */}
+                    <div className="space-y-4 pt-4 border-t border-borderDark/60">
+                      <div className="flex items-center gap-2 text-accentGold font-bold text-base border-b border-borderDark/60 pb-2">
+                        <Award className="w-5 h-5 text-accentGold" />
+                        <span>10. CHỈ SỐ NHÂN CÁCH ({personalityVal}) & CHỈ SỐ TRƯỞNG THÀNH ({maturityVal})</span>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <div className="p-4 rounded-xl bg-surface border border-borderDark space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-white">Chỉ Số Nhân Cách (Personality)</span>
+                            <span className="text-2xl font-extrabold text-amber-400">{personalityVal}</span>
+                          </div>
+                          <p className="text-gray-300 leading-relaxed">
+                            Ấn tượng ban đầu bạn để lại cho người khác. Chiếc áo choàng phong thái giúp bạn kết nối và xây dựng quan hệ xã hội lành mạnh.
+                          </p>
+                        </div>
+
+                        <div className="p-4 rounded-xl bg-surface border border-borderDark space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-white">Chỉ Số Trưởng Thành (Maturity sau 40t)</span>
+                            <span className="text-2xl font-extrabold text-teal-400">{maturityVal}</span>
+                          </div>
+                          <p className="text-gray-300 leading-relaxed">
+                            Món quà trưởng thành sau tuổi 40. Định hướng đích đến và phần thưởng viên mãn mà bạn gặt hái được trong nửa sau cuộc đời.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 11. THÁI ĐỘ */}
+                    <div className="space-y-4 pt-4 border-t border-borderDark/60">
+                      <div className="flex items-center justify-between border-b border-borderDark/60 pb-2">
+                        <div className="flex items-center gap-2 text-accentGold font-bold text-base">
+                          <Compass className="w-5 h-5 text-accentGold" />
+                          <span>11. CHỈ SỐ THÁI ĐỘ (ATTITUDE): SỐ {attitudeNum} - {attitudeInterp.title}</span>
+                        </div>
+                        <span className="text-3xl font-extrabold text-teal-400">{attitudeNum}</span>
+                      </div>
+                      <div className="p-4 rounded-xl bg-surface border border-borderDark space-y-1.5 text-xs">
+                        <p className="text-gray-200 leading-relaxed">{attitudeInterp.meaning}</p>
+                        <span className="text-accentGold block pt-1 font-medium">💡 Lời khuyên hành động: {attitudeInterp.advice}</span>
+                      </div>
+                    </div>
+
+                    {/* 12. NỢ NGHIỆP */}
+                    <div className="space-y-4 pt-4 border-t border-borderDark/60">
+                      <div className="flex items-center gap-2 text-accentGold font-bold text-base border-b border-borderDark/60 pb-2">
+                        <AlertTriangle className="w-5 h-5 text-amber-400" />
+                        <span>12. CHỈ SỐ NỢ NGHIỆP (KARMIC DEBTS: 13/4, 14/5, 16/7, 19/1)</span>
+                      </div>
+                      {karmicDebts.length === 0 ? (
+                        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-200 flex items-center gap-2">
+                          <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
+                          <span>
+                            Chúc mừng! Bạn không mang các chỉ số nợ nghiệp lớn (13/4, 14/5, 16/7, 19/1). Trường năng lượng của bạn khá thanh tịnh để tự do phát triển tiềm năng.
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="space-y-3 text-xs">
+                          {karmicDebts.map((kd) => (
+                            <div key={kd.code} className="p-4 rounded-xl bg-amber-950/20 border border-amber-500/40 space-y-1.5">
+                              <div className="flex items-center justify-between text-amber-300 font-bold">
+                                <span>Nợ Nghiệp {kd.code}: {kd.name}</span>
+                              </div>
+                              <p className="text-gray-200 leading-relaxed">{kd.meaning}</p>
+                              <div className="text-emerald-300 pt-1">
+                                🌱 <strong>Phương pháp hóa giải:</strong> {kd.advice}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* 13. BÀI HỌC LINH HỒN CÒN THIẾU (KARMIC LESSONS) */}
+                    <div className="space-y-4 pt-4 border-t border-borderDark/60">
+                      <div className="flex items-center gap-2 text-accentGold font-bold text-base border-b border-borderDark/60 pb-2">
+                        <BookOpen className="w-5 h-5 text-accentGold" />
+                        <span>13. BÀI HỌC LINH HỒN CÒN THIẾU (CÁC SỐ VẮNG MẶT TRONG HỌ TÊN)</span>
+                      </div>
+                      {karmicLessons.length === 0 ? (
+                        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-200 flex items-center gap-2">
+                          <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
+                          <span>Họ tên của bạn chứa đầy đủ tất cả các chữ số từ 1 đến 9, thể hiện bộ công cụ trải nghiệm khá trọn vẹn.</span>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                          {karmicLessons.map((kl) => (
+                            <div key={kl.number} className="p-3.5 rounded-xl bg-surface border border-borderDark space-y-1.5">
+                              <div className="flex items-center justify-between">
+                                <span className="font-bold text-white">Số {kl.number}: {kl.name}</span>
+                                <span className="px-2 py-0.5 rounded text-[10px] bg-rose-500/20 text-rose-300 font-semibold border border-rose-500/30">
+                                  Cần Bổ Sung
+                                </span>
+                              </div>
+                              <p className="text-gray-300 text-[11px] leading-relaxed">{kl.missingTrait}</p>
+                              <p className="text-emerald-300 text-[11px] leading-relaxed font-medium">✨ Rèn luyện: {kl.solution}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* PHẦN D. PHÂN TÍCH NĂNG LỰC & MA TRẬN 3X3 NGÀY SINH */}
+                  <div className="p-6 md:p-8 rounded-3xl bg-surface border border-teal-500/30 space-y-6 shadow-xl">
+                    <div className="border-b border-borderDark pb-4 space-y-1">
+                      <div className="flex items-center gap-2 text-teal-400 font-bold text-xs uppercase tracking-wider">
+                        <Grid className="w-4 h-4" />
+                        <span>Phần D • Bản Đồ Năng Lực & Ma Trận 3x3 Ngày Sinh</span>
+                      </div>
+                      <h2 className="text-2xl font-extrabold text-white">PHẦN D. PHÂN TÍCH NĂNG LỰC</h2>
+                    </div>
+
+                    {/* 14. BIỂU ĐỒ NGÀY SINH 3X3 */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 text-accentGold font-bold text-base border-b border-borderDark/60 pb-2">
+                        <Grid className="w-5 h-5 text-accentGold" />
+                        <span>14. BIỂU ĐỒ NGÀY SINH 3X3 (TRỤC THỂ CHẤT - TÂM HỒN - THẦN TRÍ)</span>
+                      </div>
+                      <p className="text-xs text-gray-300 leading-relaxed">
+                        Biểu đồ ngày sinh 3x3 phản ánh cấu trúc năng lượng nguyên thủy mà vũ trụ trao cho bạn lúc chào đời. Nó được tạo bởi 3 trục: Thần trí (3-6-9), Tâm hồn (2-5-8) và Thể chất (1-4-7).
+                      </p>
+
+                      {/* 3x3 Matrix Grid & 3 Planes */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        {/* 3x3 Visual Matrix */}
+                        <div className="grid grid-cols-3 gap-2 p-4 rounded-2xl bg-background/90 border border-borderDark max-w-xs mx-auto w-full">
+                          {/* Row 1: 3, 6, 9 */}
+                          {[3, 6, 9].map((num) => {
+                            const count = birthChart.matrixCounts[num] || 0;
+                            return (
+                              <div
+                                key={num}
+                                className={`h-20 rounded-xl border flex flex-col items-center justify-center transition-all ${
+                                  count > 0
+                                    ? 'bg-indigo-500/20 border-indigo-400 text-white shadow-md'
+                                    : 'bg-surface/50 border-borderDark/50 text-gray-600'
+                                }`}
+                              >
+                                <span className="text-xs text-gray-400">Số {num}</span>
+                                <span className={`text-2xl font-extrabold ${count > 0 ? 'text-accentGold' : 'text-gray-600'}`}>
+                                  {count > 0 ? Array(count).fill(num).join('') : '-'}
+                                </span>
+                                <span className="text-[10px] text-gray-400">{count > 0 ? `(${count} lần)` : 'Trống'}</span>
+                              </div>
+                            );
+                          })}
+
+                          {/* Row 2: 2, 5, 8 */}
+                          {[2, 5, 8].map((num) => {
+                            const count = birthChart.matrixCounts[num] || 0;
+                            return (
+                              <div
+                                key={num}
+                                className={`h-20 rounded-xl border flex flex-col items-center justify-center transition-all ${
+                                  count > 0
+                                    ? 'bg-emerald-500/20 border-emerald-400 text-white shadow-md'
+                                    : 'bg-surface/50 border-borderDark/50 text-gray-600'
+                                }`}
+                              >
+                                <span className="text-xs text-gray-400">Số {num}</span>
+                                <span className={`text-2xl font-extrabold ${count > 0 ? 'text-accentGold' : 'text-gray-600'}`}>
+                                  {count > 0 ? Array(count).fill(num).join('') : '-'}
+                                </span>
+                                <span className="text-[10px] text-gray-400">{count > 0 ? `(${count} lần)` : 'Trống'}</span>
+                              </div>
+                            );
+                          })}
+
+                          {/* Row 3: 1, 4, 7 */}
+                          {[1, 4, 7].map((num) => {
+                            const count = birthChart.matrixCounts[num] || 0;
+                            return (
+                              <div
+                                key={num}
+                                className={`h-20 rounded-xl border flex flex-col items-center justify-center transition-all ${
+                                  count > 0
+                                    ? 'bg-teal-500/20 border-teal-400 text-white shadow-md'
+                                    : 'bg-surface/50 border-borderDark/50 text-gray-600'
+                                }`}
+                              >
+                                <span className="text-xs text-gray-400">Số {num}</span>
+                                <span className={`text-2xl font-extrabold ${count > 0 ? 'text-accentGold' : 'text-gray-600'}`}>
+                                  {count > 0 ? Array(count).fill(num).join('') : '-'}
+                                </span>
+                                <span className="text-[10px] text-gray-400">{count > 0 ? `(${count} lần)` : 'Trống'}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* 3 Planes Summary */}
+                        <div className="space-y-3 text-xs">
+                          <div className="p-4 rounded-xl bg-surface border border-indigo-500/30 space-y-1">
+                            <div className="flex items-center justify-between font-bold text-indigo-300">
+                              <span>Trục Thần Trí (Trí Tuệ: 3 - 6 - 9)</span>
+                              <span className="font-mono text-white">{birthChart.planes.mental} điểm</span>
+                            </div>
+                            <p className="text-gray-300 text-[11px] leading-relaxed">
+                              Phản ánh khả năng phân tích, trí nhớ, óc sáng tạo và tư duy trừu tượng logic.
+                            </p>
+                          </div>
+
+                          <div className="p-4 rounded-xl bg-surface border border-emerald-500/30 space-y-1">
+                            <div className="flex items-center justify-between font-bold text-emerald-300">
+                              <span>Trục Tâm Hồn (Cảm Xúc: 2 - 5 - 8)</span>
+                              <span className="font-mono text-white">{birthChart.planes.emotional} điểm</span>
+                            </div>
+                            <p className="text-gray-300 text-[11px] leading-relaxed">
+                              Phản ánh trực giác, độ nhạy cảm tâm lý, khả năng yêu thương và cân bằng cảm xúc.
+                            </p>
+                          </div>
+
+                          <div className="p-4 rounded-xl bg-surface border border-teal-500/30 space-y-1">
+                            <div className="flex items-center justify-between font-bold text-teal-300">
+                              <span>Trục Thể Chất (Hành Động: 1 - 4 - 7)</span>
+                              <span className="font-mono text-white">{birthChart.planes.physical} điểm</span>
+                            </div>
+                            <p className="text-gray-300 text-[11px] leading-relaxed">
+                              Phản ánh tính kỷ luật, kỹ năng thực hành bằng tay chân và sức bền hành động thực tế.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 15. CÁC MŨI TÊN CÁ TÍNH */}
+                    <div className="space-y-4 pt-4 border-t border-borderDark/60">
+                      <div className="flex items-center gap-2 text-accentGold font-bold text-base border-b border-borderDark/60 pb-2">
+                        <Award className="w-5 h-5 text-accentGold" />
+                        <span>15. CÁC MŨI TÊN CÁ TÍNH (ARROWS OF INDIVIDUALITY)</span>
+                      </div>
+
+                      {birthChart.arrows.length === 0 ? (
+                        <p className="text-xs text-gray-400">
+                          Bạn không có mũi tên đầy đủ 3 con số hoặc mũi tên hoàn toàn trống. Năng lượng các con số phân bố độc lập.
+                        </p>
+                      ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                          {birthChart.arrows.map((ar, i) => (
+                            <div
+                              key={i}
+                              className={`p-4 rounded-xl border space-y-1.5 ${
+                                ar.type === 'strength'
+                                  ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-100'
+                                  : 'bg-amber-500/10 border-amber-500/40 text-amber-100'
+                              }`}
+                            >
+                              <div className="flex items-center justify-between font-bold">
+                                <span className={ar.type === 'strength' ? 'text-emerald-300' : 'text-amber-300'}>
+                                  {ar.type === 'strength' ? '✨ ' : '⚠️ '} {ar.title}
+                                </span>
+                                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-background/60 border border-borderDark">
+                                  {ar.numbers.join('-')}
+                                </span>
+                              </div>
+                              <p className="leading-relaxed text-[11px]">{ar.description}</p>
+                              <p className="text-[11px] pt-1 font-semibold text-accentGold">💡 Lời khuyên: {ar.advice}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
