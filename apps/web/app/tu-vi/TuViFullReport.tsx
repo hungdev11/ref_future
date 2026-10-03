@@ -20,7 +20,7 @@ import {
   evaluateMenhCucRelation,
   STAR_DETAILED_READINGS,
   generateTuViHolisticSynthesis,
-} from '@/lib/tuvi-interpretations';
+} from '@mystic/tuvi-engine';
 import { TermTag } from '@/components/TermTag';
 
 interface TuViFullReportProps {

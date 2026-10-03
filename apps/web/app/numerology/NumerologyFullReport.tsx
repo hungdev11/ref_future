@@ -27,7 +27,7 @@ import {
   evaluateLifePathExpressionHarmony,
   evaluateLifePathSoulHarmony,
   generateNumerologyHolisticSynthesis,
-} from '@/lib/numerology-interpretations';
+} from '@mystic/numerology-engine';
 import { TermTag } from '@/components/TermTag';
 
 interface NumerologyFullReportProps {

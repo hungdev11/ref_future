@@ -22,7 +22,7 @@ import {
   calculatePalaceScore,
   evaluateMenhCucRelation,
   STAR_DETAILED_READINGS,
-} from '@/lib/tuvi-interpretations';
+} from '@mystic/tuvi-engine';
 import { TuViFullReport } from './TuViFullReport';
 import { TermTag } from '@/components/TermTag';
 

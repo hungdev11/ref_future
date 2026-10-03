@@ -5,3 +5,6 @@ dist
 .DS_Store
 .next
 *.tsbuildinfo
+*.db
+*.db-journal
+*.sqlite
