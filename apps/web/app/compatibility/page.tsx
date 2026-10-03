@@ -227,12 +227,12 @@ export default function CompatibilityPage() {
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-pink-400 font-semibold text-sm">
           <HeartHandshake className="w-4 h-4" />
-          <span>Multi-Discipline Compatibility Engine (Synastry & Numerology Harmony)</span>
+          <span>Hòa Hợp Lứa Đôi & Tri Kỷ</span>
         </div>
-        <h1 className="text-3xl font-extrabold text-white">Đối Chiếu Tương Hợp Đa Hệ Thống</h1>
+        <h1 className="text-3xl font-extrabold text-white">Xem Độ Tương Hợp Giữa Hai Bạn</h1>
         <p className="text-sm text-gray-400 max-w-2xl">
-          Phân tích độ tương thích giữa hai người dựa trên nguyên lý tương tác nguyên tố Chiêm Tinh Học và nhịp điệu số học Pythagoras. 
-          Không sử dụng điểm số phần trăm giả tạo — toàn bộ phân tích dựa trên cấu trúc năng lượng minh bạch và lời khuyên đồng hành thực tế.
+          Đối chiếu sự hòa hợp dựa trên nguyên lý nguyên tố Hoàng Đạo (Lửa, Đất, Khí, Nước) và cặp Số Chủ Đạo Thần Số Học Pythagoras. 
+          Giúp bạn thấu hiểu điểm chung, nhận diện nguy cơ xung đột và nhận lời khuyên vun đắp tình cảm bền chặt.
         </p>
       </div>
 
@@ -494,11 +494,11 @@ export default function CompatibilityPage() {
           {/* Transparent explanation */}
           <div className="p-4 rounded-xl bg-surfaceHover/60 border border-borderDark space-y-2 text-xs text-gray-300">
             <div className="font-semibold text-white flex items-center gap-1.5">
-              <Info className="w-4 h-4 text-emerald-400" />
-              Minh Bạch Về Nguyên Tắc Tương Hợp Tất Định (Zero AI)
+              <Info className="w-4 h-4 text-pink-400" />
+              Nguyên Tắc Đánh Giá Hòa Hợp
             </div>
             <p className="leading-relaxed text-gray-400">
-              Hệ thống xác định tương thích thông qua nguyên tắc hài hòa nguyên tố (Lửa, Đất, Khí, Nước) và nhịp điệu chu kỳ số học Pythagoras. Chúng tôi kiên quyết không tạo ra những con số % may rủi vô căn cứ mà tập trung chỉ ra điểm tương đồng, nguy cơ xung đột và cách hai người tương trợ lẫn nhau để xây dựng mối quan hệ bền vững.
+              Hệ thống xác định tương thích thông qua nguyên tắc tương sinh tương khắc giữa các nguyên tố và nhịp điệu chu kỳ số học. Chúng tôi không đưa ra những con số phần trăm may rủi vô nghĩa, mà tập trung chỉ ra cách hai bạn có thể thấu cảm, nhường nhịn và đồng hành cùng nhau trên chặng đường dài.
             </p>
           </div>
         </div>

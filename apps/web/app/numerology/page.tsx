@@ -515,11 +515,11 @@ export default function NumerologyPage() {
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-emerald-400 font-semibold text-sm">
           <Hash className="w-4 h-4" />
-          <span>Hệ Thống Thần Số Học Pythagoras Tất Định (NUMEROLOGY_METHOD_V1)</span>
+          <span>Thần Số Học Pythagoras</span>
         </div>
-        <h1 className="text-3xl font-extrabold text-white">Tra Cứu Bản Đồ Số Học Pythagoras</h1>
+        <h1 className="text-3xl font-extrabold text-white">Tra Cứu & Giải Mã Thần Số Học Của Bạn</h1>
         <p className="text-sm text-gray-400 max-w-2xl">
-          Giải mã tần số rung động từ họ tên và ngày sinh theo chuẩn phương Tây cổ điển. 
+          Khám phá bản đồ năng lượng các con số từ họ tên và ngày sinh của bạn. 
           <strong> Nhấn vào bất kỳ con số, đỉnh cao hay mũi tên nào để mở cửa sổ luận giải chi tiết và dễ hiểu nhất cho bạn.</strong>
         </p>
       </div>
@@ -614,22 +614,7 @@ export default function NumerologyPage() {
                     👉 Nhấn vào số để mở luận giải Popup
                   </span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setShowTechnical(!showTechnical)}
-                  className="text-gray-400 hover:text-emerald-400 text-[11px] transition-colors underline"
-                >
-                  {showTechnical ? 'Ẩn thông số' : 'Thông số kỹ thuật'}
-                </button>
               </div>
-
-              {showTechnical && (
-                <div className="p-3.5 rounded-xl bg-background/90 border border-borderDark text-[11px] font-mono text-gray-400 space-y-1">
-                  <div>Thuật toán: Pythagorean Standard v{result.engineVersion}</div>
-                  <div>Input Hash: <span className="text-emerald-400">{result.inputHash}</span></div>
-                  <div>Công thức Số Chủ Đạo: {result.facts?.core?.LIFE_PATH?.rawCalculation}</div>
-                </div>
-              )}
 
               {/* View Mode Switcher */}
               <div className="flex flex-wrap items-center justify-between gap-3 p-2 rounded-2xl bg-surface/80 border border-borderDark">

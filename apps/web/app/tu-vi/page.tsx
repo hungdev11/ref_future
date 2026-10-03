@@ -228,12 +228,12 @@ export default function TuViPage() {
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-indigo-400 font-semibold text-sm">
           <Moon className="w-4 h-4" />
-          <span>Tử Vi Đẩu Số (Nam Phái Truyền Thống - TUVI_METHOD_V1)</span>
+          <span>Tử Vi Đẩu Số Truyền Thống</span>
         </div>
-        <h1 className="text-3xl font-extrabold text-white">An Lá Số Tử Vi Đẩu Số Tất Định</h1>
+        <h1 className="text-3xl font-extrabold text-white">Lập & Giải Mã Lá Số Tử Vi Trọn Đời</h1>
         <p className="text-sm text-gray-400 max-w-2xl">
-          Tính toán lịch âm thiên văn chuẩn kinh tuyến 105°E (GMT+7). An 12 cung chức, định Cục, an 14 chính tinh và phụ tinh. 
-          <strong> Nhấn vào bất kỳ Cung chức nào để mở cửa sổ luận giải chi tiết, rõ ràng và dễ hiểu cho người mới bắt đầu.</strong>
+          An bản đồ 12 cung chức, định Cục, an 14 chính tinh và các sao chiếu mệnh của bạn. 
+          <strong> Nhấn vào bất kỳ Cung chức nào để mở cửa sổ luận giải chi tiết, rõ ràng và dễ hiểu nhất.</strong>
         </p>
       </div>
 
@@ -262,7 +262,7 @@ export default function TuViPage() {
                 className="w-full px-3 py-2 rounded-xl bg-background border border-borderDark text-white text-sm focus:outline-none focus:border-indigo-500"
               />
               <span className="text-[10px] text-gray-500 mt-1 block">
-                Tử Vi Đẩu Số bắt buộc phải có giờ sinh để an Mệnh/Thân và Cục.
+                Tử Vi Đẩu Số cần có giờ sinh để an Mệnh/Thân và Cục chính xác.
               </span>
             </div>
 
@@ -299,7 +299,7 @@ export default function TuViPage() {
               disabled={loading}
               className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold hover:opacity-95 transition-opacity disabled:opacity-50 mt-4 shadow-lg shadow-indigo-600/20"
             >
-              {loading ? 'Đang Khởi Bàn...' : 'Lập Lá Số Tất Định'}
+              {loading ? 'Đang Khởi Bàn...' : 'An Lá Số Tử Vi Của Tôi'}
             </button>
           </form>
 

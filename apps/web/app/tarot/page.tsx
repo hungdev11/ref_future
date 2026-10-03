@@ -123,12 +123,12 @@ export default function TarotPage() {
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-rose-400 font-semibold text-sm">
           <BookOpen className="w-4 h-4" />
-          <span>Rider-Waite-Smith 78 Cards (Tất Định & Tái Lập Tuyệt Đối)</span>
+          <span>Bói Bài Tarot Rider-Waite 78 Lá</span>
         </div>
         <h1 className="text-3xl font-extrabold text-white">Trải Bài Tarot & Thông Điệp Trực Giác</h1>
         <p className="text-sm text-gray-400 max-w-2xl">
-          Rút bài khách quan theo thuật toán Fisher-Yates chuẩn xác. Hệ thống trình bày trực quan mô phỏng bàn trải bài thực tế — 
-          <strong> bạn chỉ cần nhấn vào từng lá bài để mở cửa sổ luận giải chi tiết và dễ hiểu nhất</strong>.
+          Tĩnh tâm, tập trung vào điều bạn đang trăn trở và rút những lá bài chỉ đường. 
+          <strong> Nhấn vào từng lá bài để mở lời luận giải chi tiết về công việc, tiền bạc, tình cảm và lời khuyên hành động.</strong>
         </p>
       </div>
 
@@ -137,7 +137,7 @@ export default function TarotPage() {
         <div className="p-6 rounded-2xl bg-surface border border-borderDark space-y-6 h-fit">
           <form onSubmit={handleDraw} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-gray-300 mb-1">Kiểu Trải Bài (Spread)</label>
+              <label className="block text-xs font-medium text-gray-300 mb-1">Kiểu Trải Bài</label>
               <select
                 value={spreadCode}
                 onChange={(e) => setSpreadCode(e.target.value)}
@@ -147,45 +147,9 @@ export default function TarotPage() {
                 <option value="SPREAD_3_PPF">3 Lá: Quá Khứ / Hiện Tại / Tương Lai</option>
                 <option value="SPREAD_3_SCA">3 Lá: Hoàn Cảnh / Thách Thức / Lời Khuyên</option>
                 <option value="SPREAD_5_SCCA_OUTCOME">5 Lá: Phân Tích Toàn Diện 5 Chiều</option>
-                <option value="SPREAD_10_CELTIC_CROSS">10 Lá: Thập Tự Celtic (Celtic Cross)</option>
+                <option value="SPREAD_10_CELTIC_CROSS">10 Lá: Thập Tự Celtic (Chuyên Sâu)</option>
               </select>
             </div>
-
-            {/* Advanced Seed Toggle */}
-            <div className="pt-1">
-              <button
-                type="button"
-                onClick={() => setShowAdvanced(!showAdvanced)}
-                className="text-xs text-gray-400 hover:text-rose-400 flex items-center gap-1.5 transition-colors"
-              >
-                <Sliders className="w-3.5 h-3.5" />
-                <span>{showAdvanced ? 'Ẩn tùy chọn nâng cao' : 'Tùy chọn nâng cao (Seed)'}</span>
-              </button>
-            </div>
-
-            {showAdvanced && (
-              <div className="p-3.5 rounded-xl bg-background/80 border border-borderDark space-y-2 animate-fadeIn">
-                <div className="flex items-center justify-between">
-                  <label className="block text-xs font-medium text-gray-300">Khóa Hạt Giống (Seed)</label>
-                  <button
-                    type="button"
-                    onClick={handleRandomSeed}
-                    className="text-[11px] text-rose-400 hover:text-rose-300 flex items-center gap-1"
-                  >
-                    <RefreshCw className="w-3 h-3" /> Đổi Seed
-                  </button>
-                </div>
-                <input
-                  type="text"
-                  value={seed}
-                  onChange={(e) => setSeed(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-background border border-borderDark text-white font-mono text-xs focus:outline-none focus:border-rose-500"
-                />
-                <span className="text-[10px] text-gray-500 block">
-                  Cố định seed để tái lập chính xác lần rút bài này.
-                </span>
-              </div>
-            )}
 
             <button
               type="submit"
@@ -255,7 +219,7 @@ export default function TarotPage() {
                 </div>
                 <div className="flex items-center gap-1.5 text-emerald-400 text-[11px]">
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>100% Xác Thực Tất Định</span>
+                  <span>Bộ bài 78 lá đã sẵn sàng</span>
                 </div>
               </div>
 

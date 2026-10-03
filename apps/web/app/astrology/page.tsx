@@ -455,10 +455,23 @@ function createSectorPath(
   return `M ${p1.x.toFixed(2)} ${p1.y.toFixed(2)} A ${rOuter} ${rOuter} 0 0 0 ${p2.x.toFixed(2)} ${p2.y.toFixed(2)} L ${p3.x.toFixed(2)} ${p3.y.toFixed(2)} A ${rInner} ${rInner} 0 0 1 ${p4.x.toFixed(2)} ${p4.y.toFixed(2)} Z`;
 }
 
+const VIETNAM_CITIES: { name: string; lat: number; lng: number }[] = [
+  { name: 'Hà Nội', lat: 21.0285, lng: 105.8542 },
+  { name: 'TP. Hồ Chí Minh', lat: 10.8231, lng: 106.6297 },
+  { name: 'Đà Nẵng', lat: 16.0544, lng: 108.2022 },
+  { name: 'Hải Phòng', lat: 20.8449, lng: 106.6881 },
+  { name: 'Cần Thơ', lat: 10.0452, lng: 105.7469 },
+  { name: 'Nha Trang', lat: 12.2388, lng: 109.1967 },
+  { name: 'Huế', lat: 16.4637, lng: 107.5909 },
+  { name: 'Đà Lạt', lat: 11.9404, lng: 108.4583 },
+  { name: 'Khác (Nhập tọa độ thủ công)', lat: 0, lng: 0 },
+];
+
 export default function AstrologyPage() {
   const [birthDate, setBirthDate] = useState('1990-07-25');
   const [birthTime, setBirthTime] = useState('08:30:00');
   const [isTimeUnknown, setIsTimeUnknown] = useState(false);
+  const [selectedCity, setSelectedCity] = useState('Hà Nội');
   const [latitude, setLatitude] = useState(21.0285);
   const [longitude, setLongitude] = useState(105.8542);
   const [timezoneOffset, setTimezoneOffset] = useState(420);
@@ -467,7 +480,6 @@ export default function AstrologyPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-  const [showAudit, setShowAudit] = useState(false);
 
   // Modal State for clicked Astrology Item
   const [selectedAstroItem, setSelectedAstroItem] = useState<{
@@ -481,6 +493,15 @@ export default function AstrologyPage() {
     mechanism?: string;
     advice: string;
   } | null>(null);
+
+  const handleCityChange = (cityName: string) => {
+    setSelectedCity(cityName);
+    const city = VIETNAM_CITIES.find((c) => c.name === cityName);
+    if (city && city.lat !== 0) {
+      setLatitude(city.lat);
+      setLongitude(city.lng);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -541,11 +562,11 @@ export default function AstrologyPage() {
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-accentGold font-semibold text-sm">
           <Compass className="w-4 h-4" />
-          <span>Western Tropical Astrology Engine (VSOP87 / ELP2000-82B)</span>
+          <span>Chiêm Tinh Học Tây Phương (Bản Đồ Sao Cá Nhân)</span>
         </div>
-        <h1 className="text-3xl font-extrabold text-white">Lập Bản Đồ Sao Chiêm Tinh Học Tất Định</h1>
+        <h1 className="text-3xl font-extrabold text-white">Lập & Giải Mã Bản Đồ Sao Của Bạn</h1>
         <p className="text-sm text-gray-400 max-w-2xl">
-          Tính toán tọa độ thực thiên văn VSOP87. 
+          Khám phá trọn vẹn vị trí các hành tinh, cung hoàng đạo và 12 cung nhà tại thời điểm bạn chào đời. 
           <strong> Nhấn vào Mặt Trời, Mặt Trăng, Cung Mọc hay bất kỳ hành tinh nào để mở popup luận giải chi tiết, dễ hiểu nhất cho bạn.</strong>
         </p>
       </div>
@@ -574,14 +595,14 @@ export default function AstrologyPage() {
                 className="rounded border-borderDark text-accentGold focus:ring-accentGold"
               />
               <label htmlFor="unknownTime" className="text-xs text-gray-400 cursor-pointer select-none">
-                Chưa rõ giờ sinh chính xác (Degraded Mode)
+                Chưa rõ giờ sinh chính xác (xem tổng quan)
               </label>
             </div>
 
             {!isTimeUnknown && (
               <>
                 <div>
-                  <label className="block text-xs font-medium text-gray-300 mb-1">Giờ Sinh (Giờ : Phút : Giây)</label>
+                  <label className="block text-xs font-medium text-gray-300 mb-1">Giờ Sinh</label>
                   <input
                     type="time"
                     step="1"
@@ -592,68 +613,60 @@ export default function AstrologyPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-300 mb-1">Vĩ Độ (Latitude)</label>
-                    <input
-                      type="number"
-                      step="any"
-                      value={latitude}
-                      onChange={(e) => setLatitude(Number(e.target.value))}
-                      className="w-full px-3 py-2 rounded-xl bg-background border border-borderDark text-white text-sm focus:outline-none focus:border-accentGold"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-300 mb-1">Kinh Độ (Longitude)</label>
-                    <input
-                      type="number"
-                      step="any"
-                      value={longitude}
-                      onChange={(e) => setLongitude(Number(e.target.value))}
-                      className="w-full px-3 py-2 rounded-xl bg-background border border-borderDark text-white text-sm focus:outline-none focus:border-accentGold"
-                    />
-                  </div>
-                </div>
-
                 <div>
-                  <label className="block text-xs font-medium text-gray-300 mb-1">Hệ Thống Nhà (House System)</label>
+                  <label className="block text-xs font-medium text-gray-300 mb-1">Nơi Sinh (Thành phố)</label>
                   <select
-                    value={houseSystem}
-                    onChange={(e) => setHouseSystem(e.target.value)}
+                    value={selectedCity}
+                    onChange={(e) => handleCityChange(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl bg-background border border-borderDark text-white text-sm focus:outline-none focus:border-accentGold"
                   >
-                    <option value="PLACIDUS">Placidus (Mặc định)</option>
-                    <option value="WHOLE_SIGN">Whole Sign</option>
-                    <option value="EQUAL">Equal</option>
+                    {VIETNAM_CITIES.map((city) => (
+                      <option key={city.name} value={city.name}>
+                        {city.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
+
+                {selectedCity === 'Khác (Nhập tọa độ thủ công)' && (
+                  <div className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-background/80 border border-borderDark">
+                    <div>
+                      <label className="block text-[11px] font-medium text-gray-300 mb-1">Vĩ Độ (Latitude)</label>
+                      <input
+                        type="number"
+                        step="any"
+                        value={latitude}
+                        onChange={(e) => setLatitude(Number(e.target.value))}
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-surface border border-borderDark text-white text-xs focus:outline-none focus:border-accentGold"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-medium text-gray-300 mb-1">Kinh Độ (Longitude)</label>
+                      <input
+                        type="number"
+                        step="any"
+                        value={longitude}
+                        onChange={(e) => setLongitude(Number(e.target.value))}
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-surface border border-borderDark text-white text-xs focus:outline-none focus:border-accentGold"
+                      />
+                    </div>
+                  </div>
+                )}
               </>
             )}
-
-            <div>
-              <label className="block text-xs font-medium text-gray-300 mb-1">Múi Giờ (Phút so với UTC)</label>
-              <input
-                type="number"
-                value={timezoneOffset}
-                onChange={(e) => setTimezoneOffset(Number(e.target.value))}
-                placeholder="420 cho UTC+7"
-                className="w-full px-3 py-2 rounded-xl bg-background border border-borderDark text-white text-sm focus:outline-none focus:border-accentGold"
-              />
-              <span className="text-[11px] text-gray-500">420 phút = UTC+7 (Việt Nam)</span>
-            </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-accentGold to-amber-600 text-background font-bold text-sm shadow-md hover:opacity-95 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-accentGold via-amber-400 to-amber-600 text-background font-bold text-sm shadow-xl shadow-accentGold/20 hover:opacity-95 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
             >
               {loading ? (
                 <>
                   <RefreshCw className="w-4 h-4 animate-spin" />
-                  Đang tính toán thiên văn...
+                  Đang khởi tạo bản đồ sao...
                 </>
               ) : (
-                'Tính Toán Lá Số Chiêm Tinh'
+                'Khám Phá Bản Đồ Sao Của Tôi'
               )}
             </button>
           </form>
@@ -672,7 +685,7 @@ export default function AstrologyPage() {
               Hướng Dẫn Đọc Bản Đồ Sao
             </div>
             <p className="leading-relaxed text-[11px]">
-              Bộ ba cốt lõi <strong>Mặt Trời, Mặt Trăng, Cung Mọc</strong> quyết định 70% bức tranh tính cách của bạn. 
+              Bộ ba <strong>Mặt Trời, Mặt Trăng, Cung Mọc</strong> phản ánh bản ngã, thế giới cảm xúc và phong thái đối ngoại của bạn. 
               <strong> Nhấn vào từng thẻ</strong> để mở cửa sổ luận giải chi tiết và lời khuyên cân bằng năng lượng.
             </p>
           </div>
@@ -685,7 +698,7 @@ export default function AstrologyPage() {
               <Compass className="w-14 h-14 text-gray-600 mx-auto" />
               <h3 className="text-gray-300 font-bold">Bản Đồ Sao Đang Chờ Bạn</h3>
               <p className="text-xs text-gray-500 max-w-sm mx-auto">
-                Nhập thông tin ngày sinh và tọa độ để khởi chạy engine tính toán thiên văn VSOP87.
+                Nhập thông tin ngày sinh và nơi sinh bên trái để khởi tạo bản đồ sao cá nhân chi tiết.
               </p>
             </div>
           )}
@@ -697,42 +710,26 @@ export default function AstrologyPage() {
                 <div className="p-4 rounded-xl bg-amber-950/40 border border-amber-500/40 text-amber-200 text-xs space-y-1">
                   <div className="flex items-center gap-2 font-semibold text-amber-400">
                     <AlertTriangle className="w-4 h-4" />
-                    Chế độ thoái hóa an toàn (Degraded Mode) được kích hoạt
+                    Lưu ý: Bạn chưa nhập giờ sinh chính xác
                   </div>
-                  <ul className="list-disc list-inside text-amber-300/80 space-y-0.5 pl-1">
-                    {result.degradationReasons?.map((r: string, idx: number) => (
-                      <li key={idx}>{r}</li>
-                    ))}
-                  </ul>
+                  <p className="text-amber-300/80 leading-relaxed text-[11px]">
+                    Hệ thống chỉ giải mã vị trí các hành tinh theo ngày sinh. Cung Mọc (Ascendant) và 12 cung nhà được ẩn đi để không tạo ra các phán đoán thiếu căn cứ.
+                  </p>
                 </div>
               )}
 
-              {/* Clean verification badge with collapsible audit info */}
+              {/* Clean verification badge */}
               <div className="p-4 rounded-xl bg-surface border border-borderDark flex flex-wrap items-center justify-between gap-3 text-xs">
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-emerald-400" />
                   <span className="text-gray-200 font-medium">
-                    Hệ thống tính toán thiên văn VSOP87 / ELP2000 (Tất Định 100%)
+                    Bản đồ sao cá nhân hóa chuẩn xác
                   </span>
                   <span className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-accentGold/10 text-accentGold border border-accentGold/30 text-[10px]">
-                    👉 Nhấn vào hành tinh để xem luận giải Popup
+                    👉 Nhấn vào hành tinh hoặc cung nhà để xem luận giải Popup
                   </span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setShowAudit(!showAudit)}
-                  className="text-gray-400 hover:text-accentGold text-[11px] transition-colors underline"
-                >
-                  {showAudit ? 'Ẩn thông số' : 'Thông số kỹ thuật'}
-                </button>
               </div>
-
-              {showAudit && (
-                <div className="p-3.5 rounded-xl bg-background/90 border border-borderDark/80 text-[11px] font-mono text-gray-400 space-y-1">
-                  <div>Engine: WesternAstrology v{result.engineVersion} • House: {result.metadata?.houseSystem}</div>
-                  <div>Input Hash (SHA-256): <span className="text-accentGold">{result.inputHash}</span></div>
-                </div>
-              )}
 
               {/* THE BIG THREE SUMMARY CARDS (Clickable to open Popup) */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
