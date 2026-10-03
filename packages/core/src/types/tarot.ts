@@ -31,4 +31,5 @@ export interface TarotFacts {
   spreadCode: string;
   seed: string;
   draws: TarotPositionResult[];
+  synthesis?: unknown;
 }

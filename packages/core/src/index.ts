@@ -4,6 +4,7 @@ export * from './types/numerology.js';
 export * from './types/tarot.js';
 export * from './types/rules.js';
 export * from './types/readings.js';
+export * from './types/semantic.js';
 export * from './interfaces/calculation-engine.js';
 export * from './interfaces/rule-engine.js';
 export * from './prng/mulberry32.js';

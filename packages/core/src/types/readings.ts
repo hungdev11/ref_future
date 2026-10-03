@@ -1,4 +1,5 @@
 import { TraitScore, TraitProfile, ContradictionItem, EvidenceItem } from './rules.js';
+import { StructuredResult } from './semantic.js';
 
 export enum ReadingDomain {
   OVERVIEW = 'OVERVIEW',
@@ -71,6 +72,7 @@ export interface ReadingOutput {
   activeSyntheses?: ContradictionItem[];
   evidenceItems?: EvidenceItem[];
   qualityScore?: number;
+  structuredResult?: StructuredResult;
   createdAt: string;
 }
 

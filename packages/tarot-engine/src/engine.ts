@@ -9,7 +9,7 @@ import {
 } from '@mystic/core';
 import { buildRWSStandardDeck } from './deck.js';
 import { STANDARD_SPREADS, SpreadDefinition } from './spreads.js';
-import { synthesizeSpreadNarrative } from './interpretations.js';
+import { synthesizeSpreadNarrative } from './context-rules.js';
 
 export interface TarotConfig {
   configVersion: string;

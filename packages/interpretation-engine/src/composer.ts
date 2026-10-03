@@ -3,6 +3,12 @@ import {
   ReadingOutput,
   ReadingSectionData,
   RuleDefinition,
+  StructuredResult,
+  SemanticSignal,
+  ContextualInterpretation,
+  StructuredSynthesis,
+  PracticalGuidance,
+  EvidenceGraph,
 } from '@mystic/core';
 import { DeterministicRuleResolver } from '@mystic/rule-engine';
 import { KNOWLEDGE_CATALOG, BASELINE_RULES, InterpretationDefinition } from './catalog.js';
@@ -89,6 +95,128 @@ export class ReadingResultComposer {
 
     const readingId = `reading_${crypto.randomUUID().slice(0, 8)}`;
 
+    // 8. Build Structured Semantic Result
+    const signals: SemanticSignal[] = evidenceList.map((e, idx) => ({
+      id: `sig_${e.evidenceId || idx}`,
+      dimension: e.domain || 'personality',
+      polarity: e.polarity === 'POSITIVE' ? 'constructive' : e.polarity === 'NEGATIVE' ? 'shadow' : 'neutral',
+      strength: e.weight,
+      source: e.sourceRuleCode,
+      evidenceIds: [e.evidenceId],
+      ruleIds: [e.sourceRuleCode],
+      contextTags: [e.domain, e.trait],
+      description: `${e.trait}: ${e.effect}`,
+    }));
+
+    const relationships = interactions.map((inter) => ({
+      ruleId: inter.ruleId,
+      theme: inter.theme,
+      domain: inter.domain,
+      title: inter.title,
+      description: inter.description,
+      intensity: inter.intensity,
+    }));
+
+    const dimensions = traitScores.map((ts) => ts.trait);
+
+    const interpretations: ContextualInterpretation[] = sections.map((sec, idx) => ({
+      id: `interp_${idx}`,
+      dimension: String(sec.domain),
+      headline: sec.title,
+      statement: sec.renderedText,
+      signals: signals.slice(0, 3).map((s) => s.id),
+      evidenceIds: sec.provenanceTraces?.flatMap((p) => p.evidenceIds) ?? [],
+      ruleIds: sec.sourceRuleCode ? [sec.sourceRuleCode] : [],
+      polarity: 'supportive',
+      strength: 0.85,
+      context: {
+        sectionOrder: sec.sectionOrder,
+        domain: sec.domain,
+        sourceReference: sec.sourceReference,
+      },
+    }));
+
+    const structuredSynthesis: StructuredSynthesis = {
+      dominantThemes: traitScores.slice(0, 3).map((ts) => ts.trait),
+      reinforcements: interactions.map((inter) => ({
+        theme: inter.theme,
+        sources: [inter.ruleId],
+        explanation: inter.description,
+      })),
+      tensions: syntheses.map((s) => ({
+        traitA: s.traitA,
+        traitB: s.traitB,
+        dynamics: s.synthesisDescription,
+        resolution: s.advice,
+      })),
+      coreDynamicStatement: syntheses[0]?.synthesisDescription || (sections[0]?.renderedText?.slice(0, 150) ?? 'Tổng luận hòa hợp đa diện.'),
+    };
+
+    const guidance: PracticalGuidance[] = sections
+      .filter((s) => s.actionableAdvice)
+      .map((s) => ({
+        actionPriority: 'STRATEGIC',
+        timeframe: 'TRUNG_HAN',
+        rationale: s.explanation || s.renderedText.slice(0, 120),
+        whatToContinue: [s.actionableAdvice!],
+        whatToAdjustOrStop: s.laymanSummary ? [s.laymanSummary] : [],
+        triggerSignals: signals.slice(0, 2).map((sig) => sig.id),
+      }));
+
+    const evidenceGraph: EvidenceGraph = {
+      nodes: [
+        ...evidenceList.map((e) => ({
+          id: e.evidenceId,
+          type: 'FEATURE' as const,
+          label: `${e.trait} (${e.effect})`,
+          metadata: { domain: e.domain, weight: e.weight },
+        })),
+        ...resolution.matchedRules.map((r) => ({
+          id: r.ruleCode,
+          type: 'RULE' as const,
+          label: r.ruleCode,
+          metadata: { priority: r.priority, specificity: r.specificityScore },
+        })),
+        ...signals.map((s) => ({
+          id: s.id,
+          type: 'SIGNAL' as const,
+          label: `${s.dimension}: ${s.polarity}`,
+          metadata: { strength: s.strength },
+        })),
+      ],
+      edges: [
+        ...evidenceList.map((e) => ({
+          from: e.sourceRuleCode,
+          to: e.evidenceId,
+          relation: 'PRODUCES' as const,
+          weight: e.weight,
+        })),
+        ...signals.map((s) => ({
+          from: s.evidenceIds[0] || 'evidence',
+          to: s.id,
+          relation: 'DERIVED_FROM' as const,
+        })),
+      ],
+    };
+
+    const structuredResult: StructuredResult = {
+      facts: Object.entries(facts).map(([key, value]) => ({ key, value })),
+      signals,
+      relationships,
+      dimensions,
+      interpretations,
+      synthesis: structuredSynthesis,
+      guidance,
+      evidence: evidenceList,
+      evidenceGraph,
+      metadata: {
+        engineVersion: request.engineVersion ?? '2.0.0',
+        rulesVersion: request.rulesetVersion ?? 'RULESET_V2',
+        deterministic: true,
+        calculatedAt: new Date().toISOString(),
+      },
+    };
+
     return {
       id: readingId,
       readingType: request.readingType,
@@ -105,6 +233,7 @@ export class ReadingResultComposer {
       activeSyntheses: syntheses,
       evidenceItems: evidenceList,
       qualityScore: audit.qualityScore,
+      structuredResult,
       createdAt: new Date().toISOString(),
     };
   }
