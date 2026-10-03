@@ -910,3 +910,134 @@ export function evaluateLifePathSoulHarmony(lifePath: number, soulUrge: number):
     advice: 'Đừng quên chăm sóc nhu cầu tâm hồn của số Linh Hồn để duy trì nguồn năng lượng bền bỉ cho chặng đường dài.',
   };
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// HOLISTIC SYNTHESIS — cross-factor analysis
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface NumerologyHolisticSynthesis {
+  coreTriangle: {
+    lifePathVsExpression: { label: string; pattern: 'HARMONY' | 'TENSION' | 'NEUTRAL'; description: string };
+    lifePathVsSoul: { label: string; pattern: 'HARMONY' | 'TENSION' | 'NEUTRAL'; description: string };
+    overallDynamic: string;
+  };
+  temporalBlueprint: {
+    currentPinnacleLabel: string;
+    currentChallengeLabel: string;
+    confluenceNote: string;
+  };
+  actionPlan: {
+    priorities: string[];
+    pitfalls: string[];
+    motto: string;
+  };
+}
+
+export function generateNumerologyHolisticSynthesis(
+  lifePath: number,
+  expression: number,
+  soulUrge: number,
+  personalYear: number,
+  birthDateStr: string,
+  cyclesData?: { pinnacles?: Array<{ number: number; label: string }>; challenges?: Array<{ number: number; label: string }> }
+): NumerologyHolisticSynthesis {
+  // 1. Core Triangle — Life Path vs Expression
+  function triAnalyze(a: number, b: number, labelA: string, labelB: string) {
+    const diff = Math.abs(a - b);
+    const sum = (a + b) % 9 || 9;
+    let pattern: 'HARMONY' | 'TENSION' | 'NEUTRAL' = 'NEUTRAL';
+    let description = '';
+
+    if (a === b) {
+      pattern = 'HARMONY';
+      description = `${labelA} và ${labelB} cùng rung động ở tần số ${a}. Bạn sống rất nhất quán: mục tiêu, cách thể hiện và nhu cầu nội tâm chỉ về một hướng. Điều này tạo ra sức mạnh tập trung nhưng cũng cần tránh thiếu linh hoạt.`;
+    } else if ([1,2,3,6,9].includes(a) && [1,2,3,6,9].includes(b)) {
+      pattern = 'HARMONY';
+      description = `${labelA} (${a}) và ${labelB} (${b}) thuộc nhóm tần số tương sinh. Năng lực bên ngoài và bên trong bổ trợ lẫn nhau, tạo điều kiện để bạn phát triển tự nhiên mà không cần gắng sức quá mức.`;
+    } else if ([4,5,7,8].includes(a) && [4,5,7,8].includes(b)) {
+      pattern = 'TENSION';
+      description = `${labelA} (${a}) và ${labelB} (${b}) tạo ra sức căng nội tâm. Bạn thường thấy bản thân muốn làm một việc nhưng năng lực tự nhiên lại dẫn đến hướng khác. Đây không phải điểm yếu — mà là nguồn động lực tìm kiếm sự tổng hợp sâu hơn.`;
+    } else if (diff <= 2 || sum === 9 || sum === 11) {
+      pattern = 'NEUTRAL';
+      description = `${labelA} (${a}) và ${labelB} (${b}) vận hành song song, không xung đột nhưng cũng không tự nhiên khuếch đại nhau. Bạn cần chủ động điều phối hai năng lượng này trong các quyết định quan trọng.`;
+    } else {
+      pattern = 'TENSION';
+      description = `${labelA} (${a}) và ${labelB} (${b}) có biên độ rung động chênh lệch đáng kể. Bạn có thể cảm thấy chia rẽ giữa con đường số phận và cách bạn muốn thể hiện bản thân với thế giới bên ngoài.`;
+    }
+    return { label: `${labelA} ${a} × ${labelB} ${b}`, pattern, description };
+  }
+
+  const lpVsExpr = triAnalyze(lifePath, expression, 'Số Chủ Đạo', 'Số Sứ Mệnh');
+  const lpVsSoul = triAnalyze(lifePath, soulUrge, 'Số Chủ Đạo', 'Số Linh Hồn');
+
+  const tensionCount = [lpVsExpr.pattern, lpVsSoul.pattern].filter((p) => p === 'TENSION').length;
+  const harmonyCount = [lpVsExpr.pattern, lpVsSoul.pattern].filter((p) => p === 'HARMONY').length;
+  let overallDynamic = '';
+  if (harmonyCount === 2) {
+    overallDynamic = `Ba trục số cốt lõi của bạn hài hòa sâu sắc. Bạn có lợi thế lớn về tính nhất quán nội tâm — ít xung đột nội tâm hơn đa số người. Thách thức là duy trì sự mở rộng khi môi trường xung quanh thay đổi.`;
+  } else if (tensionCount === 2) {
+    overallDynamic = `Tam giác số của bạn mang nhiều sức căng. Điều này thường tạo ra những người có chiều sâu nội tâm lớn, hay đặt câu hỏi về bản sắc. Ưu điểm: bạn không dễ bị bão hòa; nhược điểm: cần nhiều thời gian hơn để ổn định.`;
+  } else {
+    overallDynamic = `Tam giác số của bạn pha trộn hài hòa và căng thẳng. Điều này tạo ra một nhân cách năng động, có khả năng thích nghi cao — bạn vừa có định hướng ổn định, vừa không ngại thay đổi khi cần thiết.`;
+  }
+
+  // 2. Temporal Blueprint
+  const pinnacle = cyclesData?.pinnacles?.[0];
+  const challenge = cyclesData?.challenges?.[0];
+  const pinnacleLabel = pinnacle ? `Đỉnh Cao ${pinnacle.number} — ${pinnacle.label}` : `Đỉnh Cao Số Mệnh ${lifePath}`;
+  const challengeLabel = challenge ? `Thử Thách ${challenge.number} — ${challenge.label}` : `Thử Thách Căn Cơ Số ${expression}`;
+
+  const pyGroupA = [1, 5, 9]; // action years
+  const pyGroupB = [2, 4, 6, 8]; // foundation years
+  const pyGroupC = [3, 7, 11]; // introspection/expression years
+  let confluenceNote = '';
+  if (pyGroupA.includes(personalYear)) {
+    confluenceNote = `Năm Cá Nhân ${personalYear} là năm hành động và khởi xướng. Đây là thời điểm tốt để kích hoạt tiềm năng của Đỉnh Cao hiện tại, đặc biệt trong lĩnh vực ${lpVsExpr.pattern === 'HARMONY' ? 'nghề nghiệp và quan hệ' : 'cá nhân và định hướng lại'}.`;
+  } else if (pyGroupB.includes(personalYear)) {
+    confluenceNote = `Năm Cá Nhân ${personalYear} là năm xây nền và củng cố. Tập trung hoàn thiện hệ thống, quan hệ và tài chính thay vì mở rộng quá nhiều mặt trận.`;
+  } else {
+    confluenceNote = `Năm Cá Nhân ${personalYear} là năm hướng vào nội tâm và biểu đạt sáng tạo. Thích hợp để học hỏi, viết lách, hoặc các hoạt động đòi hỏi tư duy sâu.`;
+  }
+
+  // 3. Action Plan
+  const priorities: string[] = [];
+  const pitfalls: string[] = [];
+
+  if (lpVsExpr.pattern === 'TENSION') {
+    priorities.push(`Chủ động điều phối giữa Số Chủ Đạo ${lifePath} và Số Sứ Mệnh ${expression}: chọn những vai trò và dự án cho phép cả hai trục cùng phát huy.`);
+    pitfalls.push(`Tránh để Số Sứ Mệnh ${expression} che khuất hoàn toàn bài học thật sự của Số Chủ Đạo ${lifePath}.`);
+  } else {
+    priorities.push(`Phát huy sức mạnh cộng hưởng giữa Số Chủ Đạo ${lifePath} và Số Sứ Mệnh ${expression}: bạn có lợi thế tự nhiên khi cả con đường và tài năng cùng chỉ về một hướng.`);
+  }
+
+  if (lpVsSoul.pattern === 'TENSION') {
+    priorities.push(`Lắng nghe nhu cầu thật của Số Linh Hồn ${soulUrge} — không phải lúc nào bạn cũng muốn những gì xã hội kỳ vọng ở bạn.`);
+    pitfalls.push(`Không để khoảng cách giữa Số Chủ Đạo ${lifePath} và Số Linh Hồn ${soulUrge} trở thành nguồn gốc của sự kiệt sức cảm xúc mãn tính.`);
+  } else {
+    priorities.push(`Nuôi dưỡng cuộc sống nội tâm: Số Linh Hồn ${soulUrge} của bạn hài hòa với con đường đang đi, hãy tạo không gian để nó tái nạp năng lượng đều đặn.`);
+  }
+
+  priorities.push(`Trong Năm Cá Nhân ${personalYear}, ưu tiên: ${confluenceNote.split('.')[0]}.`);
+
+  const mottos: Record<string, string> = {
+    '1': 'Tự lãnh đạo bản thân trước khi dẫn dắt người khác.',
+    '2': 'Sức mạnh thật sự nằm trong sự lắng nghe, không phải trong lời nói.',
+    '3': 'Biểu đạt chân thật là con đường ngắn nhất đến sự kết nối.',
+    '4': 'Kỷ luật không phải là gánh nặng — đó là bộ khung giữ giấc mơ đứng vững.',
+    '5': 'Tự do thật sự bắt đầu từ sự cam kết có chọn lựa.',
+    '6': 'Yêu thương người khác bắt đầu từ việc không bỏ rơi chính mình.',
+    '7': 'Hiểu biết sâu nhất đến từ khoảng lặng, không phải từ dữ liệu.',
+    '8': 'Quyền năng bền vững được xây từ tính chính trực, không phải từ vị trí.',
+    '9': 'Cho đi không phải là mất — mà là con đường mở rộng bản thân.',
+    '11': 'Trực giác là dữ liệu — hãy học cách đọc nó như đọc bản đồ.',
+    '22': 'Tầm nhìn lớn cần bộ khung thực tiễn — hãy xây từng viên gạch.',
+    '33': 'Phụng sự là đặc quyền, không phải nghĩa vụ.',
+  };
+  const motto = mottos[String(lifePath)] ?? `Sống đúng với tần số Số Chủ Đạo ${lifePath} là hành trình dài nhưng xứng đáng nhất bạn có thể chọn.`;
+
+  return {
+    coreTriangle: { lifePathVsExpression: lpVsExpr, lifePathVsSoul: lpVsSoul, overallDynamic },
+    temporalBlueprint: { currentPinnacleLabel: pinnacleLabel, currentChallengeLabel: challengeLabel, confluenceNote },
+    actionPlan: { priorities, pitfalls, motto },
+  };
+}

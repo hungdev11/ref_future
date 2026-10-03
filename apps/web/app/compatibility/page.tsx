@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { HeartHandshake, ShieldCheck, AlertTriangle, RefreshCw, Sparkles, User, Info, BookOpen, Flame, Compass, MessageCircle, CheckCircle2 } from 'lucide-react';
+import { HeartHandshake, ShieldCheck, AlertTriangle, RefreshCw, Sparkles, User, Info, BookOpen, Flame, Compass, MessageCircle, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
 
 const ZODIAC_VN: Record<string, { name: string; element: 'FIRE' | 'EARTH' | 'AIR' | 'WATER'; elementVn: string }> = {
   ARIES: { name: 'Bạch Dương (Aries)', element: 'FIRE', elementVn: 'Hỏa' },
@@ -142,25 +142,57 @@ function getNumerologySynergy(lpA: number, lpB: number): {
   };
 }
 
+const CITIES: Record<string, string> = {
+  'HN': 'Hà Nội',
+  'HCM': 'TP. Hồ Chí Minh',
+  'DN': 'Đà Nẵng',
+  'CT': 'Cần Thơ',
+  'HP': 'Hải Phòng',
+  'OTHER': 'Thành phố khác',
+};
+
+function getDataCompleteness(timeA: string, timeB: string): { pct: number; label: string; note: string } {
+  const hasTime = timeA.trim() !== '' && timeB.trim() !== '';
+  if (hasTime) {
+    return {
+      pct: 95,
+      label: 'Đầy Đủ (Có Giờ Sinh)',
+      note: 'Phân tích bao gồm ước tính Mặt Trăng chính xác hơn với giờ sinh.',
+    };
+  }
+  return {
+    pct: 60,
+    label: 'Cơ Bản (Chỉ Ngày Sinh)',
+    note: 'Thiếu giờ sinh: Mặt Trăng được ước tính theo ngày. Để phân tích chính xác hơn, hãy thêm giờ sinh.',
+  };
+}
+
 export default function CompatibilityPage() {
   // Person A
   const [nameA, setNameA] = useState('Nguyễn Văn An');
   const [dateA, setDateA] = useState('1992-05-15');
   const [genderA, setGenderA] = useState<'MALE' | 'FEMALE'>('MALE');
+  const [timeA, setTimeA] = useState('');
+  const [cityA, setCityA] = useState('HN');
 
   // Person B
   const [nameB, setNameB] = useState('Trần Thị Bình');
   const [dateB, setDateB] = useState('1994-10-20');
   const [genderB, setGenderB] = useState<'MALE' | 'FEMALE'>('FEMALE');
+  const [timeB, setTimeB] = useState('');
+  const [cityB, setCityB] = useState('HN');
 
   const [loading, setLoading] = useState(false);
   const [analysis, setAnalysis] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({ s1: false, s2: false, s3: false, s4: false });
+  const toggleSec = (k: string) => setOpenSections((p) => ({ ...p, [k]: !p[k] }));
 
   const handleCompare = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setOpenSections({ s1: false, s2: false, s3: false, s4: false });
 
     try {
       // 1. Calculate Astro & Numerology for Person A and B
@@ -168,7 +200,7 @@ export default function CompatibilityPage() {
         fetch('/api/astrology/chart', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ birthDate: dateA, timeAccuracy: 'UNKNOWN' }),
+          body: JSON.stringify({ birthDate: dateA, birthTime: timeA || undefined, timeAccuracy: timeA ? 'EXACT' : 'UNKNOWN' }),
         }).then((r) => r.json()),
         fetch('/api/numerology/calculate', {
           method: 'POST',
@@ -178,7 +210,7 @@ export default function CompatibilityPage() {
         fetch('/api/astrology/chart', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ birthDate: dateB, timeAccuracy: 'UNKNOWN' }),
+          body: JSON.stringify({ birthDate: dateB, birthTime: timeB || undefined, timeAccuracy: timeB ? 'EXACT' : 'UNKNOWN' }),
         }).then((r) => r.json()),
         fetch('/api/numerology/calculate', {
           method: 'POST',
@@ -207,12 +239,16 @@ export default function CompatibilityPage() {
 
       const elementAnalysis = getElementPairAnalysis(elemA, elemB);
       const numAnalysis = getNumerologySynergy(lpA, lpB);
+      const completeness = getDataCompleteness(timeA, timeB);
+      const hasTime = timeA.trim() !== '' && timeB.trim() !== '';
 
       setAnalysis({
-        personA: { name: nameA, sun: sunA, moon: moonA, lifePath: lpA, expression: exprA, element: elemA },
-        personB: { name: nameB, sun: sunB, moon: moonB, lifePath: lpB, expression: exprB, element: elemB },
+        personA: { name: nameA, sun: sunA, moon: moonA, lifePath: lpA, expression: exprA, element: elemA, city: CITIES[cityA] ?? cityA, birthTime: timeA },
+        personB: { name: nameB, sun: sunB, moon: moonB, lifePath: lpB, expression: exprB, element: elemB, city: CITIES[cityB] ?? cityB, birthTime: timeB },
         elementAnalysis,
         numAnalysis,
+        completeness,
+        hasTime,
       });
     } catch (err: any) {
       setError(err.message);
@@ -281,6 +317,33 @@ export default function CompatibilityPage() {
                 <option value="FEMALE">Nữ</option>
               </select>
             </div>
+
+            <div>
+              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
+                Giờ Sinh <span className="text-stone/60 normal-case">(tùy chọn, tăng độ chính xác)</span>
+              </label>
+              <input
+                type="time"
+                value={timeA}
+                onChange={(e) => setTimeA(e.target.value)}
+                className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
+                Nơi Sinh <span className="text-stone/60 normal-case">(tùy chọn)</span>
+              </label>
+              <select
+                value={cityA}
+                onChange={(e) => setCityA(e.target.value)}
+                className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
+              >
+                {Object.entries(CITIES).map(([k, v]) => (
+                  <option key={k} value={k}>{v}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {/* Person B */}
@@ -323,8 +386,55 @@ export default function CompatibilityPage() {
                 <option value="MALE">Nam</option>
               </select>
             </div>
+
+            <div>
+              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
+                Giờ Sinh <span className="text-stone/60 normal-case">(tùy chọn, tăng độ chính xác)</span>
+              </label>
+              <input
+                type="time"
+                value={timeB}
+                onChange={(e) => setTimeB(e.target.value)}
+                className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
+                Nơi Sinh <span className="text-stone/60 normal-case">(tùy chọn)</span>
+              </label>
+              <select
+                value={cityB}
+                onChange={(e) => setCityB(e.target.value)}
+                className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
+              >
+                {Object.entries(CITIES).map(([k, v]) => (
+                  <option key={k} value={k}>{v}</option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
+
+        {/* Data Completeness Meter */}
+        {(() => {
+          const { pct, label, note } = getDataCompleteness(timeA, timeB);
+          return (
+            <div className="p-3 bg-surface border border-borderDark space-y-2">
+              <div className="flex items-center justify-between text-[11px] font-mono">
+                <span className="text-stone uppercase tracking-wider">Độ Đầy Đủ Dữ Liệu</span>
+                <span className={pct >= 90 ? 'text-emerald-400' : 'text-amber-400'}>{label} — {pct}%</span>
+              </div>
+              <div className="h-1 bg-background border border-borderDark">
+                <div
+                  className={`h-full transition-all ${pct >= 90 ? 'bg-emerald-400' : 'bg-amber-400'}`}
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+              <p className="text-stone text-[10px] leading-relaxed">{note}</p>
+            </div>
+          );
+        })()}
 
         <div className="flex justify-center">
           <button
@@ -352,142 +462,200 @@ export default function CompatibilityPage() {
       )}
 
       {analysis && (
-        <div className="space-y-6 pt-2 animate-fadeIn">
+        <div className="space-y-4 pt-2 animate-fadeIn">
+
+          {/* Completeness Banner */}
+          <div className={`p-3 border text-[11px] font-mono flex items-start gap-2 ${analysis.hasTime ? 'border-emerald-400/40 bg-emerald-400/5 text-emerald-300' : 'border-amber-400/40 bg-amber-400/5 text-amber-300'}`}>
+            <Info className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+            <div>
+              <span className="font-semibold">{analysis.completeness.label}</span>
+              {' — '}
+              <span className="text-stone">{analysis.completeness.note}</span>
+              {!analysis.hasTime && (
+                <span className="block mt-0.5 text-stone/70">
+                  ⚠ Mặt Trăng (Moon Sign) được ước tính theo ngày sinh. Vị trí thực tế phụ thuộc vào giờ và địa điểm sinh. Hãy coi đây là gợi ý tham khảo.
+                </span>
+              )}
+            </div>
+          </div>
+
           {/* Side by side profile summary */}
           <div className="p-5 bg-surface border border-borderDark space-y-4">
-            <h2 className="text-base font-serif text-parchment border-b border-borderDark pb-2">
-              Đối Chiếu Tọa Độ Hai Cá Nhân
-            </h2>
+            <div className="flex items-center justify-between border-b border-borderDark pb-2">
+              <h2 className="text-base font-serif text-parchment">Tọa Độ Cá Nhân</h2>
+              <div className="flex gap-2">
+                <button type="button" onClick={() => setOpenSections({ s1: true, s2: true, s3: true, s4: true })} className="text-[10px] font-mono text-stone hover:text-parchment">Mở Tất Cả</button>
+                <span className="text-stone/40">|</span>
+                <button type="button" onClick={() => setOpenSections({ s1: false, s2: false, s3: false, s4: false })} className="text-[10px] font-mono text-stone hover:text-parchment">Đóng Tất Cả</button>
+              </div>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 bg-background border border-borderDark space-y-2 text-xs font-mono">
-                <div className="font-serif font-bold text-parchment text-sm">{analysis.personA.name}</div>
-                <div className="space-y-1 text-stone">
-                  <div className="flex justify-between border-b border-borderDark/40 pb-1">
-                    <span>Mặt Trời (Sun Sign):</span>
-                    <span className="text-parchment">{ZODIAC_VN[analysis.personA.sun]?.name ?? analysis.personA.sun}</span>
+              {[analysis.personA, analysis.personB].map((person: any, idx: number) => (
+                <div key={idx} className="p-4 bg-background border border-borderDark space-y-2 text-xs font-mono">
+                  <div className="font-serif font-bold text-parchment text-sm">{person.name}</div>
+                  <div className="space-y-1 text-stone">
+                    <div className="flex justify-between border-b border-borderDark/40 pb-1">
+                      <span>Mặt Trời:</span>
+                      <span className="text-parchment">{ZODIAC_VN[person.sun]?.name ?? person.sun}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-borderDark/40 pb-1">
+                      <span>Nguyên Tố:</span>
+                      <span className="text-accentGold">{ZODIAC_VN[person.sun]?.elementVn ?? '—'}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-borderDark/40 pb-1">
+                      <span>Mặt Trăng{!analysis.hasTime ? ' (ước tính)' : ''}:</span>
+                      <span className={analysis.hasTime ? 'text-parchment' : 'text-stone/70 italic'}>{ZODIAC_VN[person.moon]?.name ?? person.moon}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-borderDark/40 pb-1">
+                      <span>Số Chủ Đạo:</span>
+                      <span className="text-accentGold font-bold">Số {person.lifePath}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Số Sứ Mệnh:</span>
+                      <span className="text-parchment">Số {person.expression}</span>
+                    </div>
+                    {person.city && (
+                      <div className="flex justify-between border-t border-borderDark/40 pt-1">
+                        <span>Nơi sinh:</span>
+                        <span className="text-stone">{person.city}</span>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex justify-between border-b border-borderDark/40 pb-1">
-                    <span>Nguyên Tố Cốt Lõi:</span>
-                    <span className="text-accentGold">Nguyên tố {ZODIAC_VN[analysis.personA.sun]?.elementVn ?? 'Thổ'}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Sec 01: 4 Nguyên Tố */}
+          <div className="bg-surface border border-borderDark">
+            <button type="button" onClick={() => toggleSec('s1')} className="w-full flex items-center justify-between p-5 hover:bg-background/60 transition-colors">
+              <div className="text-left">
+                <span className="font-mono text-[10px] text-accentGold uppercase tracking-widest block">Phân Tích 01</span>
+                <span className="font-serif text-sm text-parchment">Tương Hợp 4 Nguyên Tố: {analysis.elementAnalysis.harmonyLevel}</span>
+              </div>
+              {openSections.s1 ? <ChevronUp className="w-4 h-4 text-accentGold" /> : <ChevronDown className="w-4 h-4 text-accentGold" />}
+            </button>
+            {openSections.s1 && (
+              <div className="p-5 border-t border-borderDark space-y-4">
+                {/* Layer 1: Data */}
+                <div className="space-y-1 text-[11px]">
+                  <span className="font-mono text-accentGold text-[10px] uppercase tracking-wider block">Tầng 1 — Dữ Liệu</span>
+                  <div className="flex gap-4 text-stone">
+                    <span>{analysis.personA.name}: <strong className="text-parchment">{ZODIAC_VN[analysis.personA.sun]?.name}</strong> → Nguyên Tố {ZODIAC_VN[analysis.personA.sun]?.elementVn}</span>
+                    <span className="text-stone/40">|</span>
+                    <span>{analysis.personB.name}: <strong className="text-parchment">{ZODIAC_VN[analysis.personB.sun]?.name}</strong> → Nguyên Tố {ZODIAC_VN[analysis.personB.sun]?.elementVn}</span>
                   </div>
-                  <div className="flex justify-between border-b border-borderDark/40 pb-1">
-                    <span>Mặt Trăng (Moon Sign):</span>
-                    <span className="text-parchment">{ZODIAC_VN[analysis.personA.moon]?.name ?? analysis.personA.moon}</span>
+                </div>
+                {/* Layer 2: Principle */}
+                <div className="p-3 bg-background border border-borderDark space-y-1">
+                  <span className="font-mono text-accentGold text-[10px] uppercase tracking-wider block">Tầng 2 — Nguyên Lý</span>
+                  <p className="text-stone text-[11px] leading-relaxed">{analysis.elementAnalysis.synergy}</p>
+                </div>
+                {/* Layer 3: Behavior */}
+                <div className="p-3 bg-background border border-borderDark space-y-1">
+                  <span className="font-mono text-accentGold text-[10px] uppercase tracking-wider block">Tầng 3 — Biểu Hiện Thực Tế</span>
+                  <p className="text-stone text-[11px] leading-relaxed">{analysis.elementAnalysis.layman}</p>
+                </div>
+                {/* Layer 4: Friction + Remedy */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
+                  <div className="p-3 bg-background border border-cinnabar/30 space-y-1">
+                    <span className="font-mono text-cinnabar text-[10px] uppercase tracking-wider block">Tầng 4 — Nguy Cơ Ma Sát</span>
+                    <p className="text-stone leading-relaxed">{analysis.elementAnalysis.challenges}</p>
                   </div>
-                  <div className="flex justify-between border-b border-borderDark/40 pb-1">
-                    <span>Số Chủ Đạo:</span>
-                    <span className="text-accentGold font-bold">Số {analysis.personA.lifePath}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Số Sứ Mệnh:</span>
-                    <span className="text-parchment">Số {analysis.personA.expression}</span>
+                  <div className="p-3 bg-background border border-borderDark space-y-1">
+                    <span className="font-mono text-emerald-400 text-[10px] uppercase tracking-wider block">Tầng 5 — Bí Quyết Hóa Giải</span>
+                    <p className="text-stone leading-relaxed">{analysis.elementAnalysis.advice}</p>
                   </div>
                 </div>
               </div>
+            )}
+          </div>
 
-              <div className="p-4 bg-background border border-borderDark space-y-2 text-xs font-mono">
-                <div className="font-serif font-bold text-parchment text-sm">{analysis.personB.name}</div>
-                <div className="space-y-1 text-stone">
-                  <div className="flex justify-between border-b border-borderDark/40 pb-1">
-                    <span>Mặt Trời (Sun Sign):</span>
-                    <span className="text-parchment">{ZODIAC_VN[analysis.personB.sun]?.name ?? analysis.personB.sun}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-borderDark/40 pb-1">
-                    <span>Nguyên Tố Cốt Lõi:</span>
-                    <span className="text-accentGold">Nguyên tố {ZODIAC_VN[analysis.personB.sun]?.elementVn ?? 'Khí'}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-borderDark/40 pb-1">
-                    <span>Mặt Trăng (Moon Sign):</span>
-                    <span className="text-parchment">{ZODIAC_VN[analysis.personB.moon]?.name ?? analysis.personB.moon}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-borderDark/40 pb-1">
-                    <span>Số Chủ Đạo:</span>
-                    <span className="text-accentGold font-bold">Số {analysis.personB.lifePath}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Số Sứ Mệnh:</span>
-                    <span className="text-parchment">Số {analysis.personB.expression}</span>
-                  </div>
+          {/* Sec 02: Numerology Synergy */}
+          <div className="bg-surface border border-borderDark">
+            <button type="button" onClick={() => toggleSec('s2')} className="w-full flex items-center justify-between p-5 hover:bg-background/60 transition-colors">
+              <div className="text-left">
+                <span className="font-mono text-[10px] text-accentGold uppercase tracking-widest block">Phân Tích 02</span>
+                <span className="font-serif text-sm text-parchment">Nhịp Điệu Thần Số: {analysis.numAnalysis.synergyTitle}</span>
+              </div>
+              {openSections.s2 ? <ChevronUp className="w-4 h-4 text-accentGold" /> : <ChevronDown className="w-4 h-4 text-accentGold" />}
+            </button>
+            {openSections.s2 && (
+              <div className="p-5 border-t border-borderDark space-y-4">
+                <div className="p-3 bg-background border border-borderDark">
+                  <p className="text-stone text-[11px] leading-relaxed">{analysis.numAnalysis.dynamic}</p>
+                </div>
+                <div className="p-3 bg-background border border-accentGold/20 space-y-1">
+                  <span className="font-mono text-accentGold text-[10px] uppercase tracking-wider block">Lời Khuyên Gắn Kết</span>
+                  <p className="text-stone text-[11px] leading-relaxed">{analysis.numAnalysis.advice}</p>
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
-          {/* 1. Astrology Element Harmony Breakdown */}
-          <div className="p-5 bg-surface border border-borderDark space-y-4">
-            <div className="flex items-center justify-between border-b border-borderDark pb-2 text-xs font-mono">
-              <h3 className="font-serif text-sm text-parchment">
-                1. Tương Hợp 4 Nguyên Tố: {analysis.elementAnalysis.harmonyLevel}
-              </h3>
-              <span className="text-accentGold text-[11px]">Giao Thoa Bản Mệnh</span>
-            </div>
-
-            <p className="text-stone leading-relaxed text-xs">
-              {analysis.elementAnalysis.synergy}
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-              <div className="p-3 bg-background border border-borderDark space-y-1">
-                <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
-                  Điểm Chung & Gắn Kết
-                </span>
-                <p className="text-stone leading-relaxed text-[11px]">
-                  {analysis.elementAnalysis.layman}
-                </p>
+          {/* Sec 03: Holistic Synthesis */}
+          <div className="border-2 border-accentGold/60 shadow-lg shadow-black/30">
+            <button type="button" onClick={() => toggleSec('s3')} className="w-full flex items-center justify-between p-5 bg-surface hover:bg-background/60 transition-colors">
+              <div className="flex items-center gap-3">
+                <Sparkles className="w-4 h-4 text-accentGold" />
+                <div className="text-left">
+                  <span className="font-mono text-[10px] text-accentGold uppercase tracking-widest block">Tổng Luận</span>
+                  <span className="font-serif text-sm text-parchment">Móc Nối Đa Chiều & 3 Nguyên Tắc Vàng</span>
+                </div>
               </div>
-
-              <div className="p-3 bg-background border border-borderDark space-y-1">
-                <span className="font-mono text-cinnabar text-[11px] uppercase tracking-wider block">
-                  Nguy Cơ Bất Đồng
-                </span>
-                <p className="text-stone leading-relaxed text-[11px]">
-                  {analysis.elementAnalysis.challenges}
-                </p>
+              {openSections.s3 ? <ChevronUp className="w-4 h-4 text-accentGold flex-shrink-0" /> : <ChevronDown className="w-4 h-4 text-accentGold flex-shrink-0" />}
+            </button>
+            {openSections.s3 && (
+              <div className="p-5 space-y-6 bg-background border-t border-accentGold/30">
+                {/* Cross-system note */}
+                <div className="space-y-3">
+                  <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">Giao Điểm Hai Hệ Thống</span>
+                  <div className="p-3 bg-surface border border-borderDark">
+                    <p className="text-stone text-[11px] leading-relaxed">
+                      {ZODIAC_VN[analysis.personA.sun]?.elementVn} ({analysis.personA.name}) gặp {ZODIAC_VN[analysis.personB.sun]?.elementVn} ({analysis.personB.name}) theo Hoàng Đạo — và Số Chủ Đạo {analysis.personA.lifePath} gặp {analysis.personB.lifePath} theo Thần Số Học.
+                      Khi hai hệ thống cùng chỉ về một hướng, đó là tín hiệu đáng tin cậy. Khi chúng mâu thuẫn, cuộc sống của bạn phức tạp hơn — nhưng cũng phong phú hơn.
+                    </p>
+                  </div>
+                </div>
+                {/* 3 Golden Rules */}
+                <div className="space-y-3">
+                  <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">3 Nguyên Tắc Vàng Duy Trì Mối Quan Hệ</span>
+                  {[
+                    {
+                      num: '01',
+                      title: 'Quy Tắc Tạm Dừng 20 Phút',
+                      body: `Khi xung đột bùng phát giữa nguyên tố ${ZODIAC_VN[analysis.personA.sun]?.elementVn} và ${ZODIAC_VN[analysis.personB.sun]?.elementVn}, hãy đồng thuận dừng cuộc thảo luận tối thiểu 20 phút. Không phải để tránh né, mà để cảm xúc hạ nhiệt đủ để lý trí dẫn dắt.`,
+                    },
+                    {
+                      num: '02',
+                      title: 'Quy Tắc Vấn Đề Hiện Tại',
+                      body: 'Mỗi cuộc thảo luận chỉ giải quyết một vấn đề đang xảy ra, không nhắc đến các lỗi cũ từ quá khứ. Lịch sử xung đột không phải bằng chứng — mà là gánh nặng cần bỏ xuống.',
+                    },
+                    {
+                      num: '03',
+                      title: 'Quy Tắc Công Thức Nhu Cầu',
+                      body: `Thay vì "Em cảm thấy tệ vì anh..." — hãy nói: "Khi [tình huống X] xảy ra, em cảm thấy [cảm xúc Y], em cần [nhu cầu Z]." Công thức này giúp Số ${analysis.personA.lifePath} và Số ${analysis.personB.lifePath} giao tiếp mà không kích hoạt phòng thủ.`,
+                    },
+                  ].map((rule) => (
+                    <div key={rule.num} className="p-3 bg-surface border border-borderDark space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-accentGold text-[10px]">{rule.num}</span>
+                        <span className="font-mono text-parchment text-[11px] font-semibold">{rule.title}</span>
+                      </div>
+                      <p className="text-stone text-[11px] leading-relaxed">{rule.body}</p>
+                    </div>
+                  ))}
+                </div>
+                {/* Methodology note */}
+                <div className="p-3 bg-background border border-borderDark text-[10px] text-stone/70 space-y-1">
+                  <span className="font-mono text-accentGold text-[10px] uppercase tracking-wider block">Nguyên Tắc Đánh Giá</span>
+                  <p className="leading-relaxed">
+                    Hệ thống không đưa ra con số phần trăm tương hợp. Tương thích không phải một điểm số cố định — mà là kết quả của sự hiểu biết và nỗ lực từ cả hai phía. Phân tích trên dựa trên nguyên lý tương sinh tương khắc 4 nguyên tố và nhịp điệu số học Pythagoras.
+                  </p>
+                </div>
               </div>
-
-              <div className="p-3 bg-background border border-borderDark space-y-1">
-                <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
-                  Bí Quyết Hòa Hợp
-                </span>
-                <p className="text-stone leading-relaxed text-[11px]">
-                  {analysis.elementAnalysis.advice}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* 2. Numerology Synergy Breakdown */}
-          <div className="p-5 bg-surface border border-borderDark space-y-4">
-            <div className="flex items-center justify-between border-b border-borderDark pb-2 text-xs font-mono">
-              <h3 className="font-serif text-sm text-parchment">
-                2. Nhịp Điệu Thần Số Học: {analysis.numAnalysis.synergyTitle}
-              </h3>
-              <span className="text-accentGold text-[11px]">Tần Số Rung Động</span>
-            </div>
-
-            <p className="text-stone leading-relaxed text-xs">
-              {analysis.numAnalysis.dynamic}
-            </p>
-
-            <div className="p-3.5 bg-background border border-borderDark space-y-1 text-xs">
-              <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
-                🎯 Lời Khuyên Gắn Kết Số Học:
-              </span>
-              <p className="text-stone leading-relaxed text-xs">
-                {analysis.numAnalysis.advice}
-              </p>
-            </div>
-          </div>
-
-          {/* Transparent explanation */}
-          <div className="p-4 bg-background border border-borderDark space-y-1 text-xs text-stone">
-            <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
-              Nguyên Tắc Đánh Giá Tương Hợp
-            </span>
-            <p className="leading-relaxed text-[11px]">
-              Hệ thống xác định tương thích thông qua nguyên tắc tương sinh tương khắc giữa các nguyên tố và nhịp điệu chu kỳ số học. Chúng tôi không đưa ra những con số phần trăm may rủi vô nghĩa, mà tập trung chỉ ra cách hai bạn có thể thấu cảm, nhường nhịn và đồng hành cùng nhau trên chặng đường dài.
-            </p>
+            )}
           </div>
         </div>
       )}

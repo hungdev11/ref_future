@@ -6,6 +6,10 @@ import {
   X,
   HelpCircle,
   RefreshCw,
+  Sparkles,
+  ChevronDown,
+  ChevronUp,
+  Layers,
 } from 'lucide-react';
 import { getTarotCardImageUrl } from '../../lib/tarot-images';
 
@@ -71,12 +75,14 @@ export default function TarotPage() {
 
   // Modal State for clicked card
   const [selectedDraw, setSelectedDraw] = useState<any | null>(null);
+  const [showSynthesis, setShowSynthesis] = useState(false);
 
   const handleDraw = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     setSelectedDraw(null);
+    setShowSynthesis(false);
 
     const activeSeed = `seed_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
@@ -274,6 +280,144 @@ export default function TarotPage() {
           )}
         </div>
       </div>
+
+      {/* ─── HOLISTIC STORY SYNTHESIS ─── */}
+      {result && result.facts.draws.length > 1 && (
+        <div className="border-2 border-accentGold/60 shadow-lg shadow-black/30">
+          <button
+            type="button"
+            onClick={() => setShowSynthesis(!showSynthesis)}
+            className="w-full flex items-center justify-between p-5 bg-surface hover:bg-background/60 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <Layers className="w-4 h-4 text-accentGold" />
+              <div className="text-left">
+                <span className="font-mono text-[10px] text-accentGold uppercase tracking-widest block">
+                  Tổng Luận Toàn Trải Bài
+                </span>
+                <span className="font-serif text-sm text-parchment">
+                  Câu Chuyện Giữa Các Lá Bài & Thông Điệp Hành Động
+                </span>
+              </div>
+            </div>
+            {showSynthesis ? (
+              <ChevronUp className="w-4 h-4 text-accentGold flex-shrink-0" />
+            ) : (
+              <ChevronDown className="w-4 h-4 text-accentGold flex-shrink-0" />
+            )}
+          </button>
+          {showSynthesis && (() => {
+            const draws = result.facts.draws;
+            // Suit distribution
+            const suitCount: Record<string, number> = { MAJOR: 0, WANDS: 0, CUPS: 0, SWORDS: 0, PENTACLES: 0 };
+            draws.forEach((d: any) => {
+              const suit = d.card.arcana === 'MAJOR' ? 'MAJOR' : (d.card.suit ?? 'WANDS');
+              suitCount[suit] = (suitCount[suit] ?? 0) + 1;
+            });
+            const reversedCount = draws.filter((d: any) => d.isReversed).length;
+            const total = draws.length;
+            // Dominant energy
+            const sortedSuits = Object.entries(suitCount)
+              .filter(([, v]) => v > 0)
+              .sort(([, a], [, b]) => b - a);
+            const dominant = sortedSuits[0]?.[0] ?? 'MAJOR';
+            const suitNames: Record<string, string> = {
+              MAJOR: 'Bộ Ẩn Chính (Arcana Lớn)',
+              WANDS: 'Gậy — Hành Động & Đam Mê',
+              CUPS: 'Chén — Cảm Xúc & Quan Hệ',
+              SWORDS: 'Kiếm — Tư Duy & Xung Đột',
+              PENTACLES: 'Đồng Tiền — Tài Chính & Vật Chất',
+            };
+            const dominantLabel = suitNames[dominant] ?? dominant;
+            const suitColors: Record<string, string> = {
+              MAJOR: 'text-accentGold',
+              WANDS: 'text-orange-400',
+              CUPS: 'text-blue-400',
+              SWORDS: 'text-stone',
+              PENTACLES: 'text-emerald-400',
+            };
+            // Narrative thread
+            const positions = draws.map((d: any) => d.position?.name ?? '').filter(Boolean);
+            const cardNames = draws.map((d: any) => d.card.namePrimary ?? d.card.name ?? '');
+            const reversedRatio = reversedCount / total;
+            let narrativeTone = '';
+            if (reversedRatio >= 0.6) {
+              narrativeTone = 'Tỷ lệ lá ngược cao cho thấy năng lượng đang bị chặn hoặc trì hoãn. Đây không phải điềm xấu — mà là tín hiệu để dừng lại, nhìn vào và điều chỉnh hướng đi trước khi tiến thêm.';
+            } else if (reversedRatio <= 0.2) {
+              narrativeTone = 'Phần lớn lá bài xuôi, năng lượng đang chảy thông suốt. Đây là thời điểm thuận lợi để hành động theo những thông điệp mà bộ bài đang chỉ ra.';
+            } else {
+              narrativeTone = 'Sự pha trộn giữa lá xuôi và lá ngược phản ánh một tình huống đang chuyển đổi — có những cánh cửa đang mở, có những phần vẫn cần thêm công sức để giải phóng.';
+            }
+            const energyDiagnosis = dominant === 'MAJOR'
+              ? 'Bộ Ẩn Chính chiếm ưu thế: tình huống của bạn đang bị tác động bởi những lực lượng lớn hơn — giai đoạn biến đổi căn bản về nhân sinh và số phận, không chỉ là vấn đề hàng ngày.'
+              : dominant === 'CUPS'
+              ? 'Bộ Chén chiếm ưu thế: lõi của tình huống này là cảm xúc, quan hệ và thế giới nội tâm. Câu trả lời cần được tìm kiếm ở cấp độ cảm giác, không chỉ hành động.'
+              : dominant === 'WANDS'
+              ? 'Bộ Gậy chiếm ưu thế: năng lượng hành động và đam mê đang mạnh. Bạn đang trong giai đoạn khởi xướng — hãy để cảm hứng dẫn đường nhưng đừng để nó vượt quá kiểm soát.'
+              : dominant === 'SWORDS'
+              ? 'Bộ Kiếm chiếm ưu thế: tư duy, xung đột và quyết định đang ở trung tâm. Câu hỏi quan trọng là: bạn đang chiến đấu với hoàn cảnh bên ngoài, hay với chính mình?'
+              : 'Bộ Đồng Tiền chiếm ưu thế: tài chính, sức khỏe và các nhu cầu vật chất đang là trọng tâm. Đây là lúc nhìn vào những gì cụ thể và hữu hình trong cuộc sống.';
+
+            return (
+              <div className="p-5 space-y-6 bg-background border-t border-accentGold/30">
+                {/* Suit Distribution */}
+                <div className="space-y-3">
+                  <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
+                    Phân Bổ Năng Lượng
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {sortedSuits.map(([suit, count]) => (
+                      <span key={suit} className={`px-2.5 py-1 border border-borderDark text-[10px] font-mono ${suitColors[suit] ?? 'text-stone'}`}>
+                        {suitNames[suit] ?? suit} × {count}
+                      </span>
+                    ))}
+                    {reversedCount > 0 && (
+                      <span className="px-2.5 py-1 border border-borderDark text-[10px] font-mono text-cinnabar">
+                        Lá Ngược × {reversedCount}/{total}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-stone text-[11px] leading-relaxed">{energyDiagnosis}</p>
+                </div>
+
+                {/* Narrative Thread */}
+                <div className="space-y-3">
+                  <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
+                    Mạch Câu Chuyện Xuyên Suốt
+                  </span>
+                  <div className="p-3 bg-surface border border-borderDark">
+                    <p className="text-stone text-[11px] leading-relaxed">{narrativeTone}</p>
+                  </div>
+                  <div className="p-3 bg-surface border border-accentGold/20 space-y-1">
+                    <span className="font-mono text-accentGold text-[10px] uppercase tracking-wider block">Năng Lượng Chủ Đạo</span>
+                    <p className={`text-[11px] font-mono ${suitColors[dominant] ?? 'text-stone'}`}>{dominantLabel}</p>
+                  </div>
+                </div>
+
+                {/* Strategy */}
+                <div className="space-y-2">
+                  <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
+                    Thông Điệp Hành Động
+                  </span>
+                  <div className="p-3.5 bg-surface border border-borderDark">
+                    <p className="text-stone text-[11px] leading-relaxed">
+                      Bộ bài này không cho bạn câu trả lời — nó giúp bạn nhìn thấy những gì đang thực sự xảy ra bên trong
+                      và bên ngoài mình. Các lá bài {positions.length > 0 ? `ở vị trí ${positions.slice(0, 3).join(', ')}` : 'trong trải bài này'} đang
+                      phác thảo một bức tranh nhất quán: hãy chú ý đến lá bài mà bạn phản ứng mạnh nhất — đó thường là
+                      nơi câu trả lời thật sự đang ẩn.
+                    </p>
+                  </div>
+                  <div className="p-3 bg-surface border border-accentGold/40 text-center">
+                    <p className="text-parchment text-[11px] italic">
+                      "Tarot không tiên đoán tương lai — nó chiếu sáng những gì bạn đang mang trong mình."
+                    </p>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+        </div>
+      )}
 
       {/* POPUP / MODAL: DETAILED TAROT CARD READING */}
       {selectedDraw && (

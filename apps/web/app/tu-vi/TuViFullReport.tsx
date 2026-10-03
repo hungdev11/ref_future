@@ -19,6 +19,7 @@ import {
   calculatePalaceScore,
   evaluateMenhCucRelation,
   STAR_DETAILED_READINGS,
+  generateTuViHolisticSynthesis,
 } from '@/lib/tuvi-interpretations';
 import { TermTag } from '@/components/TermTag';
 
@@ -33,22 +34,23 @@ export function TuViFullReport({
   onSelectPalace,
   onOpenThienBan,
 }: TuViFullReportProps) {
-  // Collapsible state for each of the 14 sections
+  // Collapsible state for each section - Default ALL CLOSED
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    sec1: true,
-    sec2: true,
-    sec3: true,
-    sec4: true,
-    sec5: true,
-    sec6: true,
-    sec7: true,
-    sec8: true,
-    sec9: true,
-    sec10: true,
-    sec11: true,
-    sec12: true,
-    sec13: true,
-    sec14: true,
+    sec1: false,
+    sec2: false,
+    sec3: false,
+    sec4: false,
+    sec5: false,
+    sec6: false,
+    sec7: false,
+    sec8: false,
+    sec9: false,
+    sec10: false,
+    sec11: false,
+    sec12: false,
+    sec13: false,
+    sec14: false,
+    sec15: false,
   });
 
   const toggleSection = (key: string) => {
@@ -57,13 +59,13 @@ export function TuViFullReport({
 
   const expandAll = () => {
     const allOpen: Record<string, boolean> = {};
-    for (let i = 1; i <= 14; i++) allOpen[`sec${i}`] = true;
+    for (let i = 1; i <= 15; i++) allOpen[`sec${i}`] = true;
     setOpenSections(allOpen);
   };
 
   const collapseAll = () => {
     const allClosed: Record<string, boolean> = {};
-    for (let i = 1; i <= 14; i++) allClosed[`sec${i}`] = false;
+    for (let i = 1; i <= 15; i++) allClosed[`sec${i}`] = false;
     setOpenSections(allClosed);
   };
 
@@ -393,65 +395,232 @@ export function TuViFullReport({
       })}
 
       {/* ========================================================
-          MỤC 14: LUẬN VẬN HẠN NĂM 2026 (BÍNH NGỌ) VÀ THÁNG HIỆN TẠI
+          MỤC 14: LUẬN VẬN HẠN NĂM HIỆN TẠI & THÁNG HIỆN TẠI
       ======================================================== */}
-      <div className="bg-surface border border-borderDark overflow-hidden">
-        <button
-          type="button"
-          onClick={() => toggleSection('sec14')}
-          className="w-full p-5 flex items-center justify-between bg-surface hover:bg-surfaceHover transition-colors border-b border-borderDark text-left"
-        >
-          <div className="flex items-center gap-3">
-            <span className="w-6 h-6 border border-accentGold/60 flex items-center justify-center font-mono text-xs text-accentGold font-bold">
-              14
-            </span>
-            <div>
-              <h2 className="font-serif text-lg text-parchment font-semibold">
-                Mục 14 • Luận Vận Hạn Năm Hiện Tại (2026 Bính Ngọ) & Tháng Hiện Tại
-              </h2>
-              <p className="text-xs text-stone">
-                Khảo cứu lưu niên Thái Tuế, cơ hội thăng tiến và những việc nên làm / cần tránh.
-              </p>
+      {(() => {
+        const currentYear = new Date().getFullYear();
+        const stemsList = ['Giáp', 'Ất', 'Bính', 'Đinh', 'Mậu', 'Kỷ', 'Canh', 'Tân', 'Nhâm', 'Quý'];
+        const branchesList = ['Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tỵ', 'Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi'];
+        const curStem = stemsList[(currentYear - 4) % 10] || 'Bính';
+        const curBranch = branchesList[(currentYear - 4) % 12] || 'Ngọ';
+        const curYearName = `${curStem} ${curBranch}`;
+        const synthesis = generateTuViHolisticSynthesis(result);
+
+        return (
+          <>
+            <div className="bg-surface border border-borderDark overflow-hidden">
+              <button
+                type="button"
+                onClick={() => toggleSection('sec14')}
+                className="w-full p-5 flex items-center justify-between bg-surface hover:bg-surfaceHover transition-colors border-b border-borderDark text-left"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="w-6 h-6 border border-accentGold/60 flex items-center justify-center font-mono text-xs text-accentGold font-bold">
+                    14
+                  </span>
+                  <div>
+                    <h2 className="font-serif text-lg text-parchment font-semibold">
+                      Mục 14 • Luận Vận Hạn Năm Hiện Tại ({currentYear} {curYearName}) & Lưu Nguyệt
+                    </h2>
+                    <p className="text-xs text-stone">
+                      Khảo cứu lưu niên Thái Tuế, thời cơ hành động và những cạm bẫy cần phòng tránh.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 text-stone text-xs font-mono">
+                  <span>{openSections.sec14 ? 'Thu gọn' : 'Mở rộng'}</span>
+                  {openSections.sec14 ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                </div>
+              </button>
+
+              {openSections.sec14 && (
+                <div className="p-5 md:p-6 space-y-4 text-xs leading-relaxed text-stone border-t border-borderDark/40">
+                  <p className="text-stone leading-relaxed">
+                    Năm {currentYear} ({curYearName}) kích hoạt sự vận động mạnh mẽ của trục lưu niên. Khảo cứu tương quan với bản mệnh, đây là thời điểm cần tập trung củng cố nội lực, tối ưu hóa các quy trình chuyên môn và duy trì sự kiểm soát chặt chẽ đối với dòng tiền.
+                  </p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                    <div className="p-4 bg-background border border-borderDark space-y-2">
+                      <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
+                        ✨ Những Việc Nên Làm Trong Năm {currentYear}:
+                      </span>
+                      <ul className="list-disc list-inside space-y-1 text-stone leading-relaxed text-[11px]">
+                        <li>Tập trung phát huy đòn bẩy chuyên môn cốt lõi, không dàn trải sang các mảng chưa nắm vững.</li>
+                        <li>Duy trì lối sống kỷ luật, chú trọng sức khỏe và kiểm soát các cam kết pháp lý.</li>
+                        <li>Tận dụng các cơ hội hợp tác có tính chất minh bạch và giá trị thực tế dài hạn.</li>
+                      </ul>
+                    </div>
+
+                    <div className="p-4 bg-background border border-borderDark space-y-2">
+                      <span className="font-mono text-cinnabar text-[11px] uppercase tracking-wider block">
+                        ⚠️ Những Việc Cần Tránh Trong Năm {currentYear}:
+                      </span>
+                      <ul className="list-disc list-inside space-y-1 text-stone leading-relaxed text-[11px]">
+                        <li>Tránh các quyết định đầu tư lướt sóng, mạo hiểm dựa trên cảm xúc nhất thời.</li>
+                        <li>Tránh tham gia vào các tranh luận thị phi không mang lại giá trị công việc.</li>
+                        <li>Không nên cho vay mượn hoặc đứng tên bảo lãnh tài chính thiếu cơ chế ràng buộc.</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
-          <div className="flex items-center gap-2 text-stone text-xs font-mono">
-            <span>{openSections.sec14 ? 'Thu gọn' : 'Mở rộng'}</span>
-            {openSections.sec14 ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-          </div>
-        </button>
 
-        {openSections.sec14 && (
-          <div className="p-5 md:p-6 space-y-4 text-xs leading-relaxed text-stone border-t border-borderDark/40">
-            <p className="text-stone leading-relaxed">
-              Năm 2026 Bính Ngọ mang nạp âm Thiên Hà Thủy. Trong lá số của bạn, vận hạn năm nay mang lại những cơ hội bứt phá nhưng đòi hỏi sự cẩn trọng trong các quyết định tài chính và quan hệ đối ngoại.
-            </p>
+            {/* ========================================================
+                MỤC 15: TỔNG LUẬN MÓC NỐI VẬN MỆNH & CHIẾN LƯỢC ĐỜI NGƯỜI
+            ======================================================== */}
+            <div className="bg-surface border-2 border-accentGold/60 overflow-hidden shadow-lg shadow-black/30">
+              <button
+                type="button"
+                onClick={() => toggleSection('sec15')}
+                className="w-full p-5 md:p-6 flex items-center justify-between bg-surface hover:bg-surfaceHover transition-colors border-b border-borderDark text-left"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="w-7 h-7 bg-accentGold text-background font-mono text-xs flex items-center justify-center font-bold">
+                    15
+                  </span>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-accentGold">
+                        Tổng Luận Móc Nối Toàn Diện
+                      </span>
+                    </div>
+                    <h2 className="font-serif text-lg md:text-xl text-parchment font-semibold">
+                      Mục 15 • Phân Tích Móc Nối Vận Mệnh & Bản Thiết Kế Đời Người
+                    </h2>
+                    <p className="text-xs text-stone">
+                      Tổng hợp đa tầng: Cách Cục Mệnh Tài Quan × Trục Mệnh Thân × Tương Tác Mệnh Cục × Tứ Hóa & Tuần Triệt.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 text-stone text-xs font-mono">
+                  <span>{openSections.sec15 ? 'Thu gọn' : 'Mở rộng'}</span>
+                  {openSections.sec15 ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                </div>
+              </button>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
-              <div className="p-4 bg-background border border-borderDark space-y-2">
-                <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
-                  ✨ Những Việc Nên Làm Trong Năm 2026:
-                </span>
-                <ul className="list-disc list-inside space-y-1 text-stone leading-relaxed text-[11px]">
-                  <li>Tập trung củng cố kiến thức chuyên môn cốt lõi và mở rộng liên minh làm việc.</li>
-                  <li>Duy trì lối sống điều độ, rèn luyện thể thao và tích đức thiện tâm.</li>
-                  <li>Tận dụng các cơ hội công tác hoặc giao tế bên ngoài để nâng cao uy tín.</li>
-                </ul>
-              </div>
+              {openSections.sec15 && (
+                <div className="p-5 md:p-6 space-y-6 text-xs text-stone border-t border-borderDark/60 bg-surface/90">
+                  {/* 1. Cách Cục Mệnh Tài Quan */}
+                  <div className="p-4 bg-background border border-borderDark space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-accentGold" />
+                      <span className="font-mono text-accentGold text-xs uppercase tracking-wider font-semibold">
+                        1. Khung Xương Sống: {synthesis.cachCuc.name}
+                      </span>
+                    </div>
+                    <p className="text-parchment leading-relaxed">{synthesis.cachCuc.nature}</p>
+                    <p className="text-stone leading-relaxed">{synthesis.cachCuc.description}</p>
+                    <div className="pt-1 text-[11px] text-accentGold font-mono">
+                      <strong>Vai Trò Cốt Lõi:</strong> {synthesis.cachCuc.coreRole}
+                    </div>
+                  </div>
 
-              <div className="p-4 bg-background border border-borderDark space-y-2">
-                <span className="font-mono text-cinnabar text-[11px] uppercase tracking-wider block">
-                  ⚠️ Những Việc Cần Tránh Trong Năm 2026:
-                </span>
-                <ul className="list-disc list-inside space-y-1 text-stone leading-relaxed text-[11px]">
-                  <li>Tránh tham gia các canh bạc đầu tư rủi ro thiếu kiểm chứng thông tin.</li>
-                  <li>Kiềm chế tính nóng giận, cẩn thận lời ăn tiếng nói trong các buổi tranh luận.</li>
-                  <li>Không nên cho vay mượn tiền bạc không có cam kết rõ ràng.</li>
-                </ul>
-              </div>
+                  {/* 2. Trục Mệnh - Thân Timeline */}
+                  <div className="p-4 bg-background border border-borderDark space-y-3">
+                    <span className="font-mono text-accentGold text-xs uppercase tracking-wider block font-semibold">
+                      2. Lộ Trình Chuyển Dịch Tiền Vận vs Hậu Vận (Mốc Chuyển Giao: {synthesis.menhThanTimeline.transitionAge} Tuổi)
+                    </span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                      <div className="p-3 bg-surface border border-borderDark/60 space-y-1">
+                        <strong className="text-parchment block">Giai Đoạn Tiền Vận (Mệnh):</strong>
+                        <p className="leading-relaxed">{synthesis.menhThanTimeline.menhPhase}</p>
+                      </div>
+                      <div className="p-3 bg-surface border border-borderDark/60 space-y-1">
+                        <strong className="text-parchment block">Giai Đoạn Hậu Vận ({synthesis.menhThanTimeline.thanPalaceName}):</strong>
+                        <p className="leading-relaxed">{synthesis.menhThanTimeline.thanPhase}</p>
+                      </div>
+                    </div>
+                    <p className="text-[11px] text-stone italic border-l-2 border-accentGold/60 pl-3">
+                      💡 {synthesis.menhThanTimeline.timelineAdvice}
+                    </p>
+                  </div>
+
+                  {/* 3. Tương Tác Mệnh - Cục */}
+                  <div className="p-4 bg-background border border-borderDark space-y-2">
+                    <span className="font-mono text-accentGold text-xs uppercase tracking-wider block font-semibold">
+                      3. Thiên Thời & Môi Trường: {synthesis.menhCucInteraction.relationTitle}
+                    </span>
+                    <p className="text-stone leading-relaxed">{synthesis.menhCucInteraction.mechanism}</p>
+                    <p className="text-[11px] text-parchment font-mono">
+                      <strong>Sách Lược Tương Thích:</strong> {synthesis.menhCucInteraction.strategicPost}
+                    </p>
+                  </div>
+
+                  {/* 4. Tứ Hóa: Đòn Bẩy & Điểm Nghẽn Nghiệp Lực */}
+                  <div className="space-y-2">
+                    <span className="font-mono text-accentGold text-xs uppercase tracking-wider block font-semibold">
+                      4. Tứ Hóa Tọa Thủ: Định Vị Đòn Bẩy & Bài Học Trưởng Thành
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="p-3 bg-background border border-emerald-500/30 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-mono text-emerald-400 font-bold text-xs">✨ HÓA LỘC ({synthesis.tuHoaAxes.loc.star})</span>
+                          <span className="text-[10px] font-mono text-stone">Cung {synthesis.tuHoaAxes.loc.palaceName}</span>
+                        </div>
+                        <p className="text-[11px] text-stone leading-relaxed">{synthesis.tuHoaAxes.loc.meaning}</p>
+                      </div>
+
+                      <div className="p-3 bg-background border border-amber-500/30 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-mono text-amber-400 font-bold text-xs">⚡ HÓA QUYỀN ({synthesis.tuHoaAxes.quyen.star})</span>
+                          <span className="text-[10px] font-mono text-stone">Cung {synthesis.tuHoaAxes.quyen.palaceName}</span>
+                        </div>
+                        <p className="text-[11px] text-stone leading-relaxed">{synthesis.tuHoaAxes.quyen.meaning}</p>
+                      </div>
+
+                      <div className="p-3 bg-background border border-blue-500/30 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-mono text-blue-400 font-bold text-xs">🛡️ HÓA KHOA ({synthesis.tuHoaAxes.khoa.star})</span>
+                          <span className="text-[10px] font-mono text-stone">Cung {synthesis.tuHoaAxes.khoa.palaceName}</span>
+                        </div>
+                        <p className="text-[11px] text-stone leading-relaxed">{synthesis.tuHoaAxes.khoa.meaning}</p>
+                      </div>
+
+                      <div className="p-3 bg-background border border-rose-500/30 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-mono text-rose-400 font-bold text-xs">⚠️ HÓA KỴ ({synthesis.tuHoaAxes.ky.star})</span>
+                          <span className="text-[10px] font-mono text-stone">Cung {synthesis.tuHoaAxes.ky.palaceName}</span>
+                        </div>
+                        <p className="text-[11px] text-stone leading-relaxed">{synthesis.tuHoaAxes.ky.meaning}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 5. Cửa Ải Tuần Triệt */}
+                  <div className="p-4 bg-background border border-borderDark space-y-1">
+                    <span className="font-mono text-accentGold text-xs uppercase tracking-wider block font-semibold">
+                      5. Cửa Ải Thử Thách: Tuần Không & Triệt Không
+                    </span>
+                    <p className="text-stone leading-relaxed text-xs">{synthesis.tuanTrietGates.analysis}</p>
+                  </div>
+
+                  {/* 6. Bản Thiết Kế Hành Động Cốt Lõi */}
+                  <div className="p-4 bg-accentGold/10 border border-accentGold/40 space-y-3">
+                    <span className="font-serif text-base text-parchment font-semibold block">
+                      Chiến Lược Đời Người & Nguyên Tắc Bất Biến
+                    </span>
+                    <div className="space-y-2 text-xs leading-relaxed">
+                      <p>
+                        <strong className="text-accentGold">Đòn Bẩy Thành Công Số 1:</strong>{' '}
+                        <span className="text-parchment">{synthesis.finalActionBlueprint.primaryLeverage}</span>
+                      </p>
+                      <p>
+                        <strong className="text-cinnabar">Điểm Mù Cần Phòng Thủ:</strong>{' '}
+                        <span className="text-parchment">{synthesis.finalActionBlueprint.criticalBlindspot}</span>
+                      </p>
+                      <p>
+                        <strong className="text-stone">Phương Châm Dẫn Đường:</strong>{' '}
+                        <span className="text-stone italic">{synthesis.finalActionBlueprint.masterPrinciple}</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
-        )}
-      </div>
+          </>
+        );
+      })()}
     </div>
   );
 }

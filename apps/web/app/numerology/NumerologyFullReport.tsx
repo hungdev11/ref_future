@@ -26,6 +26,7 @@ import {
   ATTITUDE_INTERPRETATIONS,
   evaluateLifePathExpressionHarmony,
   evaluateLifePathSoulHarmony,
+  generateNumerologyHolisticSynthesis,
 } from '@/lib/numerology-interpretations';
 import { TermTag } from '@/components/TermTag';
 
@@ -69,11 +70,12 @@ export function NumerologyFullReport({
 }: NumerologyFullReportProps) {
   // Collapsible sections state
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    secA: true,
-    secB: true,
-    secC: true,
-    secD: true,
-    secE: true,
+    secA: false,
+    secB: false,
+    secC: false,
+    secD: false,
+    secE: false,
+    secF: false,
   });
 
   const toggleSection = (key: string) => {
@@ -81,11 +83,11 @@ export function NumerologyFullReport({
   };
 
   const expandAll = () => {
-    setOpenSections({ secA: true, secB: true, secC: true, secD: true, secE: true });
+    setOpenSections({ secA: true, secB: true, secC: true, secD: true, secE: true, secF: true });
   };
 
   const collapseAll = () => {
-    setOpenSections({ secA: false, secB: false, secC: false, secD: false, secE: false });
+    setOpenSections({ secA: false, secB: false, secC: false, secD: false, secE: false, secF: false });
   };
 
   const birthChart = calculateBirthChart(birthDateStr);
@@ -933,6 +935,122 @@ export function NumerologyFullReport({
           </div>
         )}
       </div>
+
+          {/* ─── Section F: Holistic Synthesis ─── */}
+          {(() => {
+            const synthesis = generateNumerologyHolisticSynthesis(
+              lifePathVal, expressionVal, soulUrgeVal, personalYearVal, birthDateStr
+            );
+            const patternColor = (p: string) =>
+              p === 'HARMONY' ? 'text-emerald-400' : p === 'TENSION' ? 'text-cinnabar' : 'text-stone';
+            const patternLabel = (p: string) =>
+              p === 'HARMONY' ? '● Hài Hòa' : p === 'TENSION' ? '● Sức Căng' : '● Trung Tính';
+            return (
+              <div className="border-2 border-accentGold/60 shadow-lg shadow-black/30">
+                <button
+                  type="button"
+                  onClick={() => toggleSection('secF')}
+                  className="w-full flex items-center justify-between p-5 bg-surface hover:bg-background/60 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <Sparkles className="w-4 h-4 text-accentGold" />
+                    <div className="text-left">
+                      <span className="font-mono text-[10px] text-accentGold uppercase tracking-widest block">
+                        Phần VI — Tổng Luận
+                      </span>
+                      <span className="font-serif text-sm text-parchment">
+                        Móc Nối Đa Chiều: Tam Giác Cốt Lõi & Lộ Trình Hành Động
+                      </span>
+                    </div>
+                  </div>
+                  {openSections.secF ? (
+                    <ChevronUp className="w-4 h-4 text-accentGold flex-shrink-0" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-accentGold flex-shrink-0" />
+                  )}
+                </button>
+                {openSections.secF && (
+                  <div className="p-5 space-y-6 bg-background border-t border-accentGold/30">
+                    {/* Core Triangle */}
+                    <div className="space-y-3">
+                      <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
+                        Tam Giác Cốt Lõi (Core Triangle)
+                      </span>
+                      <div className="space-y-3">
+                        {[synthesis.coreTriangle.lifePathVsExpression, synthesis.coreTriangle.lifePathVsSoul].map((axis) => (
+                          <div key={axis.label} className="p-3 bg-surface border border-borderDark space-y-1.5">
+                            <div className="flex items-center gap-2">
+                              <span className="font-mono text-parchment text-[11px] font-semibold">{axis.label}</span>
+                              <span className={`font-mono text-[10px] ${patternColor(axis.pattern)}`}>
+                                {patternLabel(axis.pattern)}
+                              </span>
+                            </div>
+                            <p className="text-stone text-[11px] leading-relaxed">{axis.description}</p>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="p-3 bg-surface border border-accentGold/20 space-y-1">
+                        <span className="font-mono text-accentGold text-[10px] uppercase tracking-wider block">
+                          Nhận Định Tổng Thể
+                        </span>
+                        <p className="text-stone text-[11px] leading-relaxed">{synthesis.coreTriangle.overallDynamic}</p>
+                      </div>
+                    </div>
+
+                    {/* Temporal Blueprint */}
+                    <div className="space-y-3">
+                      <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
+                        Lộ Trình Thời Gian (Temporal Blueprint)
+                      </span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px]">
+                        <div className="p-3 bg-surface border border-borderDark space-y-1">
+                          <span className="font-mono text-emerald-400 text-[10px] uppercase tracking-wider block">Đỉnh Cao Hiện Tại</span>
+                          <p className="text-parchment">{synthesis.temporalBlueprint.currentPinnacleLabel}</p>
+                        </div>
+                        <div className="p-3 bg-surface border border-borderDark space-y-1">
+                          <span className="font-mono text-amber-400 text-[10px] uppercase tracking-wider block">Thử Thách Hiện Tại</span>
+                          <p className="text-parchment">{synthesis.temporalBlueprint.currentChallengeLabel}</p>
+                        </div>
+                      </div>
+                      <div className="p-3 bg-surface border border-borderDark">
+                        <p className="text-stone text-[11px] leading-relaxed">{synthesis.temporalBlueprint.confluenceNote}</p>
+                      </div>
+                    </div>
+
+                    {/* Action Plan */}
+                    <div className="space-y-3">
+                      <span className="font-mono text-accentGold text-[11px] uppercase tracking-wider block">
+                        Kế Hoạch Hành Động (Action Plan)
+                      </span>
+                      <div className="space-y-2">
+                        {synthesis.actionPlan.priorities.map((p, i) => (
+                          <div key={i} className="flex gap-2 p-2.5 bg-surface border border-borderDark text-[11px]">
+                            <span className="font-mono text-accentGold flex-shrink-0">{i + 1}.</span>
+                            <p className="text-stone leading-relaxed">{p}</p>
+                          </div>
+                        ))}
+                      </div>
+                      {synthesis.actionPlan.pitfalls.length > 0 && (
+                        <div className="space-y-2">
+                          <span className="font-mono text-cinnabar text-[10px] uppercase tracking-wider block">Cẩn Trọng</span>
+                          {synthesis.actionPlan.pitfalls.map((pf, i) => (
+                            <div key={i} className="flex gap-2 p-2.5 bg-surface border border-cinnabar/30 text-[11px]">
+                              <span className="font-mono text-cinnabar flex-shrink-0">⚠</span>
+                              <p className="text-stone leading-relaxed">{pf}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      <div className="p-3 bg-surface border border-accentGold/40 text-center">
+                        <span className="font-mono text-accentGold text-[10px] uppercase tracking-wider block mb-1">Kim Chỉ Nam</span>
+                        <p className="text-parchment text-[11px] italic">"{synthesis.actionPlan.motto}"</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
     </div>
   );
 }

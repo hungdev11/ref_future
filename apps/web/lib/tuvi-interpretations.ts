@@ -700,3 +700,283 @@ export const PALACE_INFO: Record<
     challenges: 'Phân định rạch ròi giữa tình cảm gia đình và lợi ích tiền bạc để tránh bất hòa.',
   },
 };
+
+// 8. TỨ HÓA THEO THIÊN CAN NĂM SINH
+export const TU_HOA_TABLE: Record<
+  string,
+  { loc: string; quyen: string; khoa: string; ky: string }
+> = {
+  GIAP: { loc: 'LIEM_TRINH', quyen: 'PHA_QUAN', khoa: 'VU_KHUC', ky: 'THAI_DUONG' },
+  AT: { loc: 'THIEN_CO', quyen: 'THIEN_LUONG', khoa: 'TU_VI', ky: 'THAI_AM' },
+  BINH: { loc: 'THIEN_DONG', quyen: 'THIEN_CO', khoa: 'VAN_XUONG', ky: 'LIEM_TRINH' },
+  DINH: { loc: 'THAI_AM', quyen: 'THIEN_DONG', khoa: 'THIEN_CO', ky: 'CU_MON' },
+  MAU: { loc: 'THAM_LANG', quyen: 'THAI_AM', khoa: 'HUU_BAT', ky: 'THIEN_CO' },
+  KY: { loc: 'VU_KHUC', quyen: 'THAM_LANG', khoa: 'THIEN_LUONG', ky: 'VAN_KHUC' },
+  CANH: { loc: 'THAI_DUONG', quyen: 'VU_KHUC', khoa: 'THAI_AM', ky: 'THIEN_DONG' },
+  TAN: { loc: 'CU_MON', quyen: 'THAI_DUONG', khoa: 'VAN_KHUC', ky: 'VAN_XUONG' },
+  NHAM: { loc: 'THIEN_LUONG', quyen: 'TU_VI', khoa: 'THIEN_PHU', ky: 'VU_KHUC' },
+  QUY: { loc: 'PHA_QUAN', quyen: 'CU_MON', khoa: 'THAI_AM', ky: 'THAM_LANG' },
+};
+
+export const STAR_NAME_VN: Record<string, string> = {
+  TU_VI: 'Tử Vi',
+  THIEN_PHU: 'Thiên Phủ',
+  THAI_DUONG: 'Thái Dương',
+  THAI_AM: 'Thái Âm',
+  VU_KHUC: 'Vũ Khúc',
+  THIEN_DONG: 'Thiên Đồng',
+  THIEN_TUONG: 'Thiên Tướng',
+  THIEN_LUONG: 'Thiên Lương',
+  THAM_LANG: 'Tham Lang',
+  CU_MON: 'Cự Môn',
+  THAT_SAT: 'Thất Sát',
+  PHA_QUAN: 'Phá Quân',
+  LIEM_TRINH: 'Liêm Trinh',
+  THIEN_CO: 'Thiên Cơ',
+  VAN_XUONG: 'Văn Xương',
+  VAN_KHUC: 'Văn Khúc',
+  HUU_BAT: 'Hữu Bật',
+  TA_PHU: 'Tả Phù',
+};
+
+export interface TuViHolisticSynthesis {
+  cachCuc: {
+    code: string;
+    name: string;
+    nature: string;
+    description: string;
+    coreRole: string;
+  };
+  menhThanTimeline: {
+    menhPhase: string;
+    thanPhase: string;
+    transitionAge: number;
+    thanPalaceName: string;
+    timelineAdvice: string;
+  };
+  menhCucInteraction: {
+    relationTitle: string;
+    mechanism: string;
+    strategicPost: string;
+  };
+  tuHoaAxes: {
+    loc: { star: string; palaceKey: string; palaceName: string; meaning: string };
+    quyen: { star: string; palaceKey: string; palaceName: string; meaning: string };
+    khoa: { star: string; palaceKey: string; palaceName: string; meaning: string };
+    ky: { star: string; palaceKey: string; palaceName: string; meaning: string };
+  };
+  tuanTrietGates: {
+    trietPalaces: string[];
+    tuanPalaces: string[];
+    analysis: string;
+  };
+  finalActionBlueprint: {
+    primaryLeverage: string;
+    criticalBlindspot: string;
+    masterPrinciple: string;
+  };
+}
+
+export function generateTuViHolisticSynthesis(result: any): TuViHolisticSynthesis {
+  const facts = result?.facts || {};
+  const palaces = facts.palaces || {};
+  const yearStem = (facts.yearStem || 'GIAP').toUpperCase();
+  const yearBranch = (facts.yearBranch || 'TY_RAT').toUpperCase();
+
+  // 1. Nhận diện Cách Cục (Dựa vào Mệnh - Tài - Quan)
+  const menhStars = (palaces.MENH?.stars || []).map((s: any) => s.code?.toUpperCase());
+  const quanStars = (palaces.QUAN_LOC?.stars || []).map((s: any) => s.code?.toUpperCase());
+  const taiStars = (palaces.TAI_BACH?.stars || []).map((s: any) => s.code?.toUpperCase());
+  const allCoreStars = [...menhStars, ...quanStars, ...taiStars];
+
+  const tuPhuGroup = ['TU_VI', 'THIEN_PHU', 'VU_KHUC', 'THIEN_TUONG'];
+  const satPhaGroup = ['THAT_SAT', 'PHA_QUAN', 'THAM_LANG'];
+  const coNguyetGroup = ['THIEN_CO', 'THAI_AM', 'THIEN_DONG', 'THIEN_LUONG'];
+  const cuNhatGroup = ['CU_MON', 'THAI_DUONG'];
+
+  const countTuPhu = allCoreStars.filter((s) => tuPhuGroup.includes(s)).length;
+  const countSatPha = allCoreStars.filter((s) => satPhaGroup.includes(s)).length;
+  const countCoNguyet = allCoreStars.filter((s) => coNguyetGroup.includes(s)).length;
+  const countCuNhat = allCoreStars.filter((s) => cuNhatGroup.includes(s)).length;
+
+  let cachCuc = {
+    code: 'DA_NANG',
+    name: 'Cách Cục Hỗ Hợp Đa Năng — Uyển Chuyển & Đa Tài',
+    nature: 'Hội tụ đa dạng phẩm chất, thích ứng linh hoạt trong nhiều môi trường.',
+    description: 'Lá số không bị bó hẹp trong khuôn mẫu cứng nhắc. Bạn có thể kiêm nhiệm nhiều vai trò từ chuyên môn, quản lý đến phát triển đối ngoại.',
+    coreRole: 'Người kiến tạo cầu nối, thích hợp với các mô hình tổ chức năng động đòi hỏi tư duy đa chiều.',
+  };
+
+  const hasMainMenhStar = (palaces.MENH?.stars || []).some((x: any) => x.isMain);
+
+  if (!hasMainMenhStar) {
+    cachCuc = {
+      code: 'VO_CHINH_DIEU',
+      name: 'Mệnh Vô Chính Diệu — Linh Hoạt Như Nước & Dễ Nương Thời Cuộc',
+      nature: 'Khả năng tiếp thu, hấp thụ và phản chiếu hoàn cảnh tuyệt vời.',
+      description: 'Cung Mệnh không có chính tinh tọa thủ ví như một tờ giấy trắng thông tuệ. Bạn có trực giác nhạy bén, khả năng mượn lực từ xung quanh để hoàn thành đại sự, tiến thoái nhịp nhàng.',
+      coreRole: 'Nhà chiến lược ẩn mình, chuyên gia đắc lực hoặc doanh nhân linh hoạt nắm bắt thị hiếu.',
+    };
+  } else if (countTuPhu >= 2 && countTuPhu >= countSatPha && countTuPhu >= countCoNguyet) {
+    cachCuc = {
+      code: 'TU_PHU_VU_TUONG',
+      name: 'Cách Cục Tử Phủ Vũ Tướng — Bậc Lãnh Đạo & Quản Trị Hệ Thống',
+      nature: 'Đĩnh đạc, quang minh, uy tín vững chắc và tầm nhìn chiến lược dài hạn.',
+      description: 'Đây là bộ sao đế vương và tể tướng kinh điển. Bạn có thiên hướng xây dựng nền móng kiên cố, tổ chức quy củ, trọng chữ tín và có sức quy tụ lòng người mạnh mẽ.',
+      coreRole: 'Nhà lãnh đạo doanh nghiệp, giám đốc điều hành, quản trị tài chính - ngân hàng hoặc hoạch định vĩ mô.',
+    };
+  } else if (countSatPha >= 2 && countSatPha >= countTuPhu && countSatPha >= countCoNguyet) {
+    cachCuc = {
+      code: 'SAT_PHA_THAM',
+      name: 'Cách Cục Sát Phá Tham — Chiến Tướng Tiên Phong & Đột Phá Can Trường',
+      nature: 'Quyết liệt, quả cảm, dám nghĩ dám làm và không ngại đập cũ dựng mới.',
+      description: 'Bộ sao của những người mở đường. Cuộc đời bạn gắn liền với những cuộc bứt phá ngoạn mục, sẵn sàng đương đầu với sóng gió để giành lấy chiến công hiển hách.',
+      coreRole: 'Nhà sáng lập khởi nghiệp, dẫn dắt đổi mới sáng tạo, mở mang thị trường mới hoặc chỉ huy tác chiến.',
+    };
+  } else if (countCoNguyet >= 2 && countCoNguyet >= countTuPhu && countCoNguyet >= countSatPha) {
+    cachCuc = {
+      code: 'CO_NGUYET_DONG_LUONG',
+      name: 'Cách Cục Cơ Nguyệt Đồng Lương — Trí Tuệ Mưu Lược & Chuyên Gia Cố Vấn',
+      nature: 'Thâm trầm, chu đáo, nhân từ thiện lương và tư duy logic bài bản.',
+      description: 'Bộ sao của giới sĩ tử, chuyên gia và quân sư thông tuệ. Bạn phát huy sức mạnh tối đa khi làm công việc tham mưu, nghiên cứu chuyên sâu, kế hoạch hoặc phụng sự xã hội.',
+      coreRole: 'Cố vấn chiến lược, chuyên gia phân tích, nhà giáo, nhà nghiên cứu khoa học hoặc quản lý công vụ.',
+    };
+  } else if (countCuNhat >= 2) {
+    cachCuc = {
+      code: 'CU_NHAT',
+      name: 'Cách Cục Cự Nhật — Quang Minh Hùng Biện & Đối Ngoại Quốc Tế',
+      nature: 'Ăn nói sắc bén, tư duy phản biện vượt trội và tầm nhìn rộng mở.',
+      description: 'Bộ sao hội tụ ánh sáng và khẩu tài. Bạn có khả năng lan tỏa tư tưởng, thuyết phục quần chúng và dễ tạo dựng tên tuổi ở môi trường giao thương bên ngoài hoặc phương xa.',
+      coreRole: 'Luật sư, nhà ngoại giao, chuyên gia truyền thông, học giả nghiên cứu hoặc nhà thương thuyết quốc tế.',
+    };
+  }
+
+  // 2. Mệnh - Thân Timeline
+  const cucNumber = facts.cucNumber || 2;
+  const transitionAge = cucNumber === 2 ? 32 : cucNumber === 3 ? 33 : cucNumber === 4 ? 34 : cucNumber === 5 ? 35 : 36;
+  
+  let thanPalaceKey = 'MENH';
+  let thanPalaceName = 'Mệnh';
+  for (const [pKey, pData] of Object.entries(palaces) as [string, any][]) {
+    if (pData.isThan) {
+      thanPalaceKey = pKey;
+      thanPalaceName = PALACE_VN[pKey] || pKey;
+      break;
+    }
+  }
+
+  const menhPhase = `Tiền Vận (từ nhỏ đến ${transitionAge} tuổi): Được định hình bởi Cung Mệnh (${PALACE_VN.MENH}). Đây là giai đoạn tích lũy nội lực bẩm sinh, rèn giũa bản lĩnh và hình thành nhân sinh quan.`;
+  const thanPhase = `Hậu Vận (từ sau ${transitionAge} tuổi trở đi): Trọng tâm cuộc đời chuyển dịch mạnh mẽ về Cung Thân ngụ tại ${thanPalaceName}. Mọi quả ngọt và sự nghiệp trưởng thành sẽ hội tụ tại trục cung này.`;
+
+  const timelineAdvice = thanPalaceKey === 'QUAN_LOC'
+    ? 'Hậu vận bạn khẳng định giá trị bản thân bằng địa vị sự nghiệp. Càng về sau danh tiếng và chuyên môn càng rực rỡ nếu tiền vận chịu khó tôi rèn.'
+    : thanPalaceKey === 'TAI_BACH'
+    ? 'Hậu vận tập trung vào sự tích lũy vật chất vững chắc. Bạn biết cách chuyển hóa kinh nghiệm thành dòng tiền an toàn và thịnh vượng bền lâu.'
+    : thanPalaceKey === 'PHUC_DUC'
+    ? 'Hậu vận hướng về chiều sâu tâm thức, sự an yên tinh thần và gánh vác việc dòng họ. Cuộc sống viên mãn đo bằng sự thanh thản nội tâm.'
+    : thanPalaceKey === 'THIEN_DI'
+    ? 'Hậu vận càng xuất ngoại, đi xa lập nghiệp hoặc làm việc đối ngoại thì vận hội càng thênh thang. Đừng để mình bị giam chân ở một chỗ.'
+    : thanPalaceKey === 'PHU_THE'
+    ? 'Người bạn đời và sự êm ấm gia đạo là chìa khóa mở ra tài vận nửa đời sau. Đồng vợ đồng chồng thì cơ đồ mới hưng thịnh.'
+    : 'Thân cư Mệnh: Bạn là người tự tay nắm giữ vận mệnh mình từ đầu đến cuối, kiên định với chí hướng đã chọn và tự lực cánh sinh.';
+
+  // 3. Tương tác Mệnh - Cục
+  const napAmKey = `${yearStem}_${yearBranch}`;
+  const napAmInfo = NAP_AM_TABLE[napAmKey] || { elementVn: 'Kim' };
+  const menhCucData = evaluateMenhCucRelation(facts.cuc || 'Thổ ngũ cục', napAmInfo.elementVn);
+
+  // 4. Tìm vị trí Tứ Hóa
+  const canRules = TU_HOA_TABLE[yearStem] || TU_HOA_TABLE.GIAP;
+  const findPalaceWithStar = (starCode: string): { key: string; name: string } => {
+    for (const [pKey, pData] of Object.entries(palaces) as [string, any][]) {
+      const hasStar = (pData.stars || []).some((s: any) => s.code?.toUpperCase() === starCode);
+      if (hasStar) {
+        return { key: pKey, name: PALACE_VN[pKey] || pKey };
+      }
+    }
+    return { key: 'MENH', name: 'Mệnh' };
+  };
+
+  const locPalace = findPalaceWithStar(canRules.loc);
+  const quyenPalace = findPalaceWithStar(canRules.quyen);
+  const khoaPalace = findPalaceWithStar(canRules.khoa);
+  const kyPalace = findPalaceWithStar(canRules.ky);
+
+  const tuHoaAxes = {
+    loc: {
+      star: STAR_NAME_VN[canRules.loc] || canRules.loc,
+      palaceKey: locPalace.key,
+      palaceName: locPalace.name,
+      meaning: `Hóa Lộc tại Cung ${locPalace.name}: Nguồn lộc tự nhiên, sự hanh thông tài vận và cơ duyên may mắn khởi phát mạnh mẽ nhất từ lĩnh vực này.`,
+    },
+    quyen: {
+      star: STAR_NAME_VN[canRules.quyen] || canRules.quyen,
+      palaceKey: quyenPalace.key,
+      palaceName: quyenPalace.name,
+      meaning: `Hóa Quyền tại Cung ${quyenPalace.name}: Nơi bạn nắm quyền chủ động, ý chí kiểm soát và khát vọng chinh phục quyết liệt nhất.`,
+    },
+    khoa: {
+      star: STAR_NAME_VN[canRules.khoa] || canRules.khoa,
+      palaceKey: khoaPalace.key,
+      palaceName: khoaPalace.name,
+      meaning: `Hóa Khoa tại Cung ${khoaPalace.name}: Đệ nhất cát thần cứu giải, vòng bảo hiểm danh dự, học vấn và sự phù trợ lúc hoạn nạn ngặt nghèo.`,
+    },
+    ky: {
+      star: STAR_NAME_VN[canRules.ky] || canRules.ky,
+      palaceKey: kyPalace.key,
+      palaceName: kyPalace.name,
+      meaning: `Hóa Kỵ tại Cung ${kyPalace.name}: Điểm nghẽn tâm lý, nơi dễ phát sinh trăn trở, thị phi hoặc đòi hỏi bạn phải trả lời bài học nghiệp lực sâu sắc nhất cuộc đời.`,
+    },
+  };
+
+  // 5. Cửa Ải Tuần Triệt
+  const trietPalaces: string[] = [];
+  const tuanPalaces: string[] = [];
+  for (const [pKey, pData] of Object.entries(palaces) as [string, any][]) {
+    if (pData.isTriet) trietPalaces.push(PALACE_VN[pKey] || pKey);
+    if (pData.isTuan) tuanPalaces.push(PALACE_VN[pKey] || pKey);
+  }
+
+  let tuanTrietAnalysis = '';
+  if (trietPalaces.length > 0) {
+    tuanTrietAnalysis += `Triệt Không đóng tại ${trietPalaces.join(', ')}: Thử thách lớn trong tiền vận (trước 34 tuổi). Những lĩnh vực này đòi hỏi bạn phải nếm trải va vấp sớm để tôi rèn nội lực, không nên vội vã gặt hái ngay lúc trẻ. `;
+  }
+  if (tuanPalaces.length > 0) {
+    tuanTrietAnalysis += `Tuần Không đóng tại ${tuanPalaces.join(', ')}: Giữ nhịp độ điềm đạm, tiến thoái có trật tự, bảo toàn nguồn lực bền vững về hậu vận.`;
+  }
+  if (!tuanTrietAnalysis) {
+    tuanTrietAnalysis = 'Các trục cung không chịu ảnh hưởng trực diện của Tuần/Triệt, các tinh diệu phát huy trọn vẹn đặc tính tự nhiên.';
+  }
+
+  // 6. Action Blueprint
+  const primaryLeverage = `Tận dụng đòn bẩy Cách Cục ${cachCuc.name.split('—')[0].trim()} kết hợp Hóa Lộc tại Cung ${locPalace.name}. Hãy tập trung 80% thời gian và nguồn lực vào việc phát huy chuyên môn mũi nhọn này thay vì dàn trải sức lực.`;
+  const criticalBlindspot = `Hóa Kỵ đóng tại Cung ${kyPalace.name} là bài học then chốt. Cần tuyệt đối minh bạch, tránh suy diễn tiêu cực hoặc nóng vội ở lĩnh vực này. Khi gặp khúc mắc, hãy dùng sự điềm đạm và chữ tín để hóa giải.`;
+  const masterPrinciple = `Thời gian từ nay đến mốc ${transitionAge} tuổi là chặng đường bản lề chuyển dịch từ Mệnh sang Thân (${thanPalaceName}). Tuân thủ đạo trung dung, lấy đức độ làm gốc thì tiền vận dù có sóng gió, hậu vận tất hưởng quả ngọt bền lâu.`;
+
+  return {
+    cachCuc,
+    menhThanTimeline: {
+      menhPhase,
+      thanPhase,
+      transitionAge,
+      thanPalaceName,
+      timelineAdvice,
+    },
+    menhCucInteraction: {
+      relationTitle: menhCucData.title,
+      mechanism: menhCucData.description,
+      strategicPost: menhCucData.advice,
+    },
+    tuHoaAxes,
+    tuanTrietGates: {
+      trietPalaces,
+      tuanPalaces,
+      analysis: tuanTrietAnalysis,
+    },
+    finalActionBlueprint: {
+      primaryLeverage,
+      criticalBlindspot,
+      masterPrinciple,
+    },
+  };
+}
