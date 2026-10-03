@@ -25,6 +25,7 @@ import {
 } from '@mystic/tuvi-engine';
 import { TuViFullReport } from './TuViFullReport';
 import { TermTag } from '@/components/TermTag';
+import { DateInput } from '@/components/DateInput';
 
 export default function TuViPage() {
   const [solarDate, setSolarDate] = useState('1990-11-29');
@@ -97,14 +98,12 @@ export default function TuViPage() {
           <form onSubmit={handleCalculate} className="space-y-4">
             <div>
               <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
-                Ngày Sinh Dương Lịch
+                Ngày Sinh Dương Lịch <span className="text-stone/60 normal-case">(Ngày / Tháng / Năm)</span>
               </label>
-              <input
-                type="date"
+              <DateInput
                 value={solarDate}
-                onChange={(e) => setSolarDate(e.target.value)}
+                onChange={setSolarDate}
                 required
-                className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
               />
             </div>
 

@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { HeartHandshake, ShieldCheck, AlertTriangle, RefreshCw, Sparkles, User, Info, BookOpen, Flame, Compass, MessageCircle, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
+import { HeartHandshake, ShieldCheck, AlertTriangle, RefreshCw, User, Info, BookOpen, Flame, Compass, MessageCircle, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
+import { DateInput } from '@/components/DateInput';
 
 const ZODIAC_VN: Record<string, { name: string; element: 'FIRE' | 'EARTH' | 'AIR' | 'WATER'; elementVn: string }> = {
   ARIES: { name: 'Bạch Dương (Aries)', element: 'FIRE', elementVn: 'Hỏa' },
@@ -296,13 +297,13 @@ export default function CompatibilityPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">Ngày Sinh Dương Lịch</label>
-              <input
-                type="date"
+              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
+                Ngày Sinh Dương Lịch <span className="text-stone/60 normal-case">(Ngày / Tháng / Năm)</span>
+              </label>
+              <DateInput
                 value={dateA}
-                onChange={(e) => setDateA(e.target.value)}
+                onChange={setDateA}
                 required
-                className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
               />
             </div>
 
@@ -365,13 +366,13 @@ export default function CompatibilityPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">Ngày Sinh Dương Lịch</label>
-              <input
-                type="date"
+              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
+                Ngày Sinh Dương Lịch <span className="text-stone/60 normal-case">(Ngày / Tháng / Năm)</span>
+              </label>
+              <DateInput
                 value={dateB}
-                onChange={(e) => setDateB(e.target.value)}
+                onChange={setDateB}
                 required
-                className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
               />
             </div>
 
@@ -598,7 +599,7 @@ export default function CompatibilityPage() {
           <div className="border-2 border-accentGold/60 shadow-lg shadow-black/30">
             <button type="button" onClick={() => toggleSec('s3')} className="w-full flex items-center justify-between p-5 bg-surface hover:bg-background/60 transition-colors">
               <div className="flex items-center gap-3">
-                <Sparkles className="w-4 h-4 text-accentGold" />
+                <Compass className="w-4 h-4 text-accentGold" />
                 <div className="text-left">
                   <span className="font-mono text-[10px] text-accentGold uppercase tracking-widest block">Tổng Luận</span>
                   <span className="font-serif text-sm text-parchment">Móc Nối Đa Chiều & 3 Nguyên Tắc Vàng</span>

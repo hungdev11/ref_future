@@ -30,6 +30,7 @@ import {
   PLANET_GLYPHS,
   HOUSE_INTERPRETATIONS,
 } from '@mystic/astrology-engine';
+import { DateInput } from '@/components/DateInput';
 
 function getClockCoordinates(cx: number, cy: number, r: number, clockHour: number) {
   const phi = (clockHour * 30 * Math.PI) / 180;
@@ -197,14 +198,12 @@ export default function AstrologyPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
-                Ngày Sinh Dương Lịch
+                Ngày Sinh Dương Lịch <span className="text-stone/60 normal-case">(Ngày / Tháng / Năm)</span>
               </label>
-              <input
-                type="date"
+              <DateInput
                 value={birthDate}
-                onChange={(e) => setBirthDate(e.target.value)}
+                onChange={setBirthDate}
                 required
-                className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
               />
             </div>
 

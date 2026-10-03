@@ -29,6 +29,7 @@ import {
 } from '@mystic/numerology-engine';
 import { NumerologyFullReport } from './NumerologyFullReport';
 import { TermTag } from '@/components/TermTag';
+import { DateInput } from '@/components/DateInput';
 
 export default function NumerologyPage() {
   const [fullName, setFullName] = useState('Nguyễn Văn Đức');
@@ -153,17 +154,15 @@ export default function NumerologyPage() {
 
             <div>
               <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
-                Ngày Sinh Dương Lịch
+                Ngày Sinh Dương Lịch <span className="text-stone/60 normal-case">(Ngày / Tháng / Năm)</span>
               </label>
-              <input
-                type="date"
+              <DateInput
                 value={birthDate}
-                onChange={(e) => setBirthDate(e.target.value)}
+                onChange={setBirthDate}
                 required
-                className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
               />
               <span className="text-[10px] text-stone/70 mt-1 block">
-                Ngày sinh quyết định Số Chủ Đạo và 4 Đỉnh Cao Kim Tự Tháp.
+                Định dạng DD/MM/YYYY — Quyết định Số Chủ Đạo và 4 Đỉnh Cao Kim Tự Tháp.
               </span>
             </div>
 

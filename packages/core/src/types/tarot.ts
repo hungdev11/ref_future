@@ -26,21 +26,9 @@ export interface TarotPositionResult {
   isReversed: boolean;
 }
 
-export interface TarotSpreadSynthesis {
-  dominantSuit: string;
-  dominantSuitLabel: string;
-  elementBalance: Record<string, number>;
-  reversedRatio: number;
-  narrativeArc: string;
-  tensionAnalysis: string;
-  coreProgression: string;
-  actionableGuidance: string;
-}
-
 export interface TarotFacts {
   deckCode: string;
   spreadCode: string;
   seed: string;
   draws: TarotPositionResult[];
-  synthesis?: TarotSpreadSynthesis;
 }

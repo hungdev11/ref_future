@@ -109,19 +109,6 @@ export class PythagoreanNumerologyEngine
       core: coreResults,
       pinnacles: cycles.pinnacles,
       challenges: cycles.challenges,
-      cycles: {
-        bases: cycles.bases,
-        PINNACLES: {
-          bases: cycles.bases,
-          pinnacle1: cycles.pinnacles[0]!,
-          pinnacle2: cycles.pinnacles[1]!,
-          pinnacle3: cycles.pinnacles[2]!,
-          pinnacle4: cycles.pinnacles[3]!,
-        },
-        personalYear: cycles.personalYear,
-        personalMonth: cycles.personalMonth,
-        personalDay: cycles.personalDay,
-      },
     };
 
     // 3. Flatten to dot-notated facts for Rule Engine
@@ -142,10 +129,6 @@ export class PythagoreanNumerologyEngine
       'numerology.cycles.personal_year.value': cycles.personalYear.value,
       'numerology.cycles.personal_month.value': cycles.personalMonth.value,
       'numerology.cycles.personal_day.value': cycles.personalDay.value,
-      'numerology.cycles.pinnacle_1.value': cycles.pinnacles[0]?.value ?? null,
-      'numerology.cycles.pinnacle_2.value': cycles.pinnacles[1]?.value ?? null,
-      'numerology.cycles.pinnacle_3.value': cycles.pinnacles[2]?.value ?? null,
-      'numerology.cycles.pinnacle_4.value': cycles.pinnacles[3]?.value ?? null,
     };
 
     const inputHash = this.hashInput(input, config);
