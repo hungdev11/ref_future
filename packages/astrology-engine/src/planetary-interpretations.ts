@@ -910,8 +910,314 @@ export function getPlanetInSignInsight(
   };
 }
 
+// ══════════════════════════════════════════════════════════════════
+// BẢNG LUẬN GIẢI CHUYÊN SÂU TỪNG CẶP HÀNH TINH (PAIRWISE ASPECT INSIGHTS)
+// ══════════════════════════════════════════════════════════════════
+export const PAIR_ASPECT_INSIGHTS: Record<
+  string,
+  {
+    harmonious: { layman: string; advice: string };
+    tension: { layman: string; advice: string };
+    conjunction?: { layman: string; advice: string };
+  }
+> = {
+  moon_sun: {
+    harmonious: {
+      layman:
+        'Bản ngã lý trí (Mặt Trời) và nhu cầu cảm xúc (Mặt Trăng) đồng điệu sâu sắc. Bạn sở hữu sự tự tin nội tại, tính cách nhất quán, ít khi bị giằng xé giữa mong muốn cá nhân và sự yên ổn trong tâm hồn. Lời nói và cảm xúc đi cùng một hướng.',
+      advice:
+        'Phát huy sự vững vàng này để trở thành chỗ dựa đáng tin cậy cho gia đình và đồng đội; bạn có năng khiếu hòa giải và tạo dựng niềm tin tự nhiên.',
+    },
+    tension: {
+      layman:
+        'Trục cọ xát kinh điển giữa khát vọng tỏa sáng (Mặt Trời) và nhu cầu an toàn riêng tư (Mặt Trăng). Bạn thường cảm thấy xung đột sâu sắc giữa việc dấn thân cho sự nghiệp bên ngoài và việc vun vén đời sống nội tâm/gia đình, như thể hai con người đang kéo về hai ngả.',
+      advice:
+        'Phân định rõ ranh giới thời gian giữa công việc và đời tư; học cách lắng nghe cả tiếng nói lý trí lẫn tiếng thở dài của cảm xúc thay vì dằn vặt bản thân.',
+    },
+    conjunction: {
+      layman:
+        'Sinh vào kỳ Trăng Non (Tân Nguyệt). Bản ngã và cảm xúc hòa làm một thể duy nhất. Bạn tập trung cao độ, trực giác mãnh liệt, tràn đầy nhiệt huyết khởi xướng những chu kỳ cuộc đời mới.',
+      advice:
+        'Tránh tính chủ quan thái quá; đôi khi lùi lại một bước để quan sát góc nhìn của người khác sẽ giúp bạn đưa ra quyết định toàn diện hơn.',
+    },
+  },
+
+  mercury_sun: {
+    harmonious: {
+      layman:
+        'Tư duy logic (Thủy Tinh) kết nối mật thiết với bản sắc cá nhân (Mặt Trời). Bạn có khả năng diễn đạt lưu loát, quan điểm khúc chiết, trí nhớ sắc bén và khả năng truyền cảm hứng bằng lời nói rất tự nhiên.',
+      advice:
+        'Tận dụng tài năng ngôn ngữ trong viết lách, đàm phán thương mại và thuyết trình chiến lược. Luôn mở rộng tinh thần đón nhận các phản biện xây dựng.',
+    },
+    tension: {
+      layman:
+        'Tư duy gắn chặt với cái tôi cá nhân. Khi ý kiến của bạn bị phản đối hoặc chất vấn, bạn dễ cảm thấy như chính lòng tự trọng của mình đang bị công kích trực diện.',
+      advice:
+        'Tách rời ý kiến khỏi giá trị tự thân; học cách tiếp nhận các góc nhìn trái chiều như một cơ hội mở rộng hiểu biết thay vì một cuộc chiến thắng thua.',
+    },
+    conjunction: {
+      layman:
+        'Trí tuệ Cazimi rực sáng. Bộ não của bạn hoạt động như một cỗ máy xử lý dữ liệu thần tốc, tư duy nhanh nhạy, làm chủ ngôn từ và có khả năng định hình ý tưởng phức tạp một cách mạch lạc.',
+      advice:
+        'Dành thời gian cho não bộ nghỉ ngơi tĩnh lặng; tránh thói quen suy nghĩ quá dồn dập khiến hệ thần kinh bị căng thẳng kéo dài.',
+    },
+  },
+
+  sun_venus: {
+    harmonious: {
+      layman:
+        'Sức hút duyên dáng, phong thái lịch thiệp và gu thẩm mỹ thanh lịch bẩm sinh. Bạn toát ra nguồn năng lượng ấm áp, dễ mến và luôn hướng đến sự công bằng, hòa thuận trong các mối quan hệ xã hội.',
+      advice:
+        'Khai thác tối đa năng khiếu ngoại giao và cảm quan thẩm mỹ trong nghệ thuật, thiết kế, thương thuyết hoặc chăm sóc cộng đồng.',
+    },
+    tension: {
+      layman:
+        'Khuynh hướng tìm kiếm sự công nhận và ưa chuộng hòa bình đến mức ngại đối đầu, dễ chiều lòng người khác mà quên đi quyền lợi và ranh giới cá nhân.',
+      advice:
+        'Học cách từ chối khéo léo; giá trị đích thực của bạn không phụ thuộc vào việc phải làm hài lòng tất cả mọi người.',
+    },
+    conjunction: {
+      layman:
+        'Vẻ đẹp tâm hồn và phong thái tỏa sáng tự nhiên. Bạn có trái tim rộng mở, biết cách làm cho người đối diện cảm thấy được trân trọng và yêu quý.',
+      advice:
+        'Đầu tư vào việc phát triển thương hiệu cá nhân và môi trường sống duy mỹ; bạn sinh ra để lan tỏa niềm vui và sự hài hòa.',
+    },
+  },
+
+  mars_sun: {
+    harmonious: {
+      layman:
+        'Nguồn sinh lực dồi dào, lòng quả cảm và tinh thần tiên phong bất khuất. Bạn dám nghĩ dám làm, không e sợ gian khó và luôn chủ động dẫn đầu khi có thử thách mới xuất hiện.',
+      advice:
+        'Đặt ra các mục tiêu lớn đòi hỏi sự bứt phá; duy trì rèn luyện thể thao hàng ngày để khai thông nguồn năng lượng thể chất mạnh mẽ này.',
+    },
+    tension: {
+      layman:
+        'Sự thôi thúc hành động quá mãnh liệt dễ dẫn đến tính nóng nảy, thiếu kiên nhẫn hoặc thói quen ganh đua gay gắt khi kế hoạch bị cản trở.',
+      advice:
+        'Áp dụng quy tắc dừng 5 giây trước khi phản ứng; chuyển hóa cơn giận thành sự tập trung sắt đá vào mục tiêu thay vì tranh chấp hơn thua.',
+    },
+    conjunction: {
+      layman:
+        'Ngọn lửa chiến binh rực cháy. Ý chí và hành động hòa làm một: bạn là người hành động dứt khoát, ghét sự chần chừ và sẵn sàng đương đầu với mọi sóng gió.',
+      advice:
+        'Học cách điều tiết tốc độ; một chiến binh xuất sắc không chỉ biết tấn công mà còn phải biết khi nào nên tạm dừng để củng cố lực lượng.',
+    },
+  },
+
+  jupiter_sun: {
+    harmonious: {
+      layman:
+        'Tầm nhìn khoáng đạt, tinh thần lạc quan hào hiệp và vận may tự nhiên từ các cơ hội mở rộng. Bạn có niềm tin tích cực vào cuộc sống và luôn thu hút được quý nhân nâng đỡ.',
+      advice:
+        'Mạnh dạn mở rộng quy mô, học hỏi tri thức mới hoặc khám phá những lĩnh vực quốc tế; sự hào phóng và chân thành sẽ mở ra nhiều cánh cửa lớn.',
+    },
+    tension: {
+      layman:
+        'Dễ tự tin thái quá, ước tính quá cao khả năng thực tế hoặc hứa hẹn vượt quá nguồn lực, dẫn đến tình trạng bắt đầu hoành tráng nhưng đuối sức về sau.',
+      advice:
+        'Đặt ra các tiêu chí kiểm soát rủi ro chặt chẽ; chia nhỏ các kế hoạch vĩ mô thành các mốc khả thi cụ thể.',
+    },
+  },
+
+  saturn_sun: {
+    harmonious: {
+      layman:
+        'Kỷ luật thép, tinh thần trách nhiệm cao độ và sự kiên định bền bỉ như đá tảng. Thành công của bạn là kết tinh của sự tích lũy nghiêm túc theo năm tháng, càng về hậu vận càng vững chắc.',
+      advice:
+        'Kiên trì đi trên con đường đã chọn; thời gian chính là người bạn đồng hành tốt nhất giúp bạn xây dựng vị thế vững chắc không thể lung lay.',
+    },
+    tension: {
+      layman:
+        'Cảm giác gánh nặng trách nhiệm đè nặng lên vai, hay tự ti hoặc tự đặt ra những yêu cầu khắt khe đến ngột ngạt đối với bản thân từ thuở thiếu thời.',
+      advice:
+        'Ghi nhận và tự thưởng cho những nỗ lực hàng ngày của mình; bớt khắt khe với bản thân và tin rằng hoàn hảo là một hành trình chứ không phải đích đến tức thì.',
+    },
+  },
+
+  sun_uranus: {
+    harmonious: {
+      layman:
+        'Tư duy đổi mới đột phá, trực giác nhạy bén về xu hướng tương lai và phong cách độc lập không thể trộn lẫn. Bạn luôn tìm ra những lối đi sáng tạo mà người khác không ngờ tới.',
+      advice:
+        'Ứng dụng công nghệ mới và tự do phát triển các ý tưởng tiên phong; đừng ngại khác biệt vì đó chính là thương hiệu độc bản của bạn.',
+    },
+    tension: {
+      layman:
+        'Tính khí bướng bỉnh, thích nổi loạn chống lại các khuôn mẫu có sẵn một cách cực đoan hoặc dễ thay đổi định hướng đột ngột khiến người xung quanh khó theo kịp.',
+      advice:
+        'Học cách kiên trì với một mục tiêu trước khi chuyển sang dự án mới; sáng tạo cần đi đôi với sự hoàn thiện để tạo ra giá trị bền vững.',
+    },
+  },
+
+  neptune_sun: {
+    harmonious: {
+      layman:
+        'Trực giác tâm linh sâu sắc, tâm hồn duy mỹ giàu lòng trắc ẩn và cảm quan nghệ thuật tinh tế. Bạn dễ dàng cảm nhận được tâm trạng của tha nhân và vẻ đẹp tiềm ẩn của vạn vật.',
+      advice:
+        'Đưa cảm xúc và trí tưởng tượng phong phú vào nghệ thuật, âm nhạc, sáng tạo nội dung hoặc các hoạt động thiện nguyện chữa lành.',
+    },
+    tension: {
+      layman:
+        'Dễ mơ mộng xa rời thực tế, thiếu ranh giới bảo vệ bản thân trước những nguồn năng lượng tiêu cực xung quanh hoặc dễ vỡ mộng khi đối diện với thực tế trần trụi.',
+      advice:
+        'Thiết lập kỷ luật thực tiễn hàng ngày; tập trung vào những việc cụ thể có thể đo lường được để giữ cho đôi chân luôn đứng vững trên mặt đất.',
+    },
+  },
+
+  pluto_sun: {
+    harmonious: {
+      layman:
+        'Nội lực phi thường và khả năng tái sinh kỳ diệu sau mọi nghịch cảnh. Bạn sở hữu đôi mắt nhìn thấu bản chất vấn đề, bản lĩnh can trường và uy lực ngầm khiến người khác nể trọng.',
+      advice:
+        'Sử dụng quyền năng này để tạo ra sự chuyển hóa tích cực cho cộng đồng; bạn là người có khả năng dẫn dắt qua các giai đoạn khủng hoảng.',
+    },
+    tension: {
+      layman:
+        'Khuynh hướng muốn kiểm soát tuyệt đối hoàn cảnh và con người xung quanh; dễ rơi vào trạng thái nghi ngờ, giằng xé nội tâm hoặc phản ứng tiêu cực khi mất quyền chủ động.',
+      advice:
+        'Học bài học buông bỏ sự kiểm soát; tin tưởng vào dòng chảy tự nhiên và chuyển hóa nỗi sợ thành sự thấu suốt.',
+    },
+  },
+
+  mercury_moon: {
+    harmonious: {
+      layman:
+        'Sự kết hợp tinh tế giữa trí tuệ logic và độ nhạy cảm xúc. Bạn hiểu được tâm trạng của người khác qua từng cử chỉ và biết dùng lời nói ấm áp, thông thái để vỗ về lòng người.',
+      advice:
+        'Phát huy năng lực này trong các công việc tư vấn, giảng dạy, viết lách hoặc gắn kết đội ngũ; bạn là người lắng nghe xuất sắc.',
+    },
+    tension: {
+      layman:
+        'Tâm trí thường xuyên bị cảm xúc xáo trộn, dễ suy nghĩ quá mức (overthinking) về những lời nói vu vơ hoặc lo lắng viển vông gây mất ngủ và căng thẳng thần kinh.',
+      advice:
+        'Tập thói quen viết nhật ký để đưa các luồng suy nghĩ ra giấy; dành thời gian tĩnh lặng hoặc đi dạo trong thiên nhiên để làm dịu tâm trí.',
+    },
+  },
+
+  moon_venus: {
+    harmonious: {
+      layman:
+        'Tâm hồn ngọt ngào, tinh tế, giàu lòng trắc ẩn và yêu chuộng cuộc sống gia đình êm ấm. Bạn mang lại cảm giác bình yên, thoải mái và dễ chịu cho bất kỳ ai tiếp xúc.',
+      advice:
+        'Chăm chút cho không gian tổ ấm và duy trì những thói quen vun đắp tình cảm chân thành với người thân yêu.',
+    },
+    tension: {
+      layman:
+        'Nỗi sợ bị từ chối hoặc thói quen nuông chiều cảm xúc tiêu cực bằng sự buông thả bản thân; dễ thỏa hiệp mù quáng để giữ hòa khí dù bản thân chịu nhiều thiệt thòi.',
+      advice:
+        'Tìm kiếm niềm vui tự thân lành mạnh; đối thoại trực tiếp về nhu cầu tình cảm thay vì im lặng chịu đựng trong ấm ức.',
+    },
+  },
+
+  mars_moon: {
+    harmonious: {
+      layman:
+        'Cảm xúc nhiệt thành, phản xạ bảo vệ bản năng nhạy bén và sẵn sàng hành động dũng cảm vì những người thân yêu. Bạn có nguồn năng lượng sống dồi dào và chân thật.',
+      advice:
+        'Khai thác nhiệt huyết này trong các hoạt động bảo vệ đội nhóm hoặc các môn thể thao đòi hỏi sự nhanh nhẹn.',
+    },
+    tension: {
+      layman:
+        'Cảm xúc dễ bùng phát dữ dội như ngọn lửa; một lời nói bất cẩn cũng có thể kích hoạt phản ứng tự vệ gay gắt, dễ gây tổn thương những người thân thiết nhất.',
+      advice:
+        'Khi cảm thấy cơn giận dâng lên, hãy tạm thời rời khỏi cuộc tranh luận và vận động thể chất để giải tỏa năng lượng xung kích.',
+    },
+  },
+
+  jupiter_moon: {
+    harmonious: {
+      layman:
+        'Tâm hồn rộng mở, hào phóng, giàu lòng nhân ái và khả năng phục hồi cảm xúc kỳ diệu. Dù gặp nghịch cảnh, bạn vẫn luôn giữ được sự lạc quan và niềm tin vững chắc vào ngày mai.',
+      advice:
+        'Lan tỏa năng lượng tích cực này đến cộng đồng; bạn có năng khiếu tự nhiên trong việc truyền cảm hứng sống đẹp và nhân hậu.',
+    },
+    tension: {
+      layman:
+        'Dễ phóng đại cảm xúc, phóng khoáng quá đà hoặc tìm cách trốn tránh đối diện với các vấn đề gai góc bằng sự lạc quan hời hợt.',
+      advice:
+        'Nhìn nhận thẳng thắn cả những mặt hạn chế trong đời sống để có giải pháp xử lý triệt để, không né tránh.',
+    },
+  },
+
+  moon_saturn: {
+    harmonious: {
+      layman:
+        'Sự vững vàng về cảm xúc, khả năng tự chủ cao và sự chín chắn trước tuổi. Bạn là chỗ dựa thầm lặng nhưng cực kỳ kiên cố trong mọi cơn bão táp của cuộc đời.',
+      advice:
+        'Đảm nhận các vai trò quản lý hoặc tổ chức; mọi người luôn an tâm tuyệt đối khi có sự hiện diện của bạn.',
+    },
+    tension: {
+      layman:
+        'Nỗi cô đơn sâu kín, cảm giác bị cô lập hoặc khó mở lòng chia sẻ tâm tư với người khác vì sợ bị phán xét hay tổn thương; thường kìm nén cảm xúc cho đến khi kiệt sức.',
+      advice:
+        'Học cách tin tưởng và cho phép bản thân được yếu đuối trước những người thật sự trân quý bạn; cởi mở là liều thuốc giải phóng gánh nặng nội tâm.',
+    },
+  },
+
+  mars_venus: {
+    harmonious: {
+      layman:
+        'Sức hấp dẫn tự nhiên đầy lôi cuốn, hòa quyện giữa nét duyên dáng quyến rũ và ngọn lửa đam mê nhiệt huyết. Bạn tạo nên sự cân bằng đẹp đẽ trong tình yêu và các mối quan hệ đôi lứa.',
+      advice:
+        'Sáng tạo nghệ thuật hoặc theo đuổi các dự án mang tính thẩm mỹ và năng động cao; tình cảm luôn là nguồn cảm hứng dồi dào.',
+    },
+    tension: {
+      layman:
+        'Sự xung đột giữa nhu cầu được yêu thương nhẹ nhàng và tính chiếm hữu mãnh liệt; các mối quan hệ tình cảm dễ thăng trầm theo chu kỳ nồng nàn rồi tranh cãi gay gắt.',
+      advice:
+        'Tôn trọng không gian riêng của đối phương; học cách yêu thương trong sự thấu hiểu thay vì đòi hỏi kiểm soát lẫn nhau.',
+    },
+  },
+
+  mars_mercury: {
+    harmonious: {
+      layman:
+        'Đầu óc nhanh nhạy như điện xẹt, phản xạ ngôn từ sắc sảo và khả năng ra quyết định chớp nhoáng dưới áp lực lớn. Bạn là người dám nói sự thật và bảo vệ chính kiến đến cùng.',
+      advice:
+        'Thích hợp cho các công việc đòi hỏi xử lý khủng hoảng, thương lượng giá cả hoặc tranh luận học thuật.',
+    },
+    tension: {
+      layman:
+        'Khẩu khí sắc bén dễ biến thành lời châm chọc cay nghiệt, hiếu thắng trong mọi cuộc thảo luận và thiếu kiên nhẫn khi người khác giải thích chậm.',
+      advice:
+        'Uốn lưỡi bảy lần trước khi nói; sự thông minh đi kèm lòng trắc ẩn mới là trí tuệ đỉnh cao.',
+    },
+  },
+
+  mars_saturn: {
+    harmonious: {
+      layman:
+        'Sự kết hợp giữa động lực hành động dũng mãnh và sự kiên nhẫn sắt đá. Bạn làm việc có phương pháp, kiên trì đào từng tấc đất để xây nền móng vững chắc không gì lay chuyển nổi.',
+      advice:
+        'Tập trung vào các dự án đồ sộ đòi hỏi sự bền bỉ trường kỳ; không ai có thể làm việc bền bỉ hơn bạn.',
+    },
+    tension: {
+      layman:
+        'Cảm giác nội tâm như "vừa đạp ga vừa nhấn phanh". Bạn rất muốn hành động nhưng luôn bị sự thận trọng quá mức hoặc nỗi sợ thất bại kìm hãm lại, sinh ra cảm giác bực bội âm ỉ.',
+      advice:
+        'Bắt đầu từ những mục tiêu nhỏ có độ rủi ro thấp để tích lũy sự tự tin trước khi tăng tốc dứt khoát.',
+    },
+  },
+
+  jupiter_saturn: {
+    harmonious: {
+      layman:
+        'Sự cân bằng vàng giữa khát vọng mở rộng và kỷ luật bảo toàn vốn. Bạn biết chính xác khi nào nên đầu tư mở rộng và khi nào nên củng cố vị trí an toàn.',
+      advice:
+        'Xây dựng các kế hoạch tài chính và sự nghiệp dài hạn; bạn có tố chất của một nhà hoạch định chiến lược kinh doanh xuất sắc.',
+    },
+    tension: {
+      layman:
+        'Sự dao động thất thường giữa hưng phấn liều lĩnh và hoang mang thận trọng quá mức, dễ dẫn đến việc bỏ lỡ các thời cơ chiến lược then chốt.',
+      advice:
+        'Thiết lập bộ quy chuẩn đầu tư bằng văn bản và tuân thủ nghiêm ngặt, không để cảm xúc thị trường dẫn dắt.',
+    },
+  },
+};
+
 /**
- * Helper to get authentic Aspect Insight between two bodies
+ * Helper to get authentic Aspect Insight between two bodies with zero undefined errors
  */
 export function getAspectInsight(
   planet1: string,
@@ -925,7 +1231,9 @@ export function getAspectInsight(
   layman: string;
   advice: string;
 } {
-  const typeUpper = aspectType.toUpperCase();
+  const p1 = (planet1 || '').toLowerCase().trim();
+  const p2 = (planet2 || '').toLowerCase().trim();
+  const typeUpper = (aspectType || '').toUpperCase().trim();
   const def = MAJOR_ASPECT_DEFINITIONS[typeUpper] ?? {
     nameVn: `Góc Chiếu ${aspectType}`,
     symbol: '●',
@@ -952,21 +1260,38 @@ export function getAspectInsight(
     midheaven: 'Thiên Đỉnh (Sự nghiệp)',
   };
 
-  const p1Name = planetNamesVn[planet1.toLowerCase()] ?? planet1;
-  const p2Name = planetNamesVn[planet2.toLowerCase()] ?? planet2;
+  const p1Name = planetNamesVn[p1] ?? (planet1 || 'Hành tinh 1');
+  const p2Name = planetNamesVn[p2] ?? (planet2 || 'Hành tinh 2');
 
   const headline = `${p1Name} ${def.symbol} ${def.nameVn} ${p2Name}`;
   const orbText = `(Sai số góc: ${orb.toFixed(2)}°)`;
 
+  const pairKey = [p1, p2].sort().join('_');
+  const pairInsight = PAIR_ASPECT_INSIGHTS[pairKey];
+
   let layman = '';
   let advice = '';
 
-  if (def.isHarmonious) {
-    layman = `Đây là một liên kết tương sinh thuận hòa giữa ${p1Name} và ${p2Name}. Hai khía cạnh này bổ trợ tự nhiên cho nhau: khi bạn phát huy năng lượng của hành tinh này, hành tinh kia sẽ tự động được tiếp thêm sức mạnh mà không gặp cản trở nội tâm.`;
-    advice = `Tận dụng tối đa điểm tựa này trong công việc và các mối quan hệ; đây là tài năng thiên bẩm giúp bạn vượt qua những giai đoạn khó khăn.`;
+  if (pairInsight) {
+    if (typeUpper === 'CONJUNCTION' && pairInsight.conjunction) {
+      layman = pairInsight.conjunction.layman;
+      advice = pairInsight.conjunction.advice;
+    } else if (def.isHarmonious) {
+      layman = pairInsight.harmonious.layman;
+      advice = pairInsight.harmonious.advice;
+    } else {
+      layman = pairInsight.tension.layman;
+      advice = pairInsight.tension.advice;
+    }
   } else {
-    layman = `Đây là một trục cọ xát thách thức giữa ${p1Name} và ${p2Name}. Bạn thường cảm thấy sự giằng co bên trong: một bên muốn hành động dứt khoát còn một bên đòi hỏi sự an toàn, hoặc giữa lý trí và cảm xúc kéo nhau về hai hướng.`;
-    advice = `Đừng xem đây là điểm xấu; góc cọ xát chính là "lò luyện thép" rèn giũa bản lĩnh của bạn. Thay vì chọn một bỏ một, hãy học cách phân bổ thời gian hợp lý cho cả hai nhu cầu.`;
+    // Dynamic synthesis based on archetypes
+    if (def.isHarmonious) {
+      layman = `Đây là một liên kết tương sinh thuận hòa giữa ${p1Name} và ${p2Name}. Năng lượng của hai thiên thể hòa nhập tự nhiên, bổ trợ nhịp nhàng cho nhau mà không tạo ra cản trở hay xung đột nội tâm.`;
+      advice = `Tận dụng tối đa sự liên kết này trong các dự án đòi hỏi sự phối hợp giữa bản lĩnh và nhận thức cá nhân.`;
+    } else {
+      layman = `Đây là một trục cọ xát thách thức giữa ${p1Name} và ${p2Name}. Bạn thường cảm nhận được sự giằng co: khi một bên thôi thúc hành động quyết liệt thì bên kia đòi hỏi sự an toàn hoặc ranh giới cảm xúc.`;
+      advice = `Xem góc cọ xát này như lò luyện ý chí; học cách điều hòa và phân bổ thời gian hợp lý cho cả hai nhu cầu thay vì thiên lệch.`;
+    }
   }
 
   return {

@@ -743,22 +743,29 @@ export default function AstrologyPage() {
                     ? harmoniousAspects
                     : tensionAspects
                   ).slice(0, 8).map((asp: any, idx: number) => {
-                    const insight = getAspectInsight(asp.body1, asp.body2, asp.aspectType, asp.orb);
-                    const p1Glyph = PLANET_GLYPHS[asp.body1.toLowerCase()] ?? '●';
-                    const p2Glyph = PLANET_GLYPHS[asp.body2.toLowerCase()] ?? '●';
+                    const bodyA = String(asp.bodyA || asp.body1 || 'sun');
+                    const bodyB = String(asp.bodyB || asp.body2 || 'moon');
+                    const aspectType = String(asp.aspectType || asp.type || 'CONJUNCTION');
+                    const orb = Number(asp.orb ?? 0);
+                    const angle = Number(asp.angle ?? asp.actualAngle ?? 0);
+                    const insight = getAspectInsight(bodyA, bodyB, aspectType, orb);
+                    const p1Glyph = PLANET_GLYPHS[bodyA.toLowerCase()] ?? '●';
+                    const p2Glyph = PLANET_GLYPHS[bodyB.toLowerCase()] ?? '●';
+                    const p1Name = PLANET_NAMES_VN[bodyA.toLowerCase()]?.split(' (')[0] ?? bodyA;
+                    const p2Name = PLANET_NAMES_VN[bodyB.toLowerCase()]?.split(' (')[0] ?? bodyB;
 
                     return (
                       <div
                         key={idx}
                         onClick={() =>
                           openItemModal({
-                            category: `GÓC CHIẾU HÀNH TINH: ${asp.aspectType}`,
+                            category: `GÓC CHIẾU HÀNH TINH: ${aspectType}`,
                             title: insight.headline,
                             beginnerGuide: insight.beginnerGuide,
                             layman: insight.layman,
-                            mechanism: `Mối tương quan góc chiếu ${asp.aspectType} giữa ${asp.body1} và ${asp.body2}. Sai số góc tính toán: ${asp.orb?.toFixed(2)}°. Tọa độ thực tế: ${asp.actualAngle?.toFixed(2)}°.`,
+                            mechanism: `Mối tương quan góc chiếu ${aspectType} giữa ${p1Name} và ${p2Name}. Sai số góc tính toán: ${orb.toFixed(2)}°. Tọa độ thực tế: ${angle.toFixed(2)}°.`,
                             advice: insight.advice,
-                            technicalDetails: `Aspect Rule: ASTRO_ASPECT_${asp.aspectType} | Body 1: ${asp.body1} | Body 2: ${asp.body2} | Angle: ${asp.actualAngle?.toFixed(2)}° | Orb: ${asp.orb?.toFixed(2)}°`,
+                            technicalDetails: `Aspect Rule: ASTRO_ASPECT_${aspectType} | Body A: ${bodyA} | Body B: ${bodyB} | Angle: ${angle.toFixed(2)}° | Orb: ${orb.toFixed(2)}°`,
                           })
                         }
                         className={`p-3.5 bg-background border ${
@@ -768,10 +775,10 @@ export default function AstrologyPage() {
                         <div className="flex items-center justify-between text-xs font-mono">
                           <div className="flex items-center gap-1.5 font-bold text-parchment">
                             <span className="text-accentGold">{p1Glyph}</span>
-                            <span>{PLANET_NAMES_VN[asp.body1.toLowerCase()]?.split(' (')[0] ?? asp.body1}</span>
+                            <span>{p1Name}</span>
                             <span className="text-stone">×</span>
                             <span className="text-accentGold">{p2Glyph}</span>
-                            <span>{PLANET_NAMES_VN[asp.body2.toLowerCase()]?.split(' (')[0] ?? asp.body2}</span>
+                            <span>{p2Name}</span>
                           </div>
                           <span
                             className={`text-[10px] px-1.5 py-0.2 border ${

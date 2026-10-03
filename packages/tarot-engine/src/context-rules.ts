@@ -192,24 +192,54 @@ export function evaluateTarotSpread(
     const mid = evaluatedCards[1];
     const last = evaluatedCards[evaluatedCards.length - 1];
 
-    narrativeOverview = `Trải bài mở đầu từ ${first?.detailed?.nameVn || first?.profile.name} (${first?.draw.positionName}), phản ánh nguồn cơn và trạng thái xuất phát điểm. Bước ngoặt trọng tâm dịch chuyển qua ${mid?.detailed?.nameVn || mid?.profile.name} (${mid?.draw.positionName}), nơi các rào cản và cọ xát cần được đối diện trực tiếp. Đích đến kết tinh tại ${last?.detailed?.nameVn || last?.profile.name} (${last?.draw.positionName}), trao cho bạn chìa khóa hành động thiết thực.`;
+    const firstTheme = first?.orientation === 'UPRIGHT'
+      ? (first?.detailed?.keywords?.slice(0, 2).join(' & ') || 'khởi đầu thuận lợi')
+      : (first?.detailed?.keywords?.[0] ? `sự chậm lại ở ${first.detailed.keywords[0]}` : 'áp lực tiềm ẩn');
+    const midTheme = mid?.orientation === 'UPRIGHT'
+      ? (mid?.detailed?.keywords?.slice(0, 2).join(' & ') || 'động lực phát triển')
+      : (mid?.detailed?.keywords?.[0] ? `thử thách xoay quanh ${mid.detailed.keywords[0]}` : 'rào cản nội tâm');
+    const lastTheme = last?.orientation === 'UPRIGHT'
+      ? (last?.detailed?.keywords?.slice(0, 2).join(' & ') || 'kết quả sáng rõ')
+      : (last?.detailed?.keywords?.[0] ? `sự thận trọng với ${last.detailed.keywords[0]}` : 'điều chỉnh kế hoạch');
+
+    narrativeOverview = `Hành trình mở ra từ ${first?.detailed?.nameVn || first?.profile.name} (${first?.draw.positionName}), gắn liền với ${firstTheme}. Bước ngoặt trọng yếu chuyển tiếp qua ${mid?.detailed?.nameVn || mid?.profile.name} (${mid?.draw.positionName}), đòi hỏi bạn thấu suốt ${midTheme}. Cuối cùng, thông điệp định hướng hội tụ tại ${last?.detailed?.nameVn || last?.profile.name} (${last?.draw.positionName}), mang lại chỉ dẫn then chốt về ${lastTheme}.`;
   } else if (evaluatedCards.length === 1) {
     const single = evaluatedCards[0];
-    narrativeOverview = `Lá bài ${single?.detailed?.nameVn || single?.profile.name} tại vị trí ${single?.draw.positionName} đóng vai trò như ngọn hải đăng soi sáng trọng tâm năng lượng của bạn lúc này.`;
+    const singleTheme = single?.orientation === 'UPRIGHT'
+      ? (single?.detailed?.keywords?.slice(0, 2).join(' & ') || 'năng lượng tích cực')
+      : (single?.detailed?.keywords?.[0] ? `bài học nội tâm về ${single.detailed.keywords[0]}` : 'sự kìm nén');
+    narrativeOverview = `Lá bài ${single?.detailed?.nameVn || single?.profile.name} ngự tại ${single?.draw.positionName}, đóng vai trò như ngọn hải đăng soi sáng trọng tâm năng lượng xoay quanh ${singleTheme}.`;
   } else {
     narrativeOverview = `Tiến trình phản ánh sự vận hành liên tục giữa ${evaluatedCards.map((c) => c.detailed?.nameVn || c.profile.name).join(' → ')}.`;
   }
 
   let structureNote = '';
   if (majorCount >= 2) {
-    structureNote = `Với ${majorCount} lá Ẩn Chính ngự trị, đây là giai đoạn mang tính bước ngoặt định mệnh, đòi hỏi sự thức tỉnh nhận thức sâu sắc hơn là những điều chỉnh kỹ thuật nhỏ nhặt.`;
+    structureNote = `Với ${majorCount} lá Ẩn Chính xuất hiện, đây là giai đoạn mang tính bước ngoặt định mệnh, đòi hỏi sự thức tỉnh nhận thức sâu sắc hơn là những điều chỉnh kỹ thuật nhỏ nhặt.`;
   } else if (reversedCount >= 2) {
-    structureNote = `Sự xuất hiện của ${reversedCount} lá ngược cho thấy năng lượng đang vận hành âm ỉ bên trong nội tâm, có thể có sự kháng cự vô thức hoặc chậm trễ khách quan nhắc nhở bạn cần đi chậm lại để quan sát.`;
+    structureNote = `Sự xuất hiện của ${reversedCount} lá ngược cho thấy năng lượng đang vận hành âm ỉ bên trong nội tâm, nhắc nhở bạn cần đi chậm lại để quan sát và tháo gỡ các nút thắt trước khi tiến bước.`;
   } else {
     structureNote = `Năng lượng các lá bài đa phần ở chiều xuôi, cho thấy dòng chảy thuận lợi, hoàn cảnh bên ngoài và nội tâm của bạn đang có sự đồng điệu cao.`;
   }
 
   const fullNarrative = `${narrativeOverview} ${structureNote} ${crossCardTension}`;
+
+  // Resolve concrete element names for tension
+  let traitA = 'Nguyên tố chủ đạo';
+  let traitB = 'Nguyên tố đối ứng';
+  if (elementCounts.FIRE > 0 && elementCounts.WATER > 0) {
+    traitA = 'Hành Hỏa (Ý chí & Hành động)';
+    traitB = 'Hành Thủy (Cảm xúc & Nội tâm)';
+  } else if (elementCounts.AIR > 0 && elementCounts.WATER > 0) {
+    traitA = 'Hành Khí (Lý trí & Phán đoán)';
+    traitB = 'Hành Thủy (Trực giác & Cảm xúc)';
+  } else if (elementCounts.FIRE > 0 && elementCounts.EARTH > 0) {
+    traitA = 'Hành Hỏa (Tốc độ & Đam mê)';
+    traitB = 'Hành Thổ (Thực tiễn & Kỷ luật)';
+  } else if (elementCounts.AIR > 0 && elementCounts.EARTH > 0) {
+    traitA = 'Hành Khí (Chiến lược & Ý tưởng)';
+    traitB = 'Hành Thổ (Ngân sách & Thực thi)';
+  }
 
   const synthesis: StructuredSynthesis & {
     dominantSuit?: string;
@@ -230,10 +260,10 @@ export function evaluateTarotSpread(
     tensions: crossCardTension
       ? [
           {
-            traitA: 'ELEMENT_ALPHA',
-            traitB: 'ELEMENT_BETA',
+            traitA,
+            traitB,
             dynamics: crossCardTension,
-            resolution: 'Học cách điều hòa hai cực năng lượng bằng sự nhận thức khách quan.',
+            resolution: 'Học cách điều hòa hai cực năng lượng bằng sự nhận thức khách quan và hành động có ý thức.',
           },
         ]
       : [],
@@ -290,28 +320,28 @@ function generateContextualCardStatement(
   switch (posType) {
     case 'CURRENT_SITUATION':
       return isUpright
-        ? `Tại vị trí Hiện Tại, ${cardName} chỉ ra bạn đang ở trong dòng chảy thuận lợi xoay quanh: ${kw}. ${detailed?.uprightMeaning ?? 'Thời điểm tốt để phát huy tối đa năng lực sẵn có.'}`
-        : `Tại vị trí Hiện Tại, ${cardName} (chiều ngược) phản ánh trạng thái nghẽn tắc hoặc áp lực từ: ${kwShadow}. ${detailed?.reversedMeaning ?? 'Cần bình tâm tháo gỡ các nút thắt nội tâm trước khi đưa ra quyết sách lớn.'}`;
+        ? `${detailed?.uprightMeaning ?? `${cardName} biểu thị dòng chảy tích cực xoay quanh ${kw}.`} Đây là điểm tựa hiện hữu để bạn tự tin phát huy tối đa năng lực sẵn có.`
+        : `${detailed?.reversedMeaning ?? `${cardName} (chiều ngược) phản ánh trạng thái nghẽn tắc từ ${kwShadow}.`} Cần bình tâm tháo gỡ các nút thắt nội tâm trước khi đưa ra quyết sách lớn.`;
 
     case 'CHALLENGE':
       return isUpright
-        ? `Tại vị trí Thách Thức, bài học cần vượt qua nằm ở việc kiểm soát năng lượng của ${cardName} sao cho không biến thành cứng nhắc, tránh rơi vào trạng thái chủ quan. ${detailed?.uprightMeaning ?? ''}`
-        : `Tại vị trí Thách Thức, lá bài ngược cho thấy chướng ngại xuất phát từ: ${kwShadow}. ${detailed?.reversedMeaning ?? 'Năng lượng đang bị phản ứng thái quá hoặc từ chối đối diện sự thật.'}`;
+        ? `${cardName} đóng vai trò như phép thử: ${detailed?.uprightMeaning ?? `bài học kiểm soát năng lượng ${kw}`}. Thách thức nằm ở việc giữ vững kỷ luật mà không biến thành cứng nhắc, giáo điều.`
+        : `${cardName} (chiều ngược) chỉ ra chướng ngại xuất phát từ: ${kwShadow}. ${detailed?.reversedMeaning ?? 'Năng lượng đang bị phản ứng thái quá hoặc từ chối nhìn nhận sự thật.'}`;
 
     case 'ADVICE':
       return isUpright
-        ? `Tại vị trí Lời Khuyên, hành động tối ưu theo ${cardName} là: ${detailed?.dos.upright ?? kw}. ${detailed?.uprightMeaning ?? ''}`
-        : `Tại vị trí Lời Khuyên, lá bài ngược nhắc nhở bạn cần dừng ngay hành vi: ${detailed?.donts.reversed ?? kwShadow}. ${detailed?.reversedMeaning ?? 'Chuyển hóa cách tiếp cận mềm mỏng và dành không gian tự nhìn nhận lại bản thân.'}`;
+        ? `${detailed?.dos.upright ? `Hành động tối ưu: ${detailed.dos.upright}.` : ''} ${detailed?.uprightMeaning ?? `${cardName} nhắc nhở bạn kiên định với ${kw}.`}`
+        : `${detailed?.donts.reversed ? `Lời nhắc nhở: ${detailed.donts.reversed}.` : ''} ${detailed?.reversedMeaning ?? 'Chuyển hóa cách tiếp cận mềm mỏng và dành không gian tự nhìn nhận lại bản thân.'}`;
 
     case 'OUTCOME':
       return isUpright
-        ? `Tại vị trí Kết Quả, tiến trình sẽ kết tinh thành quả tích cực xoay quanh: ${kw}. ${detailed?.uprightMeaning ?? 'Thành quả đến từ sự kiên định bền bỉ.'}`
-        : `Tại vị trí Kết Quả, lá bài ngược dự phóng khả năng bị chậm trễ hoặc phát sinh biến số ngoài ý muốn: ${detailed?.reversedMeaning ?? 'Cần chủ động rà soát lại kế hoạch để giảm thiểu rủi ro.'}`;
+        ? `${detailed?.uprightMeaning ?? `${cardName} kết tinh thành quả tích cực từ ${kw}.`} Xu hướng phát triển đang mở ra cơ hội vững chắc nếu bạn duy trì sự kiên định.`
+        : `${detailed?.reversedMeaning ?? `${cardName} (chiều ngược) dự phóng sự chậm trễ từ ${kwShadow}.`} Cần chủ động rà soát lại các phương án dự phòng để giảm thiểu rủi ro biến số ngoài ý muốn.`;
 
     default:
       return isUpright
-        ? `${cardName} mang lại nguồn năng lượng tích cực từ ${kw}. ${detailed?.uprightMeaning ?? ''}`
-        : `${cardName} (ngược) cảnh báo nguy cơ từ ${kwShadow}. ${detailed?.reversedMeaning ?? ''}`;
+        ? (detailed?.uprightMeaning ?? `${cardName} mang lại nguồn năng lượng tích cực từ ${kw}.`)
+        : (detailed?.reversedMeaning ?? `${cardName} (chiều ngược) cảnh báo nguy cơ từ ${kwShadow}.`);
   }
 }
 

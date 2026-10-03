@@ -840,10 +840,26 @@ export default function NumerologyPage() {
                                 : 'bg-background border-borderDark text-stone'
                             }`}
                           >
-                            <div className="font-serif font-bold text-parchment">
-                              {ar.name} ({ar.numbers.join('-')})
+                            <div className="flex flex-wrap items-center justify-between font-mono text-[11px] mb-1 gap-2">
+                              <span className="font-serif font-bold text-parchment text-xs">
+                                {ar.title}
+                              </span>
+                              <span
+                                className={
+                                  ar.type === 'strength'
+                                    ? 'text-accentGold font-medium'
+                                    : 'text-cinnabar font-medium'
+                                }
+                              >
+                                {ar.type === 'strength' ? '★ Mũi Tên Sức Mạnh' : '▲ Mũi Tên Trống'} ({ar.numbers.join('-')})
+                              </span>
                             </div>
                             <p className="text-stone leading-relaxed">{ar.description}</p>
+                            {ar.advice && (
+                              <p className="text-[10px] text-accentGold/80 pt-1 border-t border-borderDark/60 leading-relaxed">
+                                <strong>Chỉ dẫn rèn luyện:</strong> {ar.advice}
+                              </p>
+                            )}
                           </div>
                         ))}
                       </div>

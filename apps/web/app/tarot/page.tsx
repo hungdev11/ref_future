@@ -24,6 +24,8 @@ export default function TarotPage() {
 
   // Modal State for clicked card
   const [selectedDraw, setSelectedDraw] = useState<any | null>(null);
+  const [modalShowEvidence, setModalShowEvidence] = useState(false);
+  const [modalShowTechnical, setModalShowTechnical] = useState(false);
   const [showSynthesis, setShowSynthesis] = useState(false);
 
   const handleDraw = async (e: React.FormEvent) => {
@@ -185,7 +187,7 @@ export default function TarotPage() {
                         </span>
                       </div>
 
-                      {/* Card Image */}
+                      {/* Card Image & Archetype Details */}
                       {(() => {
                         const quickInsight = getAuthenticTarotCardInsights(
                           draw.card.cardCode,
@@ -195,26 +197,42 @@ export default function TarotPage() {
                           draw.isReversed
                         );
 
+                        const mainTitle = quickInsight.cardTitle || draw.card.name;
+                        const subTitle = quickInsight.cardTitle && quickInsight.cardTitle !== draw.card.name ? draw.card.name : '';
+
+                        const suitVnMap: Record<string, string> = {
+                          WANDS: 'Bộ Gậy (Hỏa)',
+                          CUPS: 'Bộ Chén (Thủy)',
+                          SWORDS: 'Bộ Kiếm (Khí)',
+                          PENTACLES: 'Bộ Tiền (Thổ)',
+                          MAJOR: 'Bộ Ẩn Chính',
+                        };
+                        const suitLabel = draw.card.arcana === 'MAJOR'
+                          ? 'Bộ Ẩn Chính (Định Mệnh)'
+                          : (draw.card.suit ? (suitVnMap[draw.card.suit] ?? 'Bộ Ẩn Phụ') : 'Bộ Ẩn Phụ');
+
                         return (
                           <>
                             <div className="p-4 flex flex-col items-center bg-background/50">
                               <div className="relative w-36 aspect-[2/3.4] overflow-hidden border border-borderDark group-hover:border-accentGold transition-colors bg-black shadow-md">
                                 <img
                                   src={imageUrl}
-                                  alt={draw.card.name}
+                                  alt={mainTitle}
                                   className={`w-full h-full object-cover transition-transform duration-300 ${
                                     isRev ? 'rotate-180' : ''
                                   }`}
                                 />
                               </div>
                               <h4 className="mt-3 font-serif font-bold text-sm text-parchment group-hover:text-accentGold transition-colors text-center">
-                                {draw.card.name}
+                                {mainTitle}
                               </h4>
-                              <span className="text-[11px] text-accentGold/90 font-medium text-center">
-                                {quickInsight.cardTitle}
-                              </span>
-                              <span className="text-[10px] font-mono text-stone mt-0.5">
-                                {draw.card.arcana === 'MAJOR' ? 'Bộ Ẩn Chính' : 'Bộ Ẩn Phụ'}
+                              {subTitle && (
+                                <span className="text-[11px] font-mono text-stone text-center">
+                                  {subTitle}
+                                </span>
+                              )}
+                              <span className="text-[10px] font-mono text-accentGold/80 mt-1 border border-borderDark px-2 py-0.5">
+                                {suitLabel}
                               </span>
                             </div>
 
@@ -377,6 +395,19 @@ export default function TarotPage() {
           selectedDraw.isReversed
         );
         const imageUrl = getTarotCardImageUrl(selectedDraw.card.cardCode);
+        const mainTitle = insights.cardTitle || selectedDraw.card.name;
+        const subTitle = insights.cardTitle && insights.cardTitle !== selectedDraw.card.name ? selectedDraw.card.name : '';
+
+        const suitVnMap: Record<string, string> = {
+          WANDS: 'Bộ Gậy (Hành Hỏa — Ý chí & Hành động)',
+          CUPS: 'Bộ Chén (Hành Thủy — Cảm xúc & Tình cảm)',
+          SWORDS: 'Bộ Kiếm (Hành Khí — Tư duy & Sự thật)',
+          PENTACLES: 'Bộ Tiền (Hành Thổ — Tài chính & Thực tiễn)',
+          MAJOR: 'Bộ Ẩn Chính (Bài Học Định Mệnh Lớn)',
+        };
+        const suitLabel = selectedDraw.card.arcana === 'MAJOR'
+          ? 'Bộ Ẩn Chính (Bài Học Định Mệnh Lớn)'
+          : (selectedDraw.card.suit ? (suitVnMap[selectedDraw.card.suit] ?? 'Bộ Ẩn Phụ') : 'Bộ Ẩn Phụ');
 
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 animate-fadeIn">
@@ -399,10 +430,10 @@ export default function TarotPage() {
                     </span>
                   </div>
                   <h2 className="text-xl sm:text-2xl font-serif text-parchment flex flex-wrap items-baseline gap-2">
-                    <span>{selectedDraw.card.name}</span>
-                    {insights.cardTitle && insights.cardTitle !== selectedDraw.card.name && (
-                      <span className="text-accentGold text-base sm:text-lg font-serif">
-                        — {insights.cardTitle}
+                    <span>{mainTitle}</span>
+                    {subTitle && (
+                      <span className="text-stone font-mono text-xs sm:text-sm">
+                        ({subTitle})
                       </span>
                     )}
                   </h2>
@@ -424,7 +455,7 @@ export default function TarotPage() {
                     <div className="relative w-32 shrink-0 aspect-[2/3.4] overflow-hidden border border-borderDark bg-black shadow-md">
                       <img
                         src={imageUrl}
-                        alt={selectedDraw.card.name}
+                        alt={mainTitle}
                         className={`w-full h-full object-cover ${
                           selectedDraw.isReversed ? 'rotate-180' : ''
                         }`}
@@ -442,7 +473,7 @@ export default function TarotPage() {
                           <strong className="text-parchment">Ý nghĩa vị trí:</strong> {insights.beginnerGuide}
                         </p>
                         <p>
-                          <strong className="text-parchment">Phân loại bộ bài:</strong> {insights.arcanaMeaning}
+                          <strong className="text-parchment">Phân loại bộ bài:</strong> {suitLabel}
                         </p>
                         <p>
                           <strong className="text-parchment">Chiều xuôi / ngược:</strong> {insights.orientationGuide}
@@ -518,6 +549,51 @@ export default function TarotPage() {
                         {insights.donts}
                       </p>
                     </div>
+                  </div>
+
+                  {/* Progressive Disclosure: Level 3 & Level 4 */}
+                  <div className="pt-2 border-t border-borderDark space-y-2">
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setModalShowEvidence(!modalShowEvidence)}
+                        className="px-3 py-1.5 bg-background border border-borderDark text-[11px] font-mono text-stone hover:text-accentGold transition-colors"
+                      >
+                        {modalShowEvidence ? '▲ Ẩn Cơ Sở Luận Giải' : '▼ Cấp 3: Cơ Sở & Cổ Mẫu'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setModalShowTechnical(!modalShowTechnical)}
+                        className="px-3 py-1.5 bg-background border border-borderDark text-[11px] font-mono text-stone hover:text-accentGold transition-colors"
+                      >
+                        {modalShowTechnical ? '▲ Ẩn Chi Tiết Kỹ Thuật' : '▼ Cấp 4: Chi Tiết Thư Tịch'}
+                      </button>
+                    </div>
+
+                    {modalShowEvidence && (
+                      <div className="p-3.5 bg-background border border-borderDark text-xs font-mono space-y-2 animate-fadeIn">
+                        <div className="text-accentGold text-[11px] font-bold">CƠ SỞ DỮ LIỆU & ĐỐI CHIẾU HỆ THỐNG</div>
+                        <div className="text-stone text-[11px] space-y-1">
+                          <div>• <strong>Vị trí trải bài:</strong> Vị trí {selectedDraw.positionIndex} — {selectedDraw.positionName}</div>
+                          <div>• <strong>Phân loại & Nguyên tố:</strong> {suitLabel}</div>
+                          <div>• <strong>Trạng thái hướng lá:</strong> {selectedDraw.isReversed ? 'Năng lượng phản chiếu / Chậm nhịp (Ngược)' : 'Năng lượng trực diện / Tích cực (Xuôi)'}</div>
+                          <div>• <strong>Từ khóa chuẩn hóa:</strong> {insights.keywords.join(' • ')}</div>
+                        </div>
+                      </div>
+                    )}
+
+                    {modalShowTechnical && (
+                      <div className="p-3.5 bg-background border border-borderDark text-xs font-mono space-y-2 animate-fadeIn">
+                        <div className="text-accentGold text-[11px] font-bold">THÔNG TIN THIẾT LẬP THƯ TỊCH RWS 1909</div>
+                        <div className="text-stone text-[11px] space-y-1">
+                          <div>• <strong>Card Code:</strong> {selectedDraw.card.cardCode}</div>
+                          <div>• <strong>Standard Rank/Number:</strong> {selectedDraw.card.number}</div>
+                          <div>• <strong>Arcana Group:</strong> {selectedDraw.card.arcana}</div>
+                          {selectedDraw.card.suit && <div>• <strong>Suit:</strong> {selectedDraw.card.suit}</div>}
+                          <div>• <strong>Provenance:</strong> Rider-Waite-Smith 1909 Canonical Archetype Engine</div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Close button */}
