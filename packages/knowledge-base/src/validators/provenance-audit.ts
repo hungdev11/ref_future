@@ -24,22 +24,43 @@ export function runProvenanceAudit(): ProvenanceAuditReport {
   let missingSourcesCount = 0;
 
   for (const rule of rules) {
-    for (const cId of rule.claimIds) {
-      if (!claimIds.has(cId)) {
-        errors.push(`Rule ${rule.ruleId} references missing claim ${cId}`);
-        orphanRulesCount++;
+    let ruleHasError = false;
+
+    if (!rule.claimIds || rule.claimIds.length === 0) {
+      errors.push(`Rule ${rule.ruleId} has no linked claimIds`);
+      orphanRulesCount++;
+      ruleHasError = true;
+    } else {
+      for (const cId of rule.claimIds) {
+        if (!claimIds.has(cId)) {
+          errors.push(`Rule ${rule.ruleId} references missing claim ${cId}`);
+          orphanRulesCount++;
+          ruleHasError = true;
+        }
       }
     }
 
-    for (const sId of rule.sourceIds) {
-      if (!sourceIds.has(sId)) {
-        errors.push(`Rule ${rule.ruleId} references missing source ${sId}`);
-        missingSourcesCount++;
+    if (!rule.sourceIds || rule.sourceIds.length === 0) {
+      errors.push(`Rule ${rule.ruleId} has no linked sourceIds`);
+      missingSourcesCount++;
+      ruleHasError = true;
+    } else {
+      for (const sId of rule.sourceIds) {
+        if (!sourceIds.has(sId)) {
+          errors.push(`Rule ${rule.ruleId} references missing source ${sId}`);
+          missingSourcesCount++;
+          ruleHasError = true;
+        }
       }
     }
   }
 
-  const passRate = errors.length === 0 ? 1.0 : (rules.length - errors.length) / rules.length;
+  const validRulesCount = rules.filter((r) =>
+    r.claimIds && r.claimIds.length > 0 && r.claimIds.every((c) => claimIds.has(c)) &&
+    r.sourceIds && r.sourceIds.length > 0 && r.sourceIds.every((s) => sourceIds.has(s))
+  ).length;
+
+  const passRate = rules.length === 0 ? 0 : validRulesCount / rules.length;
 
   return {
     totalRules: rules.length,
