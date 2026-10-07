@@ -15,7 +15,7 @@ export const REGISTERED_CONFLICTS: SourceConflict[] = [
   },
   {
     conflictId: 'CONF_TUVI_CAN_CANH_TU_HOA',
-    topic: 'Tứ Hóa Can Canh: Thái Dương Hóa Hóa Khoa vs Thiên Phủ Hóa Khoa',
+    topic: 'Tứ Hóa Can Canh: Thái Dương Hóa Khoa vs Thiên Phủ Hóa Khoa',
     sources: ['SRC_TUVI_TOAN_THU', 'SRC_TUVI_TRUNG_CHAU_VUONG_DINH_CHI'],
     schoolA: 'Toàn Thư Nam Phái (Nhật Vũ Đồng Âm)',
     schoolB: 'Trung Châu Phái (Nhật Vũ Âm Đồng)',
