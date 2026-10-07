@@ -3,6 +3,7 @@ import {
   EvidenceEffect,
   RuleDefinition,
 } from '@mystic/core';
+import { KnowledgeStore, ProvenanceTracer } from '@mystic/knowledge-base';
 import { InterpretationDefinition } from './catalog.js';
 
 // Base traits mapping for standard rule patterns and themes
@@ -29,15 +30,39 @@ const THEME_TO_TRAIT_MAP: Record<string, { trait: string; weight: number; domain
 };
 
 export class EvidenceEngine {
+  private static tracer = new ProvenanceTracer();
+
   public static extractEvidence(
     matchedRules: RuleDefinition[],
     catalog: Record<string, InterpretationDefinition>,
     _dotNotatedFacts: Record<string, unknown>
   ): EvidenceItem[] {
     const evidenceList: EvidenceItem[] = [];
+    const store = KnowledgeStore.getInstance();
     let counter = 1;
 
     for (const rule of matchedRules) {
+      let kbRule =
+        store.getRule(rule.ruleCode) ||
+        store.getRule(`RUL_${rule.ruleCode.replace(/[-]/g, '_')}`);
+
+      if (!kbRule && rule.action.targetInterpretationId) {
+        const targetId = rule.action.targetInterpretationId;
+        const targetClean = targetId.replace(/^INTERP_/, '');
+        kbRule =
+          store.getRule(targetId) ||
+          store.getRule(`RUL_${targetClean}`) ||
+          store.getAllRules().find((r) => r.ruleId.includes(targetClean)) ||
+          store.getAllRules().find((r) => {
+            const parts = targetClean.split('_').filter((p) => p.length > 2);
+            return parts.length > 0 && parts.every((p) => r.ruleId.includes(p));
+          });
+      }
+
+      const provenanceFootnote = kbRule
+        ? EvidenceEngine.tracer.formatFootnote(kbRule.ruleId)
+        : undefined;
+
       // 1. Explicit Rule Evidence Generators if defined
       if (rule.action.evidenceGenerators && rule.action.evidenceGenerators.length > 0) {
         for (const gen of rule.action.evidenceGenerators) {
@@ -52,6 +77,7 @@ export class EvidenceEngine {
             relevance: 0.9,
             polarity: gen.polarity ?? 'POSITIVE',
             confidence: 1.0,
+            ...(provenanceFootnote ? { provenanceFootnote } : {}),
           });
         }
         continue;
@@ -79,6 +105,7 @@ export class EvidenceEngine {
                 relevance: 0.85,
                 polarity: 'POSITIVE',
                 confidence: 0.95,
+                ...(provenanceFootnote ? { provenanceFootnote } : {}),
               });
             }
           }
@@ -102,6 +129,7 @@ export class EvidenceEngine {
           relevance: 0.7,
           polarity: 'POSITIVE',
           confidence: 0.8,
+          ...(provenanceFootnote ? { provenanceFootnote } : {}),
         });
       }
     }

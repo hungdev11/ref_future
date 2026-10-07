@@ -104,6 +104,7 @@ export interface EvidenceItem {
   relevance: number;
   polarity: 'POSITIVE' | 'NEGATIVE' | 'NEUTRAL';
   confidence: number;
+  provenanceFootnote?: string;
 }
 
 export enum TraitLevel {
