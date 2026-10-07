@@ -41,7 +41,7 @@ export const ASTROLOGY_RULES: InterpretationRule[] = [
     domain: 'astrology',
     school: 'Classical Ptolemaic',
     sourceIds: ['SRC_ASTRO_PTOLEMY_TETRABIBLOS', 'SRC_ASTRO_HAND_1976'],
-    claimIds: ['CLM_ASTRO_SATURN_CONJUNCT_001', 'CLM_ASTRO_MARS_SQUARE_001'],
+    claimIds: ['CLM_ASTRO_SATURN_SQUARE_001', 'CLM_ASTRO_MARS_SQUARE_001'],
     preconditions: [
       { field: 'aspects.mars_saturn.aspectType', operator: 'EQUALS', value: 'SQUARE' },
       { field: 'aspects.mars_saturn.orb', operator: 'LESS_THAN', value: 6.0 },

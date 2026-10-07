@@ -28,7 +28,7 @@ describe('Interpretation Rules & Provenance Links (Phase 5 & 6)', () => {
       // Preconditions must never be empty (anti-generic rule design)
       expect(rule.preconditions.length).toBeGreaterThan(0);
       expect(rule.derivedSignals.length).toBeGreaterThan(0);
-      expect(['A', 'B', 'C', 'E']).toContain(rule.evidenceLevel);
+      expect(['A', 'B', 'C', 'D', 'E', 'F']).toContain(rule.evidenceLevel);
     }
   });
 

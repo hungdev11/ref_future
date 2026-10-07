@@ -5,8 +5,8 @@ export const COMPATIBILITY_RULES: InterpretationRule[] = [
     ruleId: 'RUL_COMPAT_ASTRO_EARTH_WATER',
     domain: 'compatibility',
     school: 'Mysticos Cross-System Synthesis',
-    sourceIds: ['SRC_ASTRO_HAND_1976'],
-    claimIds: ['CLM_ASTRO_MOON_TAURUS_001'],
+    sourceIds: ['SRC_ASTRO_HAND_1976', 'SRC_ASTRO_PTOLEMY_TETRABIBLOS'],
+    claimIds: ['CLM_ASTRO_EARTH_ELEMENT_001'],
     preconditions: [
       { field: 'personA.dominantElement', operator: 'EQUALS', value: 'EARTH' },
       { field: 'personB.dominantElement', operator: 'EQUALS', value: 'WATER' },
