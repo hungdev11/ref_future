@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@mystic/core": "*",
+    "@mystic/knowledge-base": "*",
     "@mystic/rule-engine": "*",
     "@mystic/template-engine": "*"
   },
