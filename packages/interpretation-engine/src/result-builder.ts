@@ -40,6 +40,10 @@ export class MysticosResultBuilder {
         if (cond.operator === 'EQUALS') return actual === cond.value;
         if (cond.operator === 'NOT_EQUALS') return actual !== cond.value;
         if (cond.operator === 'IN' && Array.isArray(cond.value)) return cond.value.includes(actual);
+        if (cond.operator === 'CONTAINS' && Array.isArray(actual)) return actual.includes(cond.value);
+        if (cond.operator === 'BETWEEN' && Array.isArray(cond.value) && cond.value.length === 2 && typeof actual === 'number') {
+          return actual >= (cond.value[0] as number) && actual <= (cond.value[1] as number);
+        }
         if (cond.operator === 'LESS_THAN' && typeof actual === 'number' && typeof cond.value === 'number') {
           return actual < cond.value;
         }
