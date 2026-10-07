@@ -1,0 +1,57 @@
+import { InterpretationRule } from '../types/rule.js';
+
+export const ASTROLOGY_RULES: InterpretationRule[] = [
+  {
+    ruleId: 'RUL_ASTRO_SUN_ARIES_H1',
+    domain: 'astrology',
+    school: 'Modern Humanistic Astrology',
+    sourceIds: ['SRC_ASTRO_HAND_1976'],
+    claimIds: ['CLM_ASTRO_SUN_ARIES_001'],
+    preconditions: [
+      { field: 'planets.sun.sign', operator: 'EQUALS', value: 'Aries' },
+      { field: 'planets.sun.houseNumber', operator: 'EQUALS', value: 1 },
+    ],
+    semanticInputs: ['initiating_vitality_and_pioneering_autonomy'],
+    derivedSignals: ['SIG_ASSERTIVE_IDENTITY', 'SIG_BOLD_EXPRESSION'],
+    priority: 95,
+    evidenceLevel: 'B',
+    confidence: 'supported',
+    pattern: 'PRIME_INITIATOR',
+    notes: 'Mặt Trời tại Bạch Dương Nhà 1 tạo nên nhân cách trực diện, hành động quyết liệt và tiên phong.',
+  },
+  {
+    ruleId: 'RUL_ASTRO_MOON_TAURUS_EXALTED',
+    domain: 'astrology',
+    school: 'Classical Ptolemaic',
+    sourceIds: ['SRC_ASTRO_PTOLEMY_TETRABIBLOS', 'SRC_ASTRO_HAND_1976'],
+    claimIds: ['CLM_ASTRO_MOON_TAURUS_001'],
+    preconditions: [
+      { field: 'planets.moon.sign', operator: 'EQUALS', value: 'Taurus' },
+    ],
+    semanticInputs: ['emotional_stability_and_sensory_groundedness'],
+    derivedSignals: ['SIG_SERENE_NURTURANCE', 'SIG_PRAGMATIC_CONTAINMENT'],
+    priority: 90,
+    evidenceLevel: 'A',
+    confidence: 'verified',
+    pattern: 'STEADFAST_HARBOR',
+    notes: 'Mặt Trăng vượng địa tại Kim Ngưu mang lại điểm tựa nội tâm tĩnh lặng và sự nhẫn nại bền bỉ.',
+  },
+  {
+    ruleId: 'RUL_ASTRO_SATURN_SQUARE_MARS',
+    domain: 'astrology',
+    school: 'Classical Ptolemaic',
+    sourceIds: ['SRC_ASTRO_PTOLEMY_TETRABIBLOS', 'SRC_ASTRO_HAND_1976'],
+    claimIds: ['CLM_ASTRO_SATURN_CONJUNCT_001', 'CLM_ASTRO_MARS_SQUARE_001'],
+    preconditions: [
+      { field: 'aspects.mars_saturn.aspectType', operator: 'EQUALS', value: 'SQUARE' },
+      { field: 'aspects.mars_saturn.orb', operator: 'LESS_THAN', value: 6.0 },
+    ],
+    semanticInputs: ['restrains_expansion', 'friction_combative_drive'],
+    derivedSignals: ['SIG_FRUSTRATION_BRAKE', 'SIG_HARDENED_RESILIENCE'],
+    priority: 92,
+    evidenceLevel: 'A',
+    confidence: 'verified',
+    pattern: 'PRESSURE_ANVIL',
+    notes: 'Góc vuông Hỏa - Thổ: Xung lực hành động bị kìm nén tôi luyện tính kiên gan và kỷ luật sắt đá.',
+  },
+];

@@ -1,0 +1,55 @@
+import { InterpretationRule } from '../types/rule.js';
+
+export const NUMEROLOGY_RULES: InterpretationRule[] = [
+  {
+    ruleId: 'RUL_NUM_LP1_DIRECT',
+    domain: 'numerology',
+    school: 'Goodwin Analytical Numerology',
+    sourceIds: ['SRC_NUM_GOODWIN'],
+    claimIds: ['CLM_NUM_LP1_001'],
+    preconditions: [
+      { field: 'results.lifePath.finalValue', operator: 'EQUALS', value: 1 },
+    ],
+    semanticInputs: ['independent_leadership_and_original_initiative'],
+    derivedSignals: ['SIG_LEADERSHIP_IMPULSE', 'SIG_PIONEERING_DRIVE'],
+    priority: 95,
+    evidenceLevel: 'B',
+    confidence: 'verified',
+    pattern: 'AUTONOMOUS_TRAILBLAZER',
+    notes: 'Đường Đời 1: Định hình sứ mệnh cá nhân độc lập và năng lực dẫn dắt khai mở con đường riêng.',
+  },
+  {
+    ruleId: 'RUL_NUM_LP5_VERSATILE',
+    domain: 'numerology',
+    school: 'Goodwin Analytical Numerology',
+    sourceIds: ['SRC_NUM_GOODWIN'],
+    claimIds: ['CLM_NUM_LP5_001'],
+    preconditions: [
+      { field: 'results.lifePath.finalValue', operator: 'EQUALS', value: 5 },
+    ],
+    semanticInputs: ['adaptability_versatility_and_freedom_of_experience'],
+    derivedSignals: ['SIG_DIVERSE_EXPLORATION', 'SIG_RESTLESS_MOBILITY'],
+    priority: 90,
+    evidenceLevel: 'B',
+    confidence: 'verified',
+    pattern: 'DYNAMIC_CATALYST',
+    notes: 'Đường Đời 5: Thúc đẩy tiến trình phát triển qua trải nghiệm phong phú và khả năng thích nghi.',
+  },
+  {
+    ruleId: 'RUL_NUM_KARMIC_16_7',
+    domain: 'numerology',
+    school: 'Goodwin Analytical Numerology',
+    sourceIds: ['SRC_NUM_GOODWIN'],
+    claimIds: ['CLM_NUM_KARMIC_16_001'],
+    preconditions: [
+      { field: 'karmicDebts', operator: 'CONTAINS', value: 16 },
+    ],
+    semanticInputs: ['dissolution_of_ego_and_spiritual_reorientation'],
+    derivedSignals: ['SIG_EGO_DECONSTRUCTION', 'SIG_AUTHENTIC_AWAKENING'],
+    priority: 98,
+    evidenceLevel: 'B',
+    confidence: 'supported',
+    pattern: 'CRUCIBLE_PURIFICATION',
+    notes: 'Nợ nghiệp 16/7: Thử thách tái thiết niềm tin và thanh lọc ảo tưởng để chạm tới chiều sâu chân thực.',
+  },
+];

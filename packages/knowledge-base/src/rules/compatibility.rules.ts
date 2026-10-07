@@ -1,0 +1,58 @@
+import { InterpretationRule } from '../types/rule.js';
+
+export const COMPATIBILITY_RULES: InterpretationRule[] = [
+  {
+    ruleId: 'RUL_COMPAT_ASTRO_EARTH_WATER',
+    domain: 'compatibility',
+    school: 'Mysticos Cross-System Synthesis',
+    sourceIds: ['SRC_ASTRO_HAND_1976'],
+    claimIds: ['CLM_ASTRO_MOON_TAURUS_001'],
+    preconditions: [
+      { field: 'personA.dominantElement', operator: 'EQUALS', value: 'EARTH' },
+      { field: 'personB.dominantElement', operator: 'EQUALS', value: 'WATER' },
+    ],
+    semanticInputs: ['emotional_stability', 'sensory_groundedness'],
+    derivedSignals: ['SIG_SYMBIOTIC_NURTURANCE', 'SIG_RECIPROCAL_SAFETY'],
+    priority: 85,
+    evidenceLevel: 'E',
+    confidence: 'supported',
+    pattern: 'CONTAINER_AND_FLOW',
+    notes: 'Mysticos-derived: Phối hợp Đất và Nước mang lại tính tương sinh ổn định và nuôi dưỡng cảm xúc.',
+  },
+  {
+    ruleId: 'RUL_COMPAT_NUM_1_AND_5',
+    domain: 'compatibility',
+    school: 'Mysticos Cross-System Synthesis',
+    sourceIds: ['SRC_NUM_GOODWIN'],
+    claimIds: ['CLM_NUM_LP1_001', 'CLM_NUM_LP5_001'],
+    preconditions: [
+      { field: 'personA.lifePath', operator: 'EQUALS', value: 1 },
+      { field: 'personB.lifePath', operator: 'EQUALS', value: 5 },
+    ],
+    semanticInputs: ['independent_leadership', 'adaptability_versatility'],
+    derivedSignals: ['SIG_INNOVATION_ALLIANCE', 'SIG_AUTONOMY_RESPECT'],
+    priority: 80,
+    evidenceLevel: 'E',
+    confidence: 'supported',
+    pattern: 'MOMENTUM_PARTNERSHIP',
+    notes: 'Mysticos-derived: Cặp đôi 1 - 5 tôn trọng không gian riêng, kích hoạt tính đột phá và đổi mới.',
+  },
+  {
+    ruleId: 'RUL_COMPAT_CROSS_FIRE_TUVI_SAT',
+    domain: 'compatibility',
+    school: 'Mysticos Cross-System Synthesis',
+    sourceIds: ['SRC_ASTRO_HAND_1976', 'SRC_TUVI_TRUNG_CHAU_VUONG_DINH_CHI'],
+    claimIds: ['CLM_ASTRO_SUN_ARIES_001', 'CLM_TUVI_THATHAT_HAM_001'],
+    preconditions: [
+      { field: 'personA.sunSign', operator: 'EQUALS', value: 'Aries' },
+      { field: 'personB.menhMajorStar', operator: 'EQUALS', value: 'THAT_SAT' },
+    ],
+    semanticInputs: ['pioneering_autonomy', 'volatility_impatience'],
+    derivedSignals: ['SIG_VOLATILE_HIGH_DRIVE', 'SIG_COMPETITIVE_FRICTION'],
+    priority: 88,
+    evidenceLevel: 'E',
+    confidence: 'supported',
+    pattern: 'BLAZING_FURNACE',
+    notes: 'Mysticos-derived: Năng lượng Hỏa Bạch Dương gặp Thất Sát tạo hiệu ứng nhiệt lượng cao cần kiềm chế cái tôi.',
+  },
+];
