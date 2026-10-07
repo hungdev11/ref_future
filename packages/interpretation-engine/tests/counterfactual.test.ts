@@ -7,7 +7,7 @@ describe('COUNTERFACTUAL & ENTITY SWAP TEST SUITE (Section 27.B - 27.G)', () => 
   // 1. ENTITY SWAP (Section 27.B)
   // --------------------------------------------------------------------------
   describe('Entity Swap', () => {
-    it('Tarot: swapping The Fool for The Tower produces completely distinct signals, patterns, and evidence', () => {
+    it('Tarot: swapping The Fool for The Tower produces completely distinct signals, patterns, evidence, and guidance', () => {
       const foolResult = MysticosResultBuilder.buildResult({
         domain: 'tarot',
         school: 'Rider-Waite-Smith',
@@ -50,9 +50,20 @@ describe('COUNTERFACTUAL & ENTITY SWAP TEST SUITE (Section 27.B - 27.G)', () => 
       expect(foolResult.interpretations[0]?.headline).not.toEqual(
         towerResult.interpretations[0]?.headline
       );
+
+      // Dynamic guidance must differ
+      expect(foolResult.guidance[0]?.whatToContinue).not.toEqual(
+        towerResult.guidance[0]?.whatToContinue
+      );
+      expect(foolResult.guidance[0]?.whatToAdjustOrStop).not.toEqual(
+        towerResult.guidance[0]?.whatToAdjustOrStop
+      );
+      expect(foolResult.guidance[0]?.rationale).not.toEqual(
+        towerResult.guidance[0]?.rationale
+      );
     });
 
-    it('Astrology: swapping Sun in Aries for Moon in Taurus alters signals and active patterns', () => {
+    it('Astrology: swapping Sun in Aries for Moon in Taurus alters signals, patterns, and guidance', () => {
       const ariesResult = MysticosResultBuilder.buildResult({
         domain: 'astrology',
         school: 'Classical Ptolemaic & Modern Synthesis',
@@ -81,9 +92,16 @@ describe('COUNTERFACTUAL & ENTITY SWAP TEST SUITE (Section 27.B - 27.G)', () => 
       expect(ariesResult.interpretations[0]?.headline).not.toEqual(
         taurusResult.interpretations[0]?.headline
       );
+
+      expect(ariesResult.guidance[0]?.whatToContinue).not.toEqual(
+        taurusResult.guidance[0]?.whatToContinue
+      );
+      expect(ariesResult.guidance[0]?.rationale).not.toEqual(
+        taurusResult.guidance[0]?.rationale
+      );
     });
 
-    it('Tu Vi: swapping Tử Vi for Hóa Kỵ in Mệnh palace alters polarity and pattern', () => {
+    it('Tu Vi: swapping Tử Vi for Hóa Kỵ in Mệnh palace alters polarity, pattern, and guidance', () => {
       const tuViResult = MysticosResultBuilder.buildResult({
         domain: 'tuvi',
         school: 'Nam Phái Toàn Thư',
@@ -114,9 +132,16 @@ describe('COUNTERFACTUAL & ENTITY SWAP TEST SUITE (Section 27.B - 27.G)', () => 
       expect(tuViResult.interpretations[0]?.headline).not.toEqual(
         hoaKyResult.interpretations[0]?.headline
       );
+
+      expect(tuViResult.guidance[0]?.whatToContinue).not.toEqual(
+        hoaKyResult.guidance[0]?.whatToContinue
+      );
+      expect(tuViResult.guidance[0]?.whatToAdjustOrStop).not.toEqual(
+        hoaKyResult.guidance[0]?.whatToAdjustOrStop
+      );
     });
 
-    it('Numerology: swapping Life Path 1 for Life Path 5 alters core signals and pattern', () => {
+    it('Numerology: swapping Life Path 1 for Life Path 5 alters core signals, pattern, and guidance', () => {
       const lp1Result = MysticosResultBuilder.buildResult({
         domain: 'numerology',
         school: 'Goodwin Analytical Numerology',
@@ -140,6 +165,13 @@ describe('COUNTERFACTUAL & ENTITY SWAP TEST SUITE (Section 27.B - 27.G)', () => 
 
       expect(lp1Result.signals.map((s) => s.type)).toContain('SIG_LEADERSHIP_IMPULSE');
       expect(lp5Result.signals.map((s) => s.type)).toContain('SIG_DIVERSE_EXPLORATION');
+
+      expect(lp1Result.guidance[0]?.whatToContinue).not.toEqual(
+        lp5Result.guidance[0]?.whatToContinue
+      );
+      expect(lp1Result.guidance[0]?.rationale).not.toEqual(
+        lp5Result.guidance[0]?.rationale
+      );
     });
   });
 
@@ -168,15 +200,24 @@ describe('COUNTERFACTUAL & ENTITY SWAP TEST SUITE (Section 27.B - 27.G)', () => 
         ],
       });
 
-      // Upright does not match RUL_TAROT_TOWER_REVERSED
+      // Upright does not match RUL_TAROT_TOWER_REVERSED, triggers contextual pattern
       expect(towerUpright.technical.rulesMatchedCount).toBe(0);
-      expect(towerUpright.patterns.length).toBe(0);
+      expect(towerUpright.patterns.length).toBeGreaterThan(0);
+      expect(towerUpright.patterns[0]?.type).not.toEqual(towerReversed.patterns[0]?.type);
 
       // Reversed matches RUL_TAROT_TOWER_REVERSED
       expect(towerReversed.technical.rulesMatchedCount).toBe(1);
       expect(towerReversed.patterns.length).toBe(1);
       expect(towerReversed.patterns[0]?.type).toBe('RESISTING_INEVITABLE_PURGE');
       expect(towerReversed.signals.map((s) => s.type)).toContain('SIG_RESISTING_COLLAPSE');
+
+      // Guidance must differ between orientations
+      expect(towerUpright.guidance[0]?.whatToContinue).not.toEqual(
+        towerReversed.guidance[0]?.whatToContinue
+      );
+      expect(towerUpright.guidance[0]?.whatToAdjustOrStop).not.toEqual(
+        towerReversed.guidance[0]?.whatToAdjustOrStop
+      );
     });
 
     it('Tarot Spread: orientation swap inverts polarity and yields distinct interpretations and guidance', () => {
@@ -254,7 +295,9 @@ describe('COUNTERFACTUAL & ENTITY SWAP TEST SUITE (Section 27.B - 27.G)', () => 
 
       // Position 1 does not trigger RUL_TAROT_FOOL_PRESENT because positionIndex != 0
       expect(foolAtPosition1.technical.rulesMatchedCount).toBe(0);
-      expect(foolAtPosition1.patterns.length).toBe(0);
+      expect(foolAtPosition1.patterns.length).toBeGreaterThan(0);
+      expect(foolAtPosition1.patterns[0]?.type).not.toEqual(configA.patterns[0]?.type);
+      expect(foolAtPosition1.guidance[0]?.rationale).not.toEqual(configA.guidance[0]?.rationale);
 
       // Now test Seven of Pentacles at Position 1 vs Position 0
       const pentaclesAt1 = MysticosResultBuilder.buildResult({
@@ -280,6 +323,8 @@ describe('COUNTERFACTUAL & ENTITY SWAP TEST SUITE (Section 27.B - 27.G)', () => 
       expect(pentaclesAt1.technical.rulesMatchedCount).toBe(1);
       expect(pentaclesAt1.patterns[0]?.type).toBe('EVALUATION_FRICTION');
       expect(pentaclesAt0.technical.rulesMatchedCount).toBe(0);
+      expect(pentaclesAt0.patterns.length).toBeGreaterThan(0);
+      expect(pentaclesAt0.patterns[0]?.type).not.toEqual(pentaclesAt1.patterns[0]?.type);
     });
 
     it('Tarot Spread: position swap produces position-specific contextual reasoning', () => {
@@ -337,7 +382,9 @@ describe('COUNTERFACTUAL & ENTITY SWAP TEST SUITE (Section 27.B - 27.G)', () => 
       expect(house1.patterns[0]?.type).toBe('PRIME_INITIATOR');
 
       expect(house2.technical.rulesMatchedCount).toBe(0);
-      expect(house2.patterns.length).toBe(0);
+      expect(house2.patterns.length).toBeGreaterThan(0);
+      expect(house2.patterns[0]?.type).not.toEqual(house1.patterns[0]?.type);
+      expect(house2.guidance[0]?.rationale).not.toEqual(house1.guidance[0]?.rationale);
     });
 
     it('Orb threshold perturbation: orb 3.0 triggers RUL_ASTRO_SATURN_SQUARE_MARS, orb 7.5 does not', () => {
@@ -366,7 +413,11 @@ describe('COUNTERFACTUAL & ENTITY SWAP TEST SUITE (Section 27.B - 27.G)', () => 
       expect(tightOrb.signals.map((s) => s.type)).toContain('SIG_HARDENED_RESILIENCE');
 
       expect(wideOrb.technical.rulesMatchedCount).toBe(0);
-      expect(wideOrb.patterns.length).toBe(0);
+      expect(wideOrb.patterns.length).toBeGreaterThan(0);
+      expect(wideOrb.patterns[0]?.type).not.toEqual(tightOrb.patterns[0]?.type);
+      expect(wideOrb.guidance[0]?.whatToAdjustOrStop).not.toEqual(
+        tightOrb.guidance[0]?.whatToAdjustOrStop
+      );
     });
 
     it('Tu Vi brightness perturbation: miếu vượng đắc triggers SOVEREIGN_AUTHORITY, hãm địa does not', () => {
@@ -396,7 +447,11 @@ describe('COUNTERFACTUAL & ENTITY SWAP TEST SUITE (Section 27.B - 27.G)', () => 
       expect(mieuVuong.patterns[0]?.type).toBe('SOVEREIGN_AUTHORITY');
 
       expect(hamDia.technical.rulesMatchedCount).toBe(0);
-      expect(hamDia.patterns.length).toBe(0);
+      expect(hamDia.patterns.length).toBeGreaterThan(0);
+      expect(hamDia.patterns[0]?.type).not.toEqual(mieuVuong.patterns[0]?.type);
+      expect(hamDia.guidance[0]?.whatToAdjustOrStop).not.toEqual(
+        mieuVuong.guidance[0]?.whatToAdjustOrStop
+      );
     });
 
     it('Remove-one-input test (Section 27.F): removing Moon fact removes exactly its associated pattern and evidence', () => {
