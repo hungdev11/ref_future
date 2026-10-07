@@ -12,6 +12,7 @@ export function WhyThisResult({ rawResult }: { rawResult: MysticosResult }) {
     <section className="border-t border-borderDark pt-8 space-y-4">
       <button
         onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
         className="w-full flex items-center justify-between p-4 bg-surface border border-borderDark hover:border-accentGold/50 transition-colors text-left"
       >
         <div className="space-y-1">

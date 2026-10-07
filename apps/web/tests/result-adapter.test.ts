@@ -90,6 +90,7 @@ describe('Result Adapter (Editorial Judgment)', () => {
     expect(adapted.summary).toBe('Bạn đang đứng trước cơ hội mở ra trang mới tràn đầy tiềm năng.');
     expect(adapted.keyThemes.length).toBeLessThanOrEqual(3);
     expect(adapted.keyThemes[0].title).toBe('Bước Nhảy Vọt Của Niềm Tin');
+    expect(adapted.keyThemes[0].description).toBe('Bạn đang đứng trước cơ hội mở ra trang mới tràn đầy tiềm năng.');
     expect(adapted.manifestations[0].detail).toContain('Dễ dàng nắm bắt dự án mới');
     expect(adapted.tensions[0].dynamic).toContain('Giằng co');
     expect(adapted.guidance[0].continueItems).toContain('Giữ tâm thái cởi mở học hỏi');

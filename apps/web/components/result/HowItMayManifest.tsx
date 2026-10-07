@@ -16,7 +16,9 @@ export function HowItMayManifest({ manifestations }: { manifestations: UserFacin
             key={idx}
             className="flex items-start gap-3 bg-surface/50 border border-borderDark/60 p-4 text-sm"
           >
-            <span className="text-accentGold font-mono text-xs mt-0.5">0{idx + 1}.</span>
+            <span className="text-accentGold font-mono text-xs mt-0.5">
+              {String(idx + 1).padStart(2, '0')}.
+            </span>
             <div className="space-y-1">
               <span className="text-xs font-mono text-stone uppercase block">{item.context}</span>
               <p className="text-parchment leading-relaxed">{item.detail}</p>

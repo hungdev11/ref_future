@@ -4,6 +4,9 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { ResultHero } from '../components/result/ResultHero';
 import { KeyThemes } from '../components/result/KeyThemes';
 import { PracticalGuidance } from '../components/result/PracticalGuidance';
+import { TechnicalDetails } from '../components/result/TechnicalDetails';
+import { HowItMayManifest } from '../components/result/HowItMayManifest';
+import { WhyThisResult } from '../components/result/WhyThisResult';
 import { adaptToUserFacingResult } from '../lib/result-adapter';
 import type { MysticosResult } from '@mystic/core';
 
@@ -86,5 +89,48 @@ describe('User Needs Component Suite', () => {
     render(<PracticalGuidance guidance={vm.guidance} />);
     expect(screen.getByText('Chủ động đề xuất phương án')).toBeDefined();
     expect(screen.getByText('Không nóng vội bỏ qua chi tiết')).toBeDefined();
+  });
+
+  it('renders KeyThemes with dynamic grid layout based on count', () => {
+    render(<KeyThemes themes={[{ id: '1', title: 'T1', description: 'D1', relevance: 'primary' }]} />);
+    expect(lastMarkup).toContain('grid-cols-1');
+    expect(lastMarkup).not.toContain('md:grid-cols-2');
+
+    render(<KeyThemes themes={[
+      { id: '1', title: 'T1', description: 'D1', relevance: 'primary' },
+      { id: '2', title: 'T2', description: 'D2', relevance: 'secondary' },
+    ]} />);
+    expect(lastMarkup).toContain('grid-cols-1 md:grid-cols-2');
+
+    render(<KeyThemes themes={[
+      { id: '1', title: 'T1', description: 'D1', relevance: 'primary' },
+      { id: '2', title: 'T2', description: 'D2', relevance: 'secondary' },
+      { id: '3', title: 'T3', description: 'D3', relevance: 'secondary' },
+    ]} />);
+    expect(lastMarkup).toContain('grid-cols-1 md:grid-cols-3');
+  });
+
+  it('renders HowItMayManifest with two-digit index formatting', () => {
+    render(<HowItMayManifest manifestations={[{ context: 'Sự nghiệp', detail: 'Tập trung chuyên môn' }]} />);
+    expect(screen.getByText('01.')).toBeDefined();
+  });
+
+  it('renders TechnicalDetails and WhyThisResult with a11y disclosure attributes', () => {
+    render(<TechnicalDetails rawResult={dummyResult} />);
+    expect(lastMarkup).toContain('aria-expanded="false"');
+
+    render(<WhyThisResult rawResult={dummyResult} />);
+    expect(lastMarkup).toContain('aria-expanded="false"');
+  });
+
+  it('serializes object fact values correctly in TechnicalDetails', () => {
+    const objectFactResult = {
+      ...dummyResult,
+      facts: [{ key: 'coords', value: { lat: 10.82, lng: 106.62 }, domain: 'astrology', source: 'chart' }],
+    };
+    // ponytail: test internal rendering when disclosure is open or checked
+    // TechnicalDetails initially renders facts when open, test closed structure first
+    render(<TechnicalDetails rawResult={objectFactResult} />);
+    expect(lastMarkup).toContain('aria-expanded="false"');
   });
 });

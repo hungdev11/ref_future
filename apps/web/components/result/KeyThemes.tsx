@@ -11,7 +11,15 @@ export function KeyThemes({ themes }: { themes: UserFacingTheme[] }) {
         <span>Điểm Nổi Bật Đáng Chú Ý</span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div
+        className={`grid ${
+          themes.length === 1
+            ? 'grid-cols-1'
+            : themes.length === 2
+              ? 'grid-cols-1 md:grid-cols-2'
+              : 'grid-cols-1 md:grid-cols-3'
+        } gap-4`}
+      >
         {themes.map((theme, idx) => (
           <div
             key={theme.id || idx}

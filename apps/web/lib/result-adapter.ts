@@ -62,12 +62,16 @@ export function adaptToUserFacingResult(result: MysticosResult): UserFacingResul
   // Select top 3 primary themes (Editorial judgment: maximum 3)
   const keyThemes: UserFacingTheme[] = (result.patterns || [])
     .slice(0, 3)
-    .map((pat, idx) => ({
-      id: pat.patternId || `theme_${idx}`,
-      title: pat.headline || `Chủ Đề ${idx + 1}`,
-      description: (result.interpretations?.[idx]?.statement || pat.headline),
-      relevance: idx === 0 ? 'primary' : 'secondary',
-    }));
+    .map((pat, idx) => {
+      const matchingInterp = result.interpretations?.find((i) => i.patternIds?.includes(pat.patternId));
+      const description = matchingInterp?.statement || pat.headline;
+      return {
+        id: pat.patternId || `theme_${idx}`,
+        title: pat.headline || `Chủ Đề ${idx + 1}`,
+        description,
+        relevance: idx === 0 ? 'primary' : 'secondary',
+      };
+    });
 
   // Collect manifestations
   const manifestations: UserFacingManifestation[] = (result.implications || []).map((imp) => ({

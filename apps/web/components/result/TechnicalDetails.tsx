@@ -11,6 +11,7 @@ export function TechnicalDetails({ rawResult }: { rawResult: MysticosResult }) {
     <section className="border-t border-borderDark/60 pt-6 space-y-3">
       <button
         onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
         className="text-xs font-mono text-stone hover:text-parchment flex items-center gap-1.5 transition-colors uppercase tracking-wider"
       >
         <span>{isOpen ? '[-]' : '[+]'}</span>
@@ -29,7 +30,11 @@ export function TechnicalDetails({ rawResult }: { rawResult: MysticosResult }) {
             {facts.map((fact, idx) => (
               <div key={idx} className="truncate">
                 <span className="text-accentGold/80">{fact.key}:</span>{' '}
-                <span className="text-parchment">{String(fact.value)}</span>
+                <span className="text-parchment truncate">
+                  {typeof fact.value === 'object' && fact.value !== null
+                    ? JSON.stringify(fact.value)
+                    : String(fact.value)}
+                </span>
               </div>
             ))}
           </div>
