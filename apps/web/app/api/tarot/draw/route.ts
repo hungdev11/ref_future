@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { RiderWaiteTarotEngine, TAROT_CONFIG_V1 } from '@mystic/tarot-engine';
-import { ReadingResultComposer } from '@mystic/interpretation-engine';
+import { ReadingResultComposer, MysticosResultBuilder } from '@mystic/interpretation-engine';
 import { ReadingRepository } from '@mystic/database';
+import type { Fact } from '@mystic/core';
 import * as crypto from 'crypto';
 
 export async function POST(request: Request) {
@@ -16,6 +17,42 @@ export async function POST(request: Request) {
 
     const inputData = { ...body, seed };
     const calcResult = await engine.calculate(inputData, TAROT_CONFIG_V1);
+
+    const primaryDraw = calcResult.facts.draws[0];
+    const facts: Fact[] = [
+      ...(primaryDraw
+        ? [
+            { key: 'cardCode', value: primaryDraw.card.cardCode, domain: 'tarot', source: 'draw' },
+            { key: 'positionIndex', value: primaryDraw.positionIndex, domain: 'tarot', source: 'spread' },
+            { key: 'isReversed', value: primaryDraw.isReversed, domain: 'tarot', source: 'draw' },
+          ]
+        : []),
+      ...Object.entries(calcResult.dotNotatedFacts).map(([key, value]) => ({
+        key,
+        value,
+        domain: 'tarot',
+        source: 'engine',
+      })),
+    ];
+
+    if (body.cardCode) {
+      facts.push(
+        { key: 'cardCode', value: body.cardCode, domain: 'tarot', source: 'draw' },
+        { key: 'positionIndex', value: body.positionIndex ?? 0, domain: 'tarot', source: 'spread' },
+        { key: 'isReversed', value: Boolean(body.isReversed), domain: 'tarot', source: 'draw' }
+      );
+    }
+
+    if (body.facts && Array.isArray(body.facts)) {
+      facts.push(...body.facts);
+    }
+
+    const mysticosResult = MysticosResultBuilder.buildResult({
+      domain: 'tarot',
+      inputSummary: inputData,
+      facts,
+      school: 'Rider-Waite-Smith',
+    });
 
     let readingId: string | null = null;
     let reading = null;
@@ -44,11 +81,14 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({
+      success: true,
+      data: mysticosResult,
+      mysticosResult,
       ...calcResult,
       readingId,
       reading,
     });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'Tarot draw failed' }, { status: 400 });
+    return NextResponse.json({ success: false, error: err.message || 'Tarot draw failed' }, { status: 400 });
   }
 }
