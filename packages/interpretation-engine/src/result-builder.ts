@@ -1,5 +1,7 @@
 import {
-  MysticosResult,
+  DeepMysticosResult,
+  DeepInterpretation,
+  NextSuggestedQuestion,
   Fact,
   SemanticUnit,
   Signal,
@@ -11,6 +13,10 @@ import {
   EvidenceReference,
 } from '@mystic/core';
 import { KnowledgeStore, ProvenanceTracer } from '@mystic/knowledge-base';
+import { ResultDepthEngine } from './depth-engine.js';
+import { QuestionReactiveEngine } from './question-reactive-engine.js';
+import { MainStoryEngine } from './main-story-engine.js';
+import { ScenarioEngine } from './scenario-engine.js';
 
 export interface BuildResultParams {
   domain: 'tarot' | 'astrology' | 'tuvi' | 'numerology' | 'compatibility';
@@ -95,7 +101,7 @@ function humanizeSignal(sig: string): string {
 export class MysticosResultBuilder {
   private static tracer = new ProvenanceTracer();
 
-  public static buildResult(params: BuildResultParams): MysticosResult {
+  public static buildResult(params: BuildResultParams): DeepMysticosResult {
     const startTime = Date.now();
     const store = KnowledgeStore.getInstance();
     const domainRules = store.getRulesByDomain(params.domain);
@@ -496,6 +502,54 @@ export class MysticosResultBuilder {
       resolution: c.notes ? `${c.resolution}: ${c.notes}` : c.resolution,
     }));
 
+    // 10. Deep Reasoning Synthesis
+    const focus = QuestionReactiveEngine.resolveFocus(
+      typeof params.inputSummary?.question === 'string' ? params.inputSummary.question : undefined
+    );
+
+    const deepInterpretations: DeepInterpretation[] = interpretations.map((interp, idx) => {
+      const pat = patterns[idx];
+      const dominance = pat?.dominance ?? interp.strength;
+      const contextFit = pat?.contextFit ?? 0.9;
+      const depth = ResultDepthEngine.calculateDepth(dominance, contextFit);
+      const imp = implications[idx];
+      const gui = guidance[idx];
+
+      return {
+        ...interp,
+        depth,
+        explanation: imp?.manifestation || `Phân tích chuyên sâu về ${interp.headline}.`,
+        constructiveExpression: gui?.whatToContinue?.join(' ') || undefined,
+        tension: gui?.whatToAdjustOrStop?.join(' ') || undefined,
+        contextFitScore: contextFit,
+      };
+    });
+
+    const mainStory = MainStoryEngine.synthesizeStory(params.domain, patterns, signals, focus);
+    const scenarios = ScenarioEngine.generateScenarios(params.domain, patterns, signals, focus);
+
+    const primaryPatterns = patterns.length > 2 ? patterns.slice(0, 2) : patterns.slice(0, 1);
+    const secondaryPatterns = patterns.length > 2 ? patterns.slice(2) : patterns.slice(1);
+
+    const candidateQuestions: NextSuggestedQuestion[] = [
+      {
+        question: `Những yếu tố nào củng cố thêm cho ${focus.category === 'general' ? 'vận trình hiện tại' : focus.category}?`,
+        context: 'Khảo sát chiều sâu năng lượng từ góc nhìn bổ trợ.',
+        targetDomain: params.domain === 'astrology' ? 'tuvi' : 'astrology',
+      },
+      {
+        question: 'Chu kỳ thời gian nào thích hợp nhất để kích hoạt chuyển biến?',
+        context: 'Nhịp điệu vận trình và dấu mốc chu kỳ thời gian.',
+        targetDomain: 'numerology',
+      },
+      {
+        question: 'Làm sao để hóa giải các điểm nghẽn tiềm ẩn khi triển khai thực tế?',
+        context: 'Chiến lược hành động và định vị thực tế.',
+        targetDomain: 'tarot',
+      },
+    ];
+    const nextQuestions = candidateQuestions.filter((q) => q.targetDomain !== params.domain);
+
     return {
       resultId: `RES_${params.domain.toUpperCase()}_${Date.now()}`,
       domain: params.domain,
@@ -511,6 +565,12 @@ export class MysticosResultBuilder {
       guidance,
       evidence,
       conflicts,
+      mainStory,
+      primaryPatterns,
+      secondaryPatterns,
+      scenarios,
+      deepInterpretations,
+      nextQuestions,
       technical: {
         calculationTimeMs: Date.now() - startTime,
         rulesEvaluatedCount: domainRules.length,

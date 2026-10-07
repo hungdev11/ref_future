@@ -8,3 +8,7 @@ export * from './narrative-planner.js';
 export * from './quality-control.js';
 export * from './compatibility-engine.js';
 export * from './result-builder.js';
+export * from './depth-engine.js';
+export * from './question-reactive-engine.js';
+export * from './main-story-engine.js';
+export * from './scenario-engine.js';
