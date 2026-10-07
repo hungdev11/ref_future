@@ -1,6 +1,14 @@
 import { MainStory, Pattern, Signal } from '@mystic/core';
 import { QuestionFocus } from './question-reactive-engine.js';
 
+export const CATEGORY_VN: Record<string, string> = {
+  career: 'sự nghiệp và công việc',
+  love: 'chuyện tình cảm',
+  finance: 'tài chính và nguồn lực',
+  growth: 'nội lực và nhận thức',
+  general: 'vận trình hiện tại',
+};
+
 export class MainStoryEngine {
   public static synthesizeStory(
     domain: string,
@@ -20,7 +28,7 @@ export class MainStoryEngine {
     };
 
     const headline = primary
-      ? `${primary.headline} — ${focus.category === 'general' ? 'Điểm tựa chủ đạo' : `Trọng tâm ${focus.category}`}`
+      ? `${primary.headline} — ${focus.category === 'general' ? 'Điểm tựa chủ đạo' : `Trọng tâm ${CATEGORY_VN[focus.category] || focus.category}`}`
       : `Xu Hướng Vận Động ${domain.toUpperCase()}`;
 
     const narrative = primary

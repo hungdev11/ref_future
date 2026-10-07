@@ -40,15 +40,23 @@ const TAROT_CARD_NAMES: Record<string, string> = {
   MAJOR_16: 'XVI — The Tower (Tòa Tháp)',
   MAJOR_16_TOWER: 'XVI — The Tower (Tòa Tháp)',
   PENTACLES_7: '7 of Pentacles',
+  MINOR_PENTACLES_7: '7 of Pentacles',
   CUPS_8: '8 of Cups',
+  MINOR_CUPS_8: '8 of Cups',
   SWORDS_3: '3 of Swords',
+  MINOR_SWORDS_3: '3 of Swords',
+  WANDS_1: 'Ace of Wands',
+  MINOR_WANDS_1: 'Ace of Wands',
 };
 
 function formatCard(val: unknown): string {
   if (typeof val !== 'string') return String(val);
   if (TAROT_CARD_NAMES[val]) return TAROT_CARD_NAMES[val];
+  const normalized = val.replace(/^MINOR_/, '');
+  if (TAROT_CARD_NAMES[normalized]) return TAROT_CARD_NAMES[normalized];
   return val
     .replace(/^MAJOR_/, 'Major Arcana ')
+    .replace(/^MINOR_/, '')
     .replace(/_/g, ' ')
     .trim();
 }

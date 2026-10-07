@@ -34,9 +34,11 @@ export function AstrologyResultView({
 
   const ascendant = (result.facts || []).find(
     (f) =>
-      f.key.includes('ascendant') ||
-      f.key.includes('rising') ||
-      f.key === 'asc'
+      (f.key.toLowerCase().includes('ascendant') ||
+        f.key.toLowerCase().includes('rising') ||
+        f.key.toLowerCase() === 'asc') &&
+      (f.key.toLowerCase().includes('sign') || typeof f.value === 'string') &&
+      typeof f.value !== 'number'
   )?.value;
 
   const hasBigThree = Boolean(sunSign || moonSign || ascendant);

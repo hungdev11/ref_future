@@ -43,8 +43,8 @@ describe('Question Reactive Verification Suite (Sections 44-49 & 67-70)', () => 
     expect(careerResult.mainStory).toBeDefined();
     expect(loveResult.mainStory).toBeDefined();
     expect(careerResult.mainStory.headline).not.toEqual(loveResult.mainStory.headline);
-    expect(careerResult.mainStory.headline).toContain('career');
-    expect(loveResult.mainStory.headline).toContain('love');
+    expect(careerResult.mainStory.headline).toContain('sự nghiệp và công việc');
+    expect(loveResult.mainStory.headline).toContain('chuyện tình cảm');
 
     expect(careerResult.mainStory.narrative).not.toEqual(loveResult.mainStory.narrative);
     expect(careerResult.mainStory.narrative).toContain(focusCareer.perspective);

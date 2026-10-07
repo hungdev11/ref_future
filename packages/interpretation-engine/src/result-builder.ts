@@ -15,8 +15,10 @@ import {
 import { KnowledgeStore, ProvenanceTracer } from '@mystic/knowledge-base';
 import { ResultDepthEngine } from './depth-engine.js';
 import { QuestionReactiveEngine } from './question-reactive-engine.js';
-import { MainStoryEngine } from './main-story-engine.js';
+import { MainStoryEngine, CATEGORY_VN } from './main-story-engine.js';
 import { ScenarioEngine } from './scenario-engine.js';
+
+export { CATEGORY_VN };
 
 export interface BuildResultParams {
   domain: 'tarot' | 'astrology' | 'tuvi' | 'numerology' | 'compatibility';
@@ -535,7 +537,7 @@ export class MysticosResultBuilder {
 
     const candidateQuestions: NextSuggestedQuestion[] = [
       {
-        question: `Những yếu tố nào củng cố thêm cho ${focus.category === 'general' ? 'vận trình hiện tại' : focus.category}?`,
+        question: `Những yếu tố nào củng cố thêm cho ${CATEGORY_VN[focus.category] || focus.category}?`,
         context: 'Khảo sát chiều sâu năng lượng từ góc nhìn bổ trợ.',
         targetDomain: params.domain === 'astrology' ? 'tuvi' : 'astrology',
       },

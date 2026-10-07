@@ -31,7 +31,44 @@ const NUMBER_LABELS: Record<string, string> = {
   maturityNumber: 'SỐ TRƯỞNG THÀNH (MATURITY)',
   personalYear: 'NĂM CÁ NHÂN (PERSONAL YEAR)',
   currentYear: 'NĂM HIỆN TẠI',
+  'results.lifePath.finalValue': 'SỐ ĐƯỜNG ĐỜI (LIFE PATH)',
 };
+
+const ALLOWED_CORE_KEYS = new Set([
+  'lifepath', 'lifepathnumber', 'destiny', 'destinynumber',
+  'soul', 'soulnumber', 'soulurge', 'soulurgenumber',
+  'personality', 'personalitynumber', 'maturity', 'maturitynumber',
+  'personalyear'
+]);
+
+const CANONICAL_LABELS: Record<string, string> = {
+  lifepath: 'SỐ ĐƯỜNG ĐỜI (LIFE PATH)',
+  destiny: 'SỐ SỨ MỆNH (DESTINY)',
+  soul: 'SỐ LINH HỒN (SOUL URGE)',
+  personality: 'SỐ TÍNH CÁCH (PERSONALITY)',
+  maturity: 'SỐ TRƯỞNG THÀNH (MATURITY)',
+  personalyear: 'NĂM CÁ NHÂN (PERSONAL YEAR)',
+};
+
+function normalizeKey(key: string): string {
+  return key
+    .replace(/^(results|numerology)\./i, '')
+    .replace(/^(core|cycles)\./i, '')
+    .replace(/\.(finalValue|value)$/i, '')
+    .toLowerCase()
+    .replace(/[^a-z]/g, '');
+}
+
+function getSimplifiedKey(rawKey: string): string {
+  const norm = normalizeKey(rawKey);
+  if (norm.startsWith('lifepath')) return 'lifepath';
+  if (norm.startsWith('destiny')) return 'destiny';
+  if (norm.startsWith('soul')) return 'soul';
+  if (norm.startsWith('personality')) return 'personality';
+  if (norm.startsWith('maturity')) return 'maturity';
+  if (norm.startsWith('personalyear')) return 'personalyear';
+  return norm;
+}
 
 export function NumerologyResultView({
   result,
@@ -41,17 +78,17 @@ export function NumerologyResultView({
 
   const school = result.metadata?.school || 'Pythagorean System';
 
-  // Extract core numbers from facts
+  // Extract core numbers from facts and deduplicate by simplified key name
+  const seenKeys = new Set<string>();
   const coreNumberFacts = (result.facts || []).filter((f) => {
-    const k = f.key.toLowerCase();
-    return (
-      k.includes('number') ||
-      k.includes('lifepath') ||
-      k.includes('destiny') ||
-      k.includes('soul') ||
-      k.includes('year') ||
-      typeof f.value === 'number'
-    );
+    if (typeof f.value !== 'number') return false;
+    const rawK = f.key.toLowerCase().replace(/[^a-z]/g, '');
+    const normK = normalizeKey(f.key);
+    if (!ALLOWED_CORE_KEYS.has(normK) && !ALLOWED_CORE_KEYS.has(rawK)) return false;
+    const simplified = getSimplifiedKey(f.key);
+    if (seenKeys.has(simplified)) return false;
+    seenKeys.add(simplified);
+    return true;
   });
 
   const cycleFact = (result.facts || []).find((f) =>
@@ -94,7 +131,7 @@ export function NumerologyResultView({
                 className="border border-borderDark bg-surface p-4 text-center space-y-1 rounded-none hover:border-accentGold/40 transition-colors"
               >
                 <span className="font-mono text-[10px] text-stone tracking-wider block truncate">
-                  {NUMBER_LABELS[fact.key] || fact.key.toUpperCase()}
+                  {NUMBER_LABELS[fact.key] || CANONICAL_LABELS[getSimplifiedKey(fact.key)] || fact.key.toUpperCase()}
                 </span>
                 <span className="font-serif text-2xl sm:text-3xl text-accentGold font-normal block">
                   {String(fact.value)}
