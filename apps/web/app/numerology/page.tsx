@@ -6,6 +6,9 @@ import {
   HelpCircle,
   RefreshCw,
   Compass,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import type { MysticosResult } from '@mystic/core';
 import { DateInput } from '@/components/DateInput';
@@ -18,10 +21,19 @@ export default function NumerologyPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<MysticosResult | null>(null);
   const [rawCore, setRawCore] = useState<Record<string, any> | null>(null);
+  const [showCoreFacts, setShowCoreFacts] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Instant feedback calculations
+  const trimmedName = fullName.trim();
+  const wordCount = trimmedName ? trimmedName.split(/\s+/).length : 0;
+  const isNameValid = trimmedName.length >= 2;
+  const isDateValid = Boolean(birthDate && /^\d{4}-\d{2}-\d{2}$/.test(birthDate));
 
   const handleCalculate = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isNameValid || !isDateValid) return;
+
     setLoading(true);
     setError(null);
 
@@ -29,7 +41,7 @@ export default function NumerologyPage() {
       const res = await fetch('/api/numerology/calculate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fullName, birthDate }),
+        body: JSON.stringify({ fullName: trimmedName, birthDate }),
       });
 
       const data = await res.json();
@@ -59,12 +71,12 @@ export default function NumerologyPage() {
         </h1>
         <p className="text-xs sm:text-sm text-stone max-w-2xl leading-relaxed">
           Giải mã tần số dao động của danh xưng và ngày sinh theo chuẩn Pythagoras.
-          Toàn bộ kết quả được xử lý qua 17 tầng MysticosResult tất định và đối chiếu thư tịch S0/S1.
+          Toàn bộ kết quả được xử lý qua 17 tầng mô hình tất định và đối chiếu thư tịch cổ S0/S1.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Column: Form & Guide */}
+        {/* Step 1: Input Form */}
         <div className="lg:col-span-4 p-5 bg-surface border border-borderDark space-y-5">
           <div className="text-xs font-mono text-accentGold uppercase tracking-wider border-b border-borderDark pb-2 flex items-center gap-2">
             <Compass className="w-4 h-4" />
@@ -73,9 +85,17 @@ export default function NumerologyPage() {
 
           <form onSubmit={handleCalculate} className="space-y-4">
             <div>
-              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
-                Họ và Tên Đầy Đủ
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs font-mono text-stone uppercase tracking-wider">
+                  Họ và Tên Đầy Đủ
+                </label>
+                {isNameValid && (
+                  <span className="text-[10px] font-mono text-accentGold flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3 text-olive" />
+                    <span>{wordCount} từ ({trimmedName.length} ký tự)</span>
+                  </span>
+                )}
+              </div>
               <input
                 type="text"
                 value={fullName}
@@ -84,15 +104,22 @@ export default function NumerologyPage() {
                 required
                 className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
               />
-              <span className="text-[10px] text-stone/70 block mt-1 font-mono">
-                Chuẩn chuyển đổi ký tự tiếng Việt có dấu sang hệ Latinh chuẩn Pythagoras.
+              <span className="text-[10px] text-stone/60 block mt-1 font-mono">
+                Tự động chuẩn hóa dấu tiếng Việt sang bảng số Pythagoras (A-Z).
               </span>
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
-                Ngày Sinh Dương Lịch <span className="text-stone/60 normal-case">(Ngày / Tháng / Năm)</span>
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs font-mono text-stone uppercase tracking-wider">
+                  Ngày Sinh Dương Lịch
+                </label>
+                {isDateValid && (
+                  <span className="text-[10px] font-mono text-stone">
+                    Định dạng YYYY-MM-DD
+                  </span>
+                )}
+              </div>
               <DateInput
                 value={birthDate}
                 onChange={setBirthDate}
@@ -100,9 +127,27 @@ export default function NumerologyPage() {
               />
             </div>
 
+            {/* Instant Input Feedback Preview */}
+            <div className="p-3 bg-background border border-borderDark space-y-2 text-xs font-mono">
+              <div className="text-[10px] text-stone uppercase tracking-wider flex items-center justify-between border-b border-borderDark pb-1.5">
+                <span>Trạng Thái Khảo Cứu:</span>
+                <span className={isNameValid && isDateValid ? 'text-olive' : 'text-stone/60'}>
+                  {isNameValid && isDateValid ? '● Đã Sẵn Sàng' : '○ Đang Chờ Dữ Liệu'}
+                </span>
+              </div>
+              <div className="space-y-1 text-[11px]">
+                <div className="text-stone truncate">
+                  Danh xưng: <strong className="text-parchment">{trimmedName || '—'}</strong>
+                </div>
+                <div className="text-stone">
+                  Ngày sinh: <strong className="text-parchment">{birthDate || '—'}</strong>
+                </div>
+              </div>
+            </div>
+
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !isNameValid || !isDateValid}
               className="w-full py-2.5 bg-accentGold text-background text-xs font-mono font-bold tracking-widest uppercase hover:bg-parchment transition-colors border border-accentGold disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
             >
               {loading ? (
@@ -131,12 +176,12 @@ export default function NumerologyPage() {
             </div>
             <p className="text-stone text-[11px] leading-relaxed">
               Mỗi con số biểu thị một mức độ rung động năng lượng tự nhiên.
-              Hệ thống Mysticos không phán đoán số phận tốt xấu tuyệt đối, mà phân tích cấu trúc hài hòa và điểm thử thách cần rèn giũa.
+              Hệ thống Mysticos không phán đoán số phận tốt xấu, mà phân tích cấu trúc tiềm năng và thử thách để phát triển bản thân.
             </p>
           </div>
         </div>
 
-        {/* Right Column: Results */}
+        {/* Step 2: Editorial Result View */}
         <div className="lg:col-span-8 space-y-6">
           {!result && !loading && (
             <div className="p-16 border border-borderDark bg-surface text-center space-y-3">
@@ -150,31 +195,47 @@ export default function NumerologyPage() {
             </div>
           )}
 
-          {/* Core Numbers Overview if present */}
-          {rawCore && (
-            <div className="p-4 bg-surface border border-borderDark space-y-3">
-              <div className="flex items-center justify-between text-xs font-mono text-stone border-b border-borderDark pb-2">
-                <span>Dữ kiện số học cốt lõi (Core Frequency Facts)</span>
-                <span className="text-accentGold text-[11px]">Pythagorean Standard</span>
-              </div>
+          {/* Clean Editorial Result Front-and-Center */}
+          {result && <MysticosResultViewer result={result} />}
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {Object.entries(rawCore).map(([k, v]: [string, any]) => (
-                  <div key={k} className="p-3 bg-background border border-borderDark space-y-1">
-                    <span className="text-[10px] font-mono text-stone block uppercase truncate">
-                      {k}
-                    </span>
-                    <span className="text-lg font-serif text-accentGold font-bold">
-                      {v?.value ?? String(v)}
-                    </span>
+          {/* Optional Progressive Disclosure: Core Numbers Grid */}
+          {result && rawCore && (
+            <div className="border border-borderDark bg-surface p-4 space-y-3">
+              <button
+                type="button"
+                onClick={() => setShowCoreFacts(!showCoreFacts)}
+                className="w-full flex items-center justify-between text-xs font-mono text-stone hover:text-parchment transition-colors text-left"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-accentGold">✦</span>
+                  <span className="text-parchment font-medium uppercase tracking-wider">
+                    Dữ Kiện Tần Số Cốt Lõi (Core Frequency Numbers)
+                  </span>
+                </div>
+                <div className="flex items-center gap-1 text-accentGold text-xs font-mono">
+                  <span>{showCoreFacts ? 'Thu gọn' : 'Xem các chỉ số'}</span>
+                  {showCoreFacts ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                </div>
+              </button>
+
+              {showCoreFacts && (
+                <div className="pt-3 border-t border-borderDark space-y-3 animate-in fade-in duration-200">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {Object.entries(rawCore).map(([k, v]: [string, any]) => (
+                      <div key={k} className="p-3 bg-background border border-borderDark space-y-1">
+                        <span className="text-[10px] font-mono text-stone block uppercase truncate">
+                          {k}
+                        </span>
+                        <span className="text-lg font-serif text-accentGold font-bold">
+                          {v?.value ?? String(v)}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
+              )}
             </div>
           )}
-
-          {/* Pure MysticosResultViewer */}
-          {result && <MysticosResultViewer result={result} />}
         </div>
       </div>
     </div>

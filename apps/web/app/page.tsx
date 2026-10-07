@@ -5,12 +5,13 @@ export default function HomePage() {
   const portals = [
     {
       code: '01',
-      title: 'Thần Số Học Pythagoras',
-      subtitle: 'Con Số Chủ Đạo & 4 Đỉnh Cao Đời Người',
-      href: '/numerology',
+      title: 'Chiêm Tinh Học Tây Phương',
+      subtitle: 'Bản Đồ Sao Cá Nhân (Natal Wheel)',
+      href: '/astrology',
       description:
-        'Phân tích năng lượng từ họ tên và ngày sinh theo trường phái Pythagoras cổ điển. Khám phá bản đồ kim tự tháp 4 đỉnh cao, chu kỳ 9 năm và biểu đồ 9 nhóm tính cách.',
-      badge: 'Bản Đồ Kim Tự Tháp',
+        'Tính toán tọa độ 10 thiên thể và 12 cung địa bàn theo hệ tọa độ Hoàng Đạo. Phân tích chi tiết bộ ba Mặt Trời, Mặt Trăng, Cung Mọc và các góc hợp tương tác.',
+      badge: 'Bánh Xe Hoàng Đạo',
+      cta: 'Lập Bản Đồ Sao →',
     },
     {
       code: '02',
@@ -18,17 +19,19 @@ export default function HomePage() {
       subtitle: 'Bản Đồ 12 Cung Chức & Thiên Bàn',
       href: '/tu-vi',
       description:
-        'An sao lập lá số theo giờ sinh và lịch thiên văn Việt Nam. Bấm trực tiếp vào từng cung trong ma trận 12 cung chức để giải nghĩa các chính tinh, phụ tinh và lời khuyên đời thường.',
+        'An sao lập lá số theo giờ sinh và lịch thiên văn Việt Nam. Giải nghĩa các chính tinh, phụ tinh và các cung chức trọng yếu trong đời sống.',
       badge: 'Ma Trận 12 Cung',
+      cta: 'Lập Lá Số Tử Vi →',
     },
     {
       code: '03',
-      title: 'Chiêm Tinh Học Tây Phương',
-      subtitle: 'Bản Đồ Sao Cá Nhân (Natal Wheel)',
-      href: '/astrology',
+      title: 'Thần Số Học Pythagoras',
+      subtitle: 'Con Số Chủ Đạo & Chu Kỳ Vận Số',
+      href: '/numerology',
       description:
-        'Tính toán tọa độ 10 thiên thể và 12 cung địa bàn theo hệ tọa độ Hoàng Đạo. Phân tích chi tiết Bộ Ba Quyền Lực (Mặt Trời, Mặt Trăng, Cung Mọc) và các góc hợp tương tác.',
-      badge: 'Bánh Xe Hoàng Đạo',
+        'Phân tích tần số dao động từ họ tên và ngày sinh theo trường phái Pythagoras cổ điển. Khám phá con số chủ đạo, sứ mệnh và 4 đỉnh cao cuộc đời.',
+      badge: 'Bản Đồ Kim Tự Tháp',
+      cta: 'Khảo Cứu Số Học →',
     },
     {
       code: '04',
@@ -36,8 +39,9 @@ export default function HomePage() {
       subtitle: '78 Lá Rider-Waite & Trải Bài Trực Giác',
       href: '/tarot',
       description:
-        'Lật mở các thông điệp chỉ dẫn qua hình ảnh nguyên bản Rider-Waite-Smith 1909. Rút 1 lá định hướng ngày, trải bài 3 lá thời gian, hoặc 5 lá đa chiều kèm lời khuyên hành động.',
+        'Lật mở các thông điệp chỉ dẫn qua hình ảnh nguyên bản Rider-Waite-Smith 1909. Trải bài từ 1 đến 10 lá kèm lời khuyên hành động đời thường.',
       badge: 'Trực Họa 78 Lá',
+      cta: 'Rút Bài Tarot →',
     },
     {
       code: '05',
@@ -45,8 +49,9 @@ export default function HomePage() {
       subtitle: 'Hòa Hợp Bản Mệnh Giữa Hai Người',
       href: '/compatibility',
       description:
-        'Đối chiếu và giải mã mức độ hòa hợp giữa hai người qua sự giao thoa của 4 nguyên tố Hoàng Đạo và cặp Số Chủ Đạo. Gợi ý phương pháp giao tiếp và hòa giải xung đột.',
+        'Đối chiếu mức độ hòa hợp giữa hai người qua sự giao thoa nguyên tố Hoàng Đạo, cặp số chủ đạo và Can Chi. Không dùng điểm số cảm tính.',
       badge: 'Đối Chiếu Cặp Đôi',
+      cta: 'Khảo Luận Tương Hợp →',
     },
   ];
 
@@ -72,22 +77,16 @@ export default function HomePage() {
 
             <p className="text-sm sm:text-base text-stone max-w-2xl leading-relaxed">
               Mỗi con người khi chào đời đều mang một tọa độ nhân sinh độc bản. Mysticos hệ thống hóa
-              các trường phái dự đoán kinh điển thành một công cụ khảo cứu trực quan, dễ hiểu cho người mới bắt đầu, 
-              không dùng thuật ngữ phô trương hay phán đoán mê tín.
+              các trường phái dự đoán kinh điển thành công cụ khảo cứu tất định, trực quan và dễ tiếp cận,
+              không dùng thuật ngữ phô trương hay phán đoán mê tín dị đoan.
             </p>
 
-            <div className="flex flex-wrap items-center gap-4 pt-2">
+            <div className="pt-2">
               <Link
-                href="/numerology"
-                className="px-5 py-2.5 bg-accentGold text-background text-xs font-semibold tracking-wider uppercase hover:bg-parchment transition-colors border border-accentGold"
+                href="/astrology"
+                className="px-6 py-3 bg-accentGold text-background text-xs font-mono font-bold tracking-widest uppercase hover:bg-parchment transition-colors border border-accentGold inline-flex items-center gap-2"
               >
-                Tra Cứu Thần Số Học →
-              </Link>
-              <Link
-                href="/tu-vi"
-                className="px-5 py-2.5 bg-surface text-parchment text-xs font-semibold tracking-wider uppercase hover:border-accentGold transition-colors border border-borderLight"
-              >
-                Lập Lá Số Tử Vi →
+                Bắt Đầu Khảo Cứu Vận Trình →
               </Link>
             </div>
           </div>
@@ -99,15 +98,15 @@ export default function HomePage() {
             <ul className="space-y-3 text-stone text-[12px] leading-relaxed">
               <li className="flex items-start gap-2">
                 <span className="text-accentGold">01.</span>
-                <span><strong>Không Mê Tín Dị Đoan:</strong> Mọi diễn giải đều hướng tới nhận thức bản thân và hoàn thiện đối nhân xử thế.</span>
+                <span><strong>Không Mê Tín Dị Đoan:</strong> Mọi diễn giải hướng tới thấu hiểu bản thân và hành xử thực tế.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-accentGold">02.</span>
-                <span><strong>Ngôn Từ Giản Dị:</strong> Diễn giải chi tiết từng khái niệm cho người chưa từng có kiến thức nền tảng.</span>
+                <span><strong>Ngôn Từ Giản Dị:</strong> Diễn giải rõ ràng, dễ hiểu cho người chưa từng có kiến thức nền tảng.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-accentGold">03.</span>
-                <span><strong>Tương Tác Trực Quan:</strong> Nhấp vào bất kỳ lá bài, con số hay cung vị nào để mở bảng giải nghĩa chi tiết.</span>
+                <span><strong>Minh Bạch Nguồn Gốc:</strong> Mỗi kết quả đều truy nguyên được công thức và thư tịch chuẩn tắc.</span>
               </li>
             </ul>
           </div>
@@ -115,11 +114,11 @@ export default function HomePage() {
       </section>
 
       {/* 5 Portals Index */}
-      <section className="space-y-6">
+      <section className="space-y-6" id="modules">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-borderDark pb-3 gap-2">
           <div>
             <h2 className="text-xl font-serif text-parchment">Các Bộ Môn Khảo Cứu</h2>
-            <p className="text-xs text-stone mt-0.5">Chọn một phương pháp bạn muốn tra cứu chi tiết</p>
+            <p className="text-xs text-stone mt-0.5">Chọn một bộ môn để bắt đầu tra cứu</p>
           </div>
           <span className="text-xs font-mono text-stone">Mục Lục 01 — 05</span>
         </div>
@@ -146,7 +145,7 @@ export default function HomePage() {
               </div>
 
               <div className="pt-4 border-t border-borderDark flex items-center justify-between text-xs font-mono text-accentGold group-hover:translate-x-0.5 transition-transform">
-                <span>Khảo Cứu Ngay</span>
+                <span>{p.cta}</span>
                 <span>→</span>
               </div>
             </Link>
@@ -163,19 +162,19 @@ export default function HomePage() {
           <div className="space-y-1.5 border-l-2 border-borderLight pl-4">
             <h4 className="text-parchment font-serif text-sm">Minh Bạch Tuyệt Đối</h4>
             <p className="leading-relaxed">
-              Tất cả các thuật toán tính toán vị trí hành tinh, can chi và số học đều dựa trên các công thức thiên văn và thư tịch cổ chuẩn mực.
+              Mọi thuật toán tính toán vị trí thiên thể, can chi và số học đều dựa trên công thức thiên văn và thư tịch cổ điển chuẩn mực.
             </p>
           </div>
           <div className="space-y-1.5 border-l-2 border-borderLight pl-4">
-            <h4 className="text-parchment font-serif text-sm">Coi Người Dùng Chưa Biết Gì</h4>
+            <h4 className="text-parchment font-serif text-sm">Dễ Hiểu & Thực Tế</h4>
             <p className="leading-relaxed">
-              Mọi biểu tượng, cung vị hay góc chiếu đều có phần giải thích bình dân ngay khi bạn nhấp vào.
+              Kết quả trả lời trực tiếp điều người dùng quan tâm, kèm gợi ý ứng biến cụ thể trong đời sống hàng ngày.
             </p>
           </div>
           <div className="space-y-1.5 border-l-2 border-borderLight pl-4">
             <h4 className="text-parchment font-serif text-sm">Hoàn Toàn Miễn Phí</h4>
             <p className="leading-relaxed">
-              Không ẩn giấu nội dung để đòi trả phí. Toàn bộ luận giải từ cơ bản đến chuyên sâu đều được hiển thị đầy đủ và công khai.
+              Không ẩn giấu nội dung hay yêu cầu trả phí. Toàn bộ luận giải từ cơ bản đến chuyên sâu đều được hiển thị đầy đủ và công khai.
             </p>
           </div>
         </div>

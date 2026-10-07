@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { AlertCircle, RefreshCw, HelpCircle } from 'lucide-react';
+import { AlertCircle, RefreshCw, HelpCircle, Sparkles } from 'lucide-react';
 import type { MysticosResult } from '@mystic/core';
 import { getTarotCardImageUrl } from '../../lib/tarot-images';
 import { MysticosResultViewer } from '@/components/MysticosResultViewer';
 
 export default function TarotPage() {
+  const [question, setQuestion] = useState('');
   const [spreadCode, setSpreadCode] = useState('SPREAD_3_PPF');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<MysticosResult | null>(null);
@@ -24,7 +25,11 @@ export default function TarotPage() {
       const res = await fetch('/api/tarot/draw', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ spreadCode, seed: activeSeed }),
+        body: JSON.stringify({
+          question: question.trim() || undefined,
+          spreadCode,
+          seed: activeSeed,
+        }),
       });
 
       const data = await res.json();
@@ -54,18 +59,32 @@ export default function TarotPage() {
         </h1>
         <p className="text-xs sm:text-sm text-stone max-w-2xl leading-relaxed">
           Tĩnh tâm, tập trung vào điều bạn đang trăn trở và rút những lá bài chỉ đường.
-          Kết quả được suy diễn tất định theo 17 tầng MysticosResult và chuẩn thư tịch RWS 1909.
+          Kết quả được suy diễn tất định theo chuẩn thư tịch Rider-Waite-Smith 1909.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Column: Form & Guide */}
+        {/* Step 1: Input Form */}
         <div className="lg:col-span-4 p-5 bg-surface border border-borderDark space-y-5">
-          <div className="text-xs font-mono text-accentGold uppercase tracking-wider border-b border-borderDark pb-2">
-            Chọn Kiểu Trải Bài
+          <div className="text-xs font-mono text-accentGold uppercase tracking-wider border-b border-borderDark pb-2 flex items-center gap-2">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Khởi Tạo Bàn Trải</span>
           </div>
 
           <form onSubmit={handleDraw} className="space-y-4">
+            <div>
+              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
+                Điều Bạn Đang Trăn Trở <span className="text-stone/60 normal-case">(Tùy chọn)</span>
+              </label>
+              <input
+                type="text"
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                placeholder="VD: Định hướng công việc và tài chính sắp tới..."
+                className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono placeholder:text-stone/40 focus:outline-none focus:border-accentGold"
+              />
+            </div>
+
             <div>
               <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
                 Phương Thức Trải Bài
@@ -91,7 +110,7 @@ export default function TarotPage() {
               {loading ? (
                 <>
                   <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                  Đang Xáo Bài...
+                  Đang Xáo & Rút Bài...
                 </>
               ) : (
                 'Xáo & Rút Bài Ngay →'
@@ -113,13 +132,13 @@ export default function TarotPage() {
               <span>Nguyên Lý Khảo Luận</span>
             </div>
             <p className="text-stone text-[11px] leading-relaxed">
-              Toàn bộ bài trải được phân tích qua hệ thống 5 tầng kiến trúc Mysticos:
-              Dữ kiện quan sát ➔ Kết quả tính toán ➔ Khuôn mẫu tổng hợp ➔ Chỉ dẫn hành động ➔ Bảng minh bạch căn nguyên (Why Panel).
+              Mỗi vị trí trong trải bài đều mang vai trò ngữ cảnh riêng biệt.
+              Hệ thống phân tích sự tương tác giữa các lá bài để đưa ra định hướng và hành động thực tế.
             </p>
           </div>
         </div>
 
-        {/* Right Column: Visual Spread Board & Pure Result Viewer */}
+        {/* Step 2: Editorial Result View */}
         <div className="lg:col-span-8 space-y-6">
           {!result && !loading && (
             <div className="p-16 border border-borderDark bg-surface text-center space-y-3">
@@ -128,12 +147,12 @@ export default function TarotPage() {
               </div>
               <h3 className="text-sm font-serif text-parchment">Bàn Trải Bài Đang Chờ</h3>
               <p className="text-stone text-xs max-w-sm mx-auto leading-relaxed">
-                Chọn kiểu trải bài phù hợp ở bên trái và bấm nút Rút Bài để khởi tạo các thông điệp chỉ dẫn.
+                Nhập câu hỏi và chọn kiểu trải bài ở bên trái, sau đó bấm Xáo & Rút Bài để nhận thông điệp chỉ dẫn.
               </p>
             </div>
           )}
 
-          {/* Render visual cards if draws exist */}
+          {/* Visual Cards Board */}
           {rawDraws.length > 0 && (
             <div className="space-y-4">
               <div className="p-3 bg-surface border border-borderDark flex items-center justify-between text-xs font-mono">
@@ -141,7 +160,7 @@ export default function TarotPage() {
                   Bàn trải quan sát: <strong className="text-parchment">{rawDraws.length} lá bài</strong>
                 </span>
                 <span className="text-[11px] text-accentGold">
-                  Trực quan hóa bài trải Rider-Waite
+                  Trực quan hóa Rider-Waite 1909
                 </span>
               </div>
 
@@ -188,7 +207,7 @@ export default function TarotPage() {
             </div>
           )}
 
-          {/* Pure MysticosResultViewer */}
+          {/* Editorial Result Presentation */}
           {result && <MysticosResultViewer result={result} />}
         </div>
       </div>

@@ -6,7 +6,6 @@ import {
   AlertTriangle,
   RefreshCw,
   User,
-  Compass,
   HelpCircle,
 } from 'lucide-react';
 import type { MysticosResult } from '@mystic/core';
@@ -95,16 +94,16 @@ export default function CompatibilityPage() {
           <span>Độ Tương Hợp Đa Hệ Thống</span>
         </div>
         <h1 className="text-2xl sm:text-4xl font-serif text-parchment font-normal tracking-tight">
-          Khảo Luận Tương Tác & Hòa Hợp Năng Lượng
+          Khảo Luận Tương Tác & Hòa Hợp Bản Mệnh
         </h1>
         <p className="text-xs sm:text-sm text-stone max-w-2xl leading-relaxed">
           Tổng hợp đa trường phái: Chiêm Tinh Học Tây Phương, Thần Số Học Pythagoras, và Can Chi Tử Vi Đông Phương.
-          Không dùng điểm số cảm tính vô nghĩa, mọi đánh giá đều tuân thủ 17 tầng MysticosResult.
+          Không dùng điểm số ảo hay phần trăm giả tạo, tập trung vào bản chất tương tác và hướng hòa giải.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Column: Input Form */}
+        {/* Step 1: Input Form */}
         <div className="lg:col-span-5 p-5 bg-surface border border-borderDark space-y-5">
           <div className="text-xs font-mono text-accentGold uppercase tracking-wider border-b border-borderDark pb-2 flex items-center gap-2">
             <HeartHandshake className="w-4 h-4" />
@@ -257,13 +256,13 @@ export default function CompatibilityPage() {
               <span>Nguyên Tắc Không Dùng Điểm Ảo</span>
             </div>
             <p className="text-stone text-[11px] leading-relaxed">
-              Mysticos không đưa ra con số 70/100 hay 85% tương hợp vô căn cứ.
-              Hệ thống phân tích cơ chế cộng hưởng, điểm va chạm tự nhiên và chỉ dẫn cụ thể để xây dựng mối quan hệ bền vững.
+              Mỗi mối quan hệ là sự giao thoa phức hợp giữa tính cách và chu kỳ phát triển.
+              Hệ thống làm rõ điểm tương hỗ và nguy cơ va chạm, không đánh giá hợp hay khắc bằng điểm số cảm tính.
             </p>
           </div>
         </div>
 
-        {/* Right Column: Results */}
+        {/* Step 2: Editorial Result View */}
         <div className="lg:col-span-7 space-y-6">
           {!result && !loading && (
             <div className="p-16 border border-borderDark bg-surface text-center space-y-3">
@@ -277,7 +276,7 @@ export default function CompatibilityPage() {
             </div>
           )}
 
-          {/* Pure MysticosResultViewer */}
+          {/* Clean Editorial Result Presentation */}
           {result && <MysticosResultViewer result={result} />}
         </div>
       </div>

@@ -6,6 +6,7 @@ import {
   AlertTriangle,
   RefreshCw,
   HelpCircle,
+  Info,
 } from 'lucide-react';
 import type { MysticosResult } from '@mystic/core';
 import { DateInput } from '@/components/DateInput';
@@ -77,7 +78,7 @@ export default function AstrologyPage() {
 
       const canonicalResult: MysticosResult = data.data || data.mysticosResult;
       setResult(canonicalResult);
-      setIsDegraded(Boolean(data.isDegraded));
+      setIsDegraded(Boolean(data.isDegraded || isTimeUnknown));
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -99,12 +100,12 @@ export default function AstrologyPage() {
         </h1>
         <p className="text-xs sm:text-sm text-stone max-w-2xl leading-relaxed">
           Tính toán tọa độ hành tinh và cung nhà dựa trên Swiss Ephemeris. Luận giải tất định
-          qua mô hình Mysticos 5 tầng: Dữ kiện ➔ Kết quả ➔ Khuôn mẫu ➔ Chỉ dẫn ➔ Minh bạch Why Panel.
+          theo chuẩn chiêm tinh cổ điển, tập trung vào bản chất hành vi và phát triển cá nhân.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Column: Form & Coordinates */}
+        {/* Step 1: Input Form */}
         <div className="lg:col-span-4 p-5 bg-surface border border-borderDark space-y-5">
           <div className="text-xs font-mono text-accentGold uppercase tracking-wider border-b border-borderDark pb-2 flex items-center gap-2">
             <Compass className="w-4 h-4" />
@@ -123,17 +124,31 @@ export default function AstrologyPage() {
               />
             </div>
 
-            <div className="flex items-center gap-2 pt-1">
-              <input
-                type="checkbox"
-                id="unknownTime"
-                checked={isTimeUnknown}
-                onChange={(e) => setIsTimeUnknown(e.target.checked)}
-                className="rounded-sm border-borderDark text-accentGold focus:ring-accentGold"
-              />
-              <label htmlFor="unknownTime" className="text-xs font-mono text-stone cursor-pointer select-none">
-                Chưa rõ giờ sinh chính xác (xem tổng quan)
-              </label>
+            <div className="space-y-2 pt-1">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="unknownTime"
+                  checked={isTimeUnknown}
+                  onChange={(e) => setIsTimeUnknown(e.target.checked)}
+                  className="rounded-sm border-borderDark text-accentGold focus:ring-accentGold"
+                />
+                <label htmlFor="unknownTime" className="text-xs font-mono text-stone cursor-pointer select-none">
+                  Chưa rõ giờ sinh chính xác (xem tổng quan)
+                </label>
+              </div>
+
+              {isTimeUnknown && (
+                <div className="p-3 bg-background border border-accentGold/40 text-stone text-[11px] space-y-1">
+                  <div className="font-mono text-accentGold text-[10px] uppercase tracking-wider flex items-center gap-1.5">
+                    <Info className="w-3 h-3" />
+                    <span>Chế độ bảo toàn (Degraded Mode)</span>
+                  </div>
+                  <p className="leading-relaxed">
+                    Hệ thống sẽ tính tọa độ các hành tinh theo ngày sinh. Cung Mọc (Ascendant) và 12 cung địa bàn sẽ được ẩn để bảo đảm tính tất định, tránh phỏng đoán sai lệch.
+                  </p>
+                </div>
+              )}
             </div>
 
             {!isTimeUnknown && (
@@ -242,13 +257,12 @@ export default function AstrologyPage() {
               <span>Chuẩn Xác & Minh Bạch</span>
             </div>
             <p className="text-stone text-[11px] leading-relaxed">
-              Mọi luận giải đều xuất phát từ góc chiếu thiên văn học thực tế. Nếu không có giờ sinh,
-              hệ thống tự động kích hoạt chế độ thoái biến bảo toàn (Degraded Mode) để tránh suy đoán sai lầm.
+              Mọi vị trí thiên thể đều được tính toán theo tọa độ thiên văn thực tế. Không suy diễn mập mờ, không gán ghép định kiến.
             </p>
           </div>
         </div>
 
-        {/* Right Column: Results */}
+        {/* Step 2: Editorial Result View */}
         <div className="lg:col-span-8 space-y-6">
           {!result && !loading && (
             <div className="p-16 border border-borderDark bg-surface text-center space-y-3">
@@ -263,18 +277,18 @@ export default function AstrologyPage() {
           )}
 
           {isDegraded && result && (
-            <div className="p-3.5 bg-surface border border-accentGold text-stone text-xs space-y-1">
+            <div className="p-4 bg-surface border border-accentGold/60 text-stone text-xs space-y-1">
               <div className="flex items-center gap-2 font-mono text-accentGold text-[11px] uppercase tracking-wider">
-                <AlertTriangle className="w-3.5 h-3.5" />
-                Lưu ý: Chưa rõ giờ sinh chính xác (Degraded Mode)
+                <Info className="w-3.5 h-3.5" />
+                <span>Chế độ bảo toàn khi thiếu giờ sinh (Degraded Mode)</span>
               </div>
               <p className="text-stone text-[11px] leading-relaxed">
-                Hệ thống chỉ giải mã vị trí các hành tinh theo ngày sinh. Cung Mọc và các cung nhà được ẩn để đảm bảo tính tất định trung thực.
+                Hệ thống chỉ phân tích vị trí các hành tinh theo ngày sinh. Cung Mọc và các cung nhà được ẩn để đảm bảo tính tất định trung thực.
               </p>
             </div>
           )}
 
-          {/* Pure MysticosResultViewer */}
+          {/* Editorial Result Presentation */}
           {result && <MysticosResultViewer result={result} />}
         </div>
       </div>

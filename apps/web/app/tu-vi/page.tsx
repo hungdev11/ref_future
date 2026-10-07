@@ -6,6 +6,8 @@ import {
   HelpCircle,
   Compass,
   RefreshCw,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import {
   STEM_VN,
@@ -24,6 +26,7 @@ export default function TuViPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<MysticosResult | null>(null);
   const [rawPalaces, setRawPalaces] = useState<Record<string, any> | null>(null);
+  const [showPalaceGrid, setShowPalaceGrid] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleCalculate = async (e: React.FormEvent) => {
@@ -69,12 +72,12 @@ export default function TuViPage() {
         </h1>
         <p className="text-xs sm:text-sm text-stone max-w-2xl leading-relaxed">
           An sao lập lá số theo giờ sinh và lịch thiên văn Việt Nam.
-          Toàn bộ luận giải được kiến trúc qua mô hình Mysticos 5 tầng tất định, đối chiếu thư tịch cổ S0/S1.
+          Toàn bộ luận giải được kiến trúc qua mô hình tất định, đối chiếu thư tịch cổ Hi Di Trần Đoàn.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Column: Form & Guide */}
+        {/* Step 1: Input Form */}
         <div className="lg:col-span-4 p-5 bg-surface border border-borderDark space-y-5">
           <div className="text-xs font-mono text-accentGold uppercase tracking-wider border-b border-borderDark pb-2 flex items-center gap-2">
             <Compass className="w-4 h-4" />
@@ -95,7 +98,7 @@ export default function TuViPage() {
 
             <div>
               <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
-                Giờ Sinh
+                Giờ Sinh <span className="text-stone/60 normal-case">(Chính xác theo giờ đồng hồ)</span>
               </label>
               <input
                 type="time"
@@ -105,6 +108,9 @@ export default function TuViPage() {
                 required
                 className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
               />
+              <span className="text-[10px] text-stone/60 block mt-1 font-mono">
+                Giờ sinh chính xác quyết định việc an Mệnh, Thân và nạp âm Cục ngũ hành.
+              </span>
             </div>
 
             <div>
@@ -167,13 +173,13 @@ export default function TuViPage() {
               <span>Trường Phái Chuẩn Tắc</span>
             </div>
             <p className="text-stone text-[11px] leading-relaxed">
-              Thuật toán an sao tuân theo chuẩn Tử Vi Đẩu Số Toàn Thư (Hi Di Trần Đoàn).
-              Các tinh tú được định vị theo Can Chi năm tháng ngày giờ và Cục ngũ hành.
+              Thuật toán an sao tuân theo chuẩn Tử Vi Đẩu Số Toàn Thư.
+              Các tinh tú được định vị theo Can Chi năm tháng ngày giờ và Cục ngũ hành mà không pha tạp mê tín.
             </p>
           </div>
         </div>
 
-        {/* Right Column: Chart View */}
+        {/* Step 2: Editorial Result View */}
         <div className="lg:col-span-8 space-y-6">
           {!result && !loading && (
             <div className="p-16 border border-borderDark bg-surface text-center space-y-3">
@@ -182,89 +188,109 @@ export default function TuViPage() {
               </div>
               <h3 className="text-sm font-serif text-parchment">Thiên Bàn Đang Chờ Khởi Tạo</h3>
               <p className="text-stone text-xs max-w-sm mx-auto leading-relaxed">
-                Nhập ngày giờ sinh và giới tính bên trái để an sao và khởi tạo bản đồ 12 cung chức Tử Vi.
+                Nhập ngày giờ sinh và giới tính bên trái để an sao và khởi tạo bản phân tích luận giải Tử Vi.
               </p>
             </div>
           )}
 
-          {/* Palace Grid Overview */}
-          {rawPalaces && (
-            <div className="space-y-3">
-              <div className="p-3 bg-surface border border-borderDark flex items-center justify-between text-xs font-mono">
-                <span className="text-stone">
-                  Thiên bàn quan sát: <strong className="text-parchment">12 Cung Chức</strong>
-                </span>
-                <span className="text-[11px] text-accentGold">
-                  Trực quan hóa đồ hình Thập Nhị Cung
-                </span>
-              </div>
+          {/* Clean Editorial Result Front-and-Center */}
+          {result && <MysticosResultViewer result={result} />}
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
-                {Object.keys(rawPalaces).map((pKey) => {
-                  const palace = rawPalaces[pKey];
-                  const isMenh = pKey === 'MENH';
+          {/* Optional Progressive Disclosure: 12 Palace Grid */}
+          {result && rawPalaces && (
+            <div className="border border-borderDark bg-surface p-4 space-y-3">
+              <button
+                type="button"
+                onClick={() => setShowPalaceGrid(!showPalaceGrid)}
+                className="w-full flex items-center justify-between text-xs font-mono text-stone hover:text-parchment transition-colors text-left"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-accentGold">✦</span>
+                  <span className="text-parchment font-medium uppercase tracking-wider">
+                    Đồ Hình Thiên Bàn 12 Cung Chức
+                  </span>
+                  <span className="text-stone text-[11px]">
+                    ({Object.keys(rawPalaces).length} Cung Vị Chi Tiết)
+                  </span>
+                </div>
+                <div className="flex items-center gap-1 text-accentGold text-xs font-mono">
+                  <span>{showPalaceGrid ? 'Thu gọn' : 'Xem ma trận sao'}</span>
+                  {showPalaceGrid ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                </div>
+              </button>
 
-                  return (
-                    <div
-                      key={pKey}
-                      className={`p-3 border flex flex-col justify-between ${
-                        isMenh
-                          ? 'bg-surface border-accentGold'
-                          : palace.isThan
-                          ? 'bg-surface border-stone/60'
-                          : 'bg-surface border-borderDark'
-                      }`}
-                    >
-                      <div className="space-y-1.5">
-                        <div className="flex items-center justify-between border-b border-borderDark pb-1.5">
-                          <span className="font-serif font-bold text-xs text-parchment">
-                            {PALACE_VN[pKey] ?? pKey}
-                          </span>
-                          <div className="flex gap-1 text-[9px] font-mono">
-                            {isMenh && (
-                              <span className="px-1 py-0.2 bg-accentGold text-background font-bold">
-                                MỆNH
+              {showPalaceGrid && (
+                <div className="pt-3 border-t border-borderDark space-y-3 animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between text-[11px] font-mono text-stone">
+                    <span>Trực quan hóa ma trận Thập Nhị Cung</span>
+                    <span className="text-accentGold">Mệnh - Thân - Tam Hợp</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
+                    {Object.keys(rawPalaces).map((pKey) => {
+                      const palace = rawPalaces[pKey];
+                      const isMenh = pKey === 'MENH';
+
+                      return (
+                        <div
+                          key={pKey}
+                          className={`p-3 border flex flex-col justify-between ${
+                            isMenh
+                              ? 'bg-background border-accentGold'
+                              : palace.isThan
+                              ? 'bg-background border-stone/60'
+                              : 'bg-background border-borderDark'
+                          }`}
+                        >
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between border-b border-borderDark pb-1.5">
+                              <span className="font-serif font-bold text-xs text-parchment">
+                                {PALACE_VN[pKey] ?? pKey}
                               </span>
-                            )}
-                            {palace.isThan && (
-                              <span className="px-1 py-0.2 border border-borderLight text-parchment">
-                                THÂN
-                              </span>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="text-[10px] font-mono text-stone">
-                          {BRANCH_VN[palace.branch] || palace.branch} ({STEM_VN[palace.stem] || palace.stem})
-                        </div>
-
-                        {palace.stars && palace.stars.length > 0 && (
-                          <div className="space-y-0.5 text-[10px]">
-                            {palace.stars.slice(0, 3).map((s: any, idx: number) => (
-                              <div key={idx} className="flex justify-between text-stone truncate">
-                                <span className={s.isMain ? 'text-parchment font-medium' : ''}>
-                                  {s.name}
-                                </span>
-                                <span className="text-stone/60 font-mono text-[9px]">{s.brightness || ''}</span>
+                              <div className="flex gap-1 text-[9px] font-mono">
+                                {isMenh && (
+                                  <span className="px-1 py-0.2 bg-accentGold text-background font-bold">
+                                    MỆNH
+                                  </span>
+                                )}
+                                {palace.isThan && (
+                                  <span className="px-1 py-0.2 border border-borderLight text-parchment">
+                                    THÂN
+                                  </span>
+                                )}
                               </div>
-                            ))}
-                            {palace.stars.length > 3 && (
-                              <span className="text-[9px] text-stone/50 block font-mono">
-                                +{palace.stars.length - 3} sao khác
-                              </span>
+                            </div>
+
+                            <div className="text-[10px] font-mono text-stone">
+                              {BRANCH_VN[palace.branch] || palace.branch} ({STEM_VN[palace.stem] || palace.stem})
+                            </div>
+
+                            {palace.stars && palace.stars.length > 0 && (
+                              <div className="space-y-0.5 text-[10px]">
+                                {palace.stars.slice(0, 3).map((s: any, idx: number) => (
+                                  <div key={idx} className="flex justify-between text-stone truncate">
+                                    <span className={s.isMain ? 'text-parchment font-medium' : ''}>
+                                      {s.name}
+                                    </span>
+                                    <span className="text-stone/60 font-mono text-[9px]">{s.brightness || ''}</span>
+                                  </div>
+                                ))}
+                                {palace.stars.length > 3 && (
+                                  <span className="text-[9px] text-stone/50 block font-mono">
+                                    +{palace.stars.length - 3} sao khác
+                                  </span>
+                                )}
+                              </div>
                             )}
                           </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           )}
-
-          {/* Pure MysticosResultViewer */}
-          {result && <MysticosResultViewer result={result} />}
         </div>
       </div>
     </div>
