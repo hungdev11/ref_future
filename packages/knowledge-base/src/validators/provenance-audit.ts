@@ -24,18 +24,14 @@ export function runProvenanceAudit(): ProvenanceAuditReport {
   let missingSourcesCount = 0;
 
   for (const rule of rules) {
-    let ruleHasError = false;
-
     if (!rule.claimIds || rule.claimIds.length === 0) {
       errors.push(`Rule ${rule.ruleId} has no linked claimIds`);
       orphanRulesCount++;
-      ruleHasError = true;
     } else {
       for (const cId of rule.claimIds) {
         if (!claimIds.has(cId)) {
           errors.push(`Rule ${rule.ruleId} references missing claim ${cId}`);
           orphanRulesCount++;
-          ruleHasError = true;
         }
       }
     }
@@ -43,13 +39,11 @@ export function runProvenanceAudit(): ProvenanceAuditReport {
     if (!rule.sourceIds || rule.sourceIds.length === 0) {
       errors.push(`Rule ${rule.ruleId} has no linked sourceIds`);
       missingSourcesCount++;
-      ruleHasError = true;
     } else {
       for (const sId of rule.sourceIds) {
         if (!sourceIds.has(sId)) {
           errors.push(`Rule ${rule.ruleId} references missing source ${sId}`);
           missingSourcesCount++;
-          ruleHasError = true;
         }
       }
     }
