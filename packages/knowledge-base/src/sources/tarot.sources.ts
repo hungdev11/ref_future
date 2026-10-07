@@ -4,7 +4,7 @@ export const TAROT_SOURCES: SourceRecord[] = [
   {
     sourceId: 'SRC_TAROT_WAITE_1911',
     domain: 'tarot',
-    title: 'The Pictorial Key to the Tarot: Being Fragrance of the Greater and Lesser Arcana',
+    title: 'The Pictorial Key to the Tarot: Being Fragments of a Secret Tradition under the Veil of Divination',
     author: 'Arthur Edward Waite',
     publisher: 'William Rider & Son, London',
     edition: 'Original 1911 Edition',
