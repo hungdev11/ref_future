@@ -167,7 +167,7 @@ export class MysticosResultBuilder {
             id: `SEM_${rule.ruleId}_${sIdx}`,
             concept: sem,
             keywords: [sem.replace(/_/g, ' ')],
-            polarity: rule.polarity === 'shadow' ? 'shadow' : 'constructive',
+            polarity: rule.polarity === 'shadow' || rule.polarity === 'tension' ? 'shadow' : 'constructive',
             weight: rule.priority / 100,
           });
         });
@@ -176,7 +176,7 @@ export class MysticosResultBuilder {
           signals.push({
             signalId: `SIG_${sigCode}_${idx}`,
             type: sigCode,
-            polarity: rule.polarity === 'shadow' ? 'challenging' : 'supportive',
+            polarity: rule.polarity === 'shadow' || rule.polarity === 'tension' ? 'challenging' : 'supportive',
             strength: Math.min(1.0, rule.priority / 100),
             ruleIds: [rule.ruleId],
             claimIds: [...rule.claimIds],
@@ -246,14 +246,16 @@ export class MysticosResultBuilder {
     // 4. Patterns
     if (matchedRules.length > 0) {
       matchedRules.forEach((rule, idx) => {
+        const rankDiscount = Math.max(0.4, 1.0 - idx * 0.2);
+        const contextFit = Math.max(0.4, 0.95 - idx * 0.25);
         patterns.push({
           patternId: `PAT_${rule.pattern || idx}`,
           type: rule.pattern || 'CORE_PATTERN',
           headline: rule.notes || `Cấu Trúc ${rule.domain.toUpperCase()}`,
           signalIds: signals.filter((s) => s.ruleIds.includes(rule.ruleId)).map((s) => s.signalId),
           relationshipIds: relationships.map((r) => r.relationshipId),
-          dominance: Math.min(1.0, rule.priority / 100),
-          contextFit: 0.95,
+          dominance: Math.min(1.0, (rule.priority / 100) * rankDiscount),
+          contextFit,
         });
       });
     } else {
@@ -286,7 +288,7 @@ export class MysticosResultBuilder {
     patterns.forEach((pat, idx) => {
       const matchedRule = matchedRules[idx];
       const polarity = matchedRule
-        ? matchedRule.polarity === 'shadow'
+        ? matchedRule.polarity === 'shadow' || matchedRule.polarity === 'tension'
           ? 'challenging'
           : 'supportive'
         : signals.some((s) => s.polarity === 'challenging')

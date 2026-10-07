@@ -12,7 +12,13 @@ export class ScenarioEngine {
     const pat = patterns[0];
     const patId = pat ? pat.patternId : 'PAT_DEFAULT';
 
-    if (focus.category === 'career' || domain === 'tarot') {
+    const isCareer = focus.category === 'career' || (focus.category === 'general' && domain === 'tarot');
+    const isLove = focus.category === 'love' || (focus.category === 'general' && domain === 'compatibility');
+    const isFinance =
+      focus.category === 'finance' ||
+      (focus.category === 'general' && (domain === 'numerology' || domain === 'astrology'));
+
+    if (isCareer) {
       scenarios.push({
         scenarioId: 'SCEN_CAREER_TRANSITION',
         title: 'Khi đứng trước bước ngoặt công việc hoặc dự án mới',
@@ -25,7 +31,7 @@ export class ScenarioEngine {
       });
     }
 
-    if (focus.category === 'love' || domain === 'compatibility') {
+    if (isLove) {
       scenarios.push({
         scenarioId: 'SCEN_RELATIONSHIP_FRICTION',
         title: 'Khi xảy ra tranh luận hoặc bất đồng quan điểm',
@@ -38,7 +44,7 @@ export class ScenarioEngine {
       });
     }
 
-    if (focus.category === 'finance' || domain === 'numerology' || domain === 'astrology') {
+    if (isFinance) {
       scenarios.push({
         scenarioId: 'SCEN_FINANCE_DECISION',
         title: 'Khi đối diện quyết định cam kết nguồn lực lâu dài',

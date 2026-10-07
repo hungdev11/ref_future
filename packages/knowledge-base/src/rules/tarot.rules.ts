@@ -36,6 +36,7 @@ export const TAROT_RULES: InterpretationRule[] = [
     evidenceLevel: 'A',
     confidence: 'verified',
     pattern: 'EVALUATION_FRICTION',
+    polarity: 'shadow',
     notes: '7 Pentacles tại vị trí Thử Thách đòi hỏi kiểm định lại tính hiệu quả của công sức đã đầu tư.',
   },
   {
@@ -54,6 +55,7 @@ export const TAROT_RULES: InterpretationRule[] = [
     evidenceLevel: 'A',
     confidence: 'verified',
     pattern: 'RESISTING_INEVITABLE_PURGE',
+    polarity: 'shadow',
     notes: 'The Tower đảo ngược biểu thị sự níu kéo cấu trúc lỗi thời gây tích tụ căng thẳng ngầm.',
   },
 ];
