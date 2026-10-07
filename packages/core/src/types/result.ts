@@ -123,3 +123,46 @@ export interface MysticosResult {
     calculatedAt: string;
   };
 }
+
+export type ResultDepth = 'DEPTH_1' | 'DEPTH_2' | 'DEPTH_3' | 'DEPTH_4' | 'DEPTH_5';
+
+export interface MainStory {
+  headline: string;
+  narrative: string;
+  centralTension?: string;
+  focalEntity?: string;
+}
+
+export interface Scenario {
+  scenarioId: string;
+  title: string;
+  trigger: string;
+  patternIds: string[];
+  likelyDynamic: string;
+  tension?: string;
+  constructiveResponse: string;
+  evidenceIds: string[];
+}
+
+export interface DeepInterpretation extends Interpretation {
+  depth: ResultDepth;
+  explanation: string;
+  constructiveExpression?: string;
+  tension?: string;
+  contextFitScore: number;
+}
+
+export interface NextSuggestedQuestion {
+  question: string;
+  context: string;
+  targetDomain: string;
+}
+
+export interface DeepMysticosResult extends MysticosResult {
+  mainStory: MainStory;
+  primaryPatterns: Pattern[];
+  secondaryPatterns: Pattern[];
+  scenarios: Scenario[];
+  deepInterpretations: DeepInterpretation[];
+  nextQuestions?: NextSuggestedQuestion[];
+}
