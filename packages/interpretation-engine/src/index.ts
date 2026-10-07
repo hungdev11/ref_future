@@ -7,3 +7,4 @@ export * from './synthesis-engine.js';
 export * from './narrative-planner.js';
 export * from './quality-control.js';
 export * from './compatibility-engine.js';
+export * from './result-builder.js';
