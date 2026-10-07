@@ -46,42 +46,29 @@ describe('Frontend Pure Viewer Components', () => {
     expect(html).toContain('The Pictorial Key to the Tarot');
   });
 
-  it('renders MysticosResultViewer across 5 editorial layout tiers', () => {
+  it('renders MysticosResultViewer across focused editorial sections', () => {
     const html = renderToStaticMarkup(<MysticosResultViewer result={tarotResult} />);
 
-    // Metadata & Header
-    expect(html).toContain('Báo Cáo Khảo Luận Tất Định Mysticos');
-    expect(html).toContain('DETERMINISTIC 100%');
+    // Editorial container
+    expect(html).toContain('max-w-3xl');
 
-    // Tier 1: RAW DATA
-    expect(html).toContain('TẦNG 1');
-    expect(html).toContain('Sự Kiện Quan Sát &amp; Tọa Độ Gốc (Observable Facts)');
-    expect(html).toContain('SPREAD_1_DAILY');
+    // Hero Section
+    expect(html).toContain('04');
+    expect(html).toContain('Khảo Cứu Tarot Rider-Waite');
+    expect(html).toContain('Rider-Waite-Smith');
 
-    // Tier 2: CALCULATED RESULT
-    expect(html).toContain('TẦNG 2');
-    expect(html).toContain('Luận Giải Cốt Lõi Tường Minh (Core Calculated Insights)');
+    // Why This Result disclosure trigger
+    expect(html).toContain('Vì sao tôi nhận được kết quả này?');
 
-    // Tier 3: PATTERNS & RELATIONSHIPS
-    expect(html).toContain('TẦNG 3');
-    expect(html).toContain('Khuôn Mẫu Chi Phối &amp; Tương Tác Tín Hiệu (Patterns &amp; Dynamics)');
-
-    // Tier 4: PRACTICAL GUIDANCE
-    expect(html).toContain('TẦNG 4');
-    expect(html).toContain('Định Hướng Ứng Dụng Đời Thường (Actionable Guidance)');
-    expect(html).toContain('Cần Tiếp Tục Duy Trì &amp; Phát Huy:');
-    expect(html).toContain('Cần Điều Chỉnh Hoặc Kiềm Chế:');
-
-    // Tier 5: WHY PANEL
-    expect(html).toContain('TẦNG 5');
-    expect(html).toContain('Vì Sao Hệ Thống Đưa Ra Kết Quả Này?');
+    // Technical Details disclosure trigger
+    expect(html).toContain('Chi Tiết Kỹ Thuật &amp; Tọa Độ Gốc (3 Dữ Kiện)');
   });
 
   it('renders MysticosResultViewer for astrology domain without errors', () => {
     const html = renderToStaticMarkup(<MysticosResultViewer result={astroResult} />);
+    expect(html).toContain('01');
     expect(html).toContain('Bản Đồ Sao Chiêm Tinh Học');
     expect(html).toContain('Modern Humanistic Astrology');
-    expect(html).toContain('planets.sun.sign');
-    expect(html).toContain('Aries');
+    expect(html).toContain('Chi Tiết Kỹ Thuật &amp; Tọa Độ Gốc (2 Dữ Kiện)');
   });
 });
