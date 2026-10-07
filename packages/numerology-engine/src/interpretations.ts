@@ -1,8 +1,10 @@
 /**
  * Numerology Interpretations & Extended Calculations Library
  * Based on authentic Pythagorean system (Dr. David Phillips / Hans Decoz).
- * 100% Free, Public, Unlocked.
+ * Deterministic formulaic indicators & semantic profile projections.
  */
+
+import { NUMEROLOGY_NUMBER_PROFILES } from './semantic-profiles.js';
 
 // 1. LUẬN GIẢI 6 KHÍA CẠNH NĂM CÁ NHÂN (PERSONAL YEAR ASPECTS)
 export interface PersonalYearAspects {
@@ -22,110 +24,110 @@ export const PERSONAL_YEAR_ASPECTS: Record<number, PersonalYearAspects> = {
   1: {
     yearNumber: 1,
     theme: 'Khởi Đầu Mới, Gieo Mầm Ý Tưởng & Bứt Phá Cá Nhân',
-    love: 'Năm số 1 mang năng lượng độc lập. Bạn có xu hướng tập trung vào bản thân nhiều hơn. Nếu độc thân, bạn toát ra sức hút tự tin và có thể bắt đầu một mối quan hệ mới đầy bất ngờ. Nếu đã có đôi, hãy tránh tính áp đặt để giữ sự hòa hợp.',
-    career: 'Thời điểm vàng để khởi nghiệp, chuyển đổi công việc hoặc nhận nhiệm vụ lãnh đạo mới. Mọi quyết định táo bạo trong năm này sẽ đặt nền móng cho cả chu kỳ 9 năm tiếp theo.',
-    finance: 'Cần đầu tư cho bản thân, học hỏi kỹ năng mới hoặc mua sắm công cụ làm việc. Thu nhập có tiềm năng mở rộng nhưng cần kế hoạch chi tiêu rõ ràng cho các dự án mới.',
-    social: 'Mở rộng mạng lưới quan hệ với những đối tác có tư duy tiến bộ. Bạn xuất hiện với phong thái người dẫn đường và thu hút sự chú ý của tập thể.',
-    learning: 'Tiếp thu các kỹ năng lãnh đạo, tư duy chiến lược và tinh thần tự lập.',
-    family: 'Gia đình cần bạn làm chỗ dựa vững chắc; chủ động sẻ chia để người thân không cảm thấy bạn quá bận rộn với công việc riêng.',
-    nextYearPreview: 'Năm số 2 tới sẽ đòi hỏi sự lắng đọng, kiên nhẫn chăm sóc hạt mầm và hợp tác hòa giải.',
-    afterNextYearPreview: 'Năm số 3 sau đó sẽ là năm bùng nổ sáng tạo và mở rộng giao tiếp xã hội.',
+    love: 'Độc lập, chủ động; duy trì sự bình đẳng và tôn trọng đối phương.',
+    career: 'Thời điểm vàng để khởi nghiệp, chuyển đổi hoặc nhận vai trò dẫn dắt.',
+    finance: 'Đầu tư phát triển kỹ năng và công cụ; lập kế hoạch chi tiêu rõ ràng.',
+    social: 'Mở rộng mạng lưới đối tác có tư duy đổi mới và đồng điệu chí hướng.',
+    learning: 'Tiếp thu kỹ năng lãnh đạo, tư duy chiến lược và tinh thần tự lập.',
+    family: 'Làm điểm tựa vững chắc; chủ động sẻ chia để giữ hòa khí gia đình.',
+    nextYearPreview: 'Năm số 2 tới: Lắng đọng, kiên nhẫn hợp tác và hòa giải.',
+    afterNextYearPreview: 'Năm số 3 sau đó: Bùng nổ sáng tạo và mở rộng giao tế.',
   },
   2: {
     yearNumber: 2,
     theme: 'Hợp Tác, Hòa Giải, Lắng Đọng & Nuôi Dưỡng Trực Giác',
-    love: 'Tình duyên thăng hoa rực rỡ. Năng lượng số 2 giúp bạn dịu dàng, biết lắng nghe và thấu cảm sâu sắc. Đây là năm tuyệt vời để hàn gắn hiểu lầm hoặc tiến tới hôn nhân bền vững.',
-    career: 'Không nên vội vã tấn công hay tranh chấp. Thành công trong năm này đến từ việc bắt tay hợp tác, hỗ trợ đồng đội và đóng vai trò người kết nối đắc lực phía sau hậu trường.',
-    finance: 'Tài chính ổn định, phù hợp tích lũy an toàn và quản lý chi tiêu cẩn trọng. Tránh đầu tư mạo hiểm hoặc cho vay mượn thiếu giấy tờ minh bạch.',
-    social: 'Tập trung vào những mối quan hệ thân tình có chiều sâu thay vì xã giao dàn trải. Bạn là người hòa giải được mọi người yêu mến.',
-    learning: 'Rèn luyện trí tuệ cảm xúc (EQ), kỹ năng ngoại giao, thương lượng và trực giác tâm lý.',
-    family: 'Gia đình ấm cúng, thuận hòa. Bạn dành nhiều thời gian chăm sóc tổ ấm và người thân yêu.',
-    nextYearPreview: 'Năm số 3 tới sẽ giải phóng năng lượng sáng tạo, đưa bạn ra ánh đèn sân khấu.',
-    afterNextYearPreview: 'Năm số 4 sau đó sẽ đòi hỏi sự kỷ luật, tái cơ cấu nền tảng thực tế.',
+    love: 'Dịu dàng, thấu cảm, củng cố gắn kết và tháo gỡ khúc mắc tình cảm.',
+    career: 'Ưu tiên cộng tác, hỗ trợ đồng đội và kết nối giá trị sau hậu trường.',
+    finance: 'Tích lũy an toàn, quản lý ngân sách thận trọng; tránh mạo hiểm.',
+    social: 'Tập trung mối quan hệ thân tình có chiều sâu thay vì xã giao dàn trải.',
+    learning: 'Rèn luyện trí tuệ cảm xúc (EQ), kỹ năng ngoại giao và thương lượng.',
+    family: 'Vun đắp tổ ấm thuận hòa, dành thời gian chăm sóc người thân.',
+    nextYearPreview: 'Năm số 3 tới: Giải phóng năng lượng sáng tạo, bước ra sân khấu.',
+    afterNextYearPreview: 'Năm số 4 sau đó: Tái cơ cấu nền tảng và kỷ luật thực tế.',
   },
   3: {
     yearNumber: 3,
     theme: 'Bùng Nổ Sáng Tạo, Lan Tỏa Năng Lượng & Mở Rộng Cơ Hội',
-    love: 'Rực rỡ nhưng dễ cảm hứng nhất thời. Bạn trở nên quyến rũ, hoạt ngôn và thu hút nhiều đối tượng. Cần tỉnh táo để không bị cảm xúc bốc đồng chi phối dẫn đến những mối tình chóng vánh.',
-    career: 'Cơ hội tuyệt vời cho các công việc liên quan đến truyền thông, marketing, nghệ thuật, viết lách và thuyết trình. Các ý tưởng độc đáo của bạn được đón nhận nồng nhiệt.',
-    finance: 'Dòng tiền lưu chuyển tích cực, có nhiều nguồn thu phụ từ các dự án sáng tạo. Cần kiểm soát chi tiêu cho các thú vui giải trí, mua sắm nhất thời.',
-    social: 'Vòng tròn bạn bè mở rộng nhanh chóng. Bạn tham gia nhiều sự kiện, tiệc tùng và là tâm điểm khuấy động không khí vui vẻ.',
-    learning: 'Tham gia các khóa học nâng cao kỹ năng diễn đạt, ngoại ngữ, nghệ thuật hoặc sáng tạo nội dung.',
-    family: 'Mang tiếng cười và niềm vui về cho gia đình; tổ chức các chuyến du lịch ngắn ngày cùng người thân.',
-    nextYearPreview: 'Năm số 4 tới sẽ đòi hỏi bạn siết chặt kỷ luật, củng cố nền tảng thực tế sau một năm thăng hoa.',
-    afterNextYearPreview: 'Năm số 5 sau đó sẽ đem lại những làn gió tự do và bước ngoặt thay đổi lớn.',
+    love: 'Sôi nổi, thu hút; cần tỉnh táo tránh cảm xúc bốc đồng nhất thời.',
+    career: 'Phát huy năng lực truyền thông, nghệ thuật, viết lách và quảng bá.',
+    finance: 'Dòng tiền lưu chuyển tích cực; cần kiểm soát chi tiêu giải trí.',
+    social: 'Vòng tròn quan hệ mở rộng; tích cực tham gia kết nối cộng đồng.',
+    learning: 'Nâng cao kỹ năng diễn đạt, ngoại ngữ, nghệ thuật và sáng tạo.',
+    family: 'Mang niềm vui và năng lượng tích cực về cho không gian gia đình.',
+    nextYearPreview: 'Năm số 4 tới: Siết chặt kỷ luật, củng cố nền tảng thực tế.',
+    afterNextYearPreview: 'Năm số 5 sau đó: Làn gió tự do và bước ngoặt đổi mới.',
   },
   4: {
     yearNumber: 4,
     theme: 'Kỷ Luật Thép, Củng Cố Nền Móng & Quản Trị Thực Tế',
-    love: 'Tình cảm hướng đến sự cam kết lâu dài và ổn định. Bạn tìm kiếm cảm giác an toàn, chung thủy thay vì những lời hứa hẹn hoa mỹ. Thời điểm thích hợp để bàn chuyện hôn nhân, xây dựng tổ ấm.',
-    career: 'Đòi hỏi sự chăm chỉ, tỉ mỉ và tập trung cao độ. Đây là năm cày xới, xây dựng quy trình, củng cố chuyên môn và hoàn thiện các hệ thống làm việc kiên cố.',
-    finance: 'Quản lý tài chính bài bản, thắt chặt chi tiêu lãng phí, tích lũy tiền bạc để mua sắm bất động sản hoặc đầu tư dài hạn an toàn.',
-    social: 'Ít tụ tập xã giao hơn, chọn lọc những mối quan hệ đáng tin cậy và có chung chí hướng làm ăn bền vững.',
-    learning: 'Học hỏi về quản trị tài chính, pháp lý, kỹ thuật chuyên môn sâu và rèn luyện thể lực.',
-    family: 'Sửa sang nhà cửa, chăm sóc sức khỏe cho người lớn tuổi trong nhà và củng cố nền tảng gia đình.',
-    nextYearPreview: 'Năm số 5 tới sẽ giải phóng bạn khỏi sự ngột ngạt với những chuyến đi xa và cơ hội đổi mới.',
-    afterNextYearPreview: 'Năm số 6 sau đó sẽ quay về chăm sóc tình thương gia đình và trách nhiệm xã hội.',
+    love: 'Chân thành, thực tế; thể hiện tình cảm qua trách nhiệm cụ thể.',
+    career: 'Kiên trì hoàn thiện quy trình, củng cố vị trí và chuyên môn bền vững.',
+    finance: 'Tiết kiệm, tái đầu tư an toàn; tuyệt đối tránh đầu cơ may rủi.',
+    social: 'Duy trì quan hệ đối tác tin cậy, làm việc chuẩn mực và minh bạch.',
+    learning: 'Học hỏi quản trị, chuyên môn sâu, kỹ năng tổ chức và vận hành.',
+    family: 'Chăm sóc sức khỏe gia đình, sửa sang nhà cửa và xây dựng nền tảng vững.',
+    nextYearPreview: 'Năm số 5 tới: Đổi mới, thích ứng với biến chuyển linh hoạt.',
+    afterNextYearPreview: 'Năm số 6 sau đó: Trọng tâm yêu thương, tổ ấm và phụng sự.',
   },
   5: {
     yearNumber: 5,
-    theme: 'Bứt Phá Tự Do, Du Lịch Khám Phá & Đổi Mới Vận Trình',
-    love: 'Đầy bất ngờ và xáo động cảm xúc. Bạn có cơ hội gặp gỡ những người thú vị trong các chuyến đi xa. Nếu đã kết hôn, hãy cùng bạn đời thử những trải nghiệm mới để hâm nóng tình cảm.',
-    career: 'Nhiều thay đổi về vị trí công tác, dự án mới hoặc chuyển hướng lĩnh vực. Khả năng thích ứng của bạn đạt đỉnh, giúp bạn nhanh chóng nắm bắt các xu hướng thời đại.',
-    finance: 'Dòng tiền biến động lớn; có cơ hội kiếm tiền nhanh nhưng cũng dễ tiêu xài cho các chuyến đi. Cần giữ một khoản dự phòng khẩn cấp.',
-    social: 'Kết nối với nhiều tầng lớp xã hội mới lạ, tham gia các cộng đồng tiến bộ, mở rộng thế giới quan.',
-    learning: 'Học hỏi qua trải nghiệm thực tế, du lịch văn hóa, kỹ năng thích ứng và công nghệ mới.',
-    family: 'Dễ xảy ra khoảng cách nếu bạn quá mải mê bên ngoài; hãy chủ động chia sẻ những điều mới mẻ cùng người thân.',
-    nextYearPreview: 'Năm số 6 tới sẽ đưa trọng tâm quay về với mái ấm gia đình, con cái và tình yêu thương.',
-    afterNextYearPreview: 'Năm số 7 sau đó sẽ là năm của sự chiêm nghiệm, học vấn chuyên sâu và tĩnh lặng.',
+    theme: 'Đổi Mới, Tự Do, Thích Ứng & Bước Ngoặt Bứt Phá',
+    love: 'Nhiều trải nghiệm mới; cần giữ cam kết và tránh cảm xúc thất thường.',
+    career: 'Linh hoạt nắm bắt cơ hội chuyển mình, mở rộng thị trường hoặc dự án mới.',
+    finance: 'Thu nhập đa dạng; cẩn trọng chi tiêu bốc đồng trong các chuyến đi.',
+    social: 'Giao lưu đối tác mới đa dạng, tiếp cận các xu hướng thị trường.',
+    learning: 'Khám phá lĩnh vực mới, trau dồi ngoại ngữ và tư duy đổi mới.',
+    family: 'Dành sự quan tâm chân thành giữa các lịch trình dịch chuyển bận rộn.',
+    nextYearPreview: 'Năm số 6 tới: Quay về tổ ấm, gánh vác trách nhiệm gia đình.',
+    afterNextYearPreview: 'Năm số 7 sau đó: Chiêm nghiệm, tĩnh tâm và nâng tầm nội lực.',
   },
   6: {
     yearNumber: 6,
     theme: 'Trách Nhiệm Gia Đình, Nuôi Dưỡng Tình Thương & Cống Hiến',
-    love: 'Mùa thu hoạch của tình yêu. Giai đoạn thuận lợi nhất để đính hôn, kết hôn, sinh con hoặc hàn gắn mọi rạn nứt tình cảm. Bạn cảm nhận sâu sắc ý nghĩa của sự chở che và gắn bó.',
-    career: 'Phát triển mạnh trong các công việc liên quan đến giáo dục, chăm sóc sức khỏe, tư vấn tâm lý, thiết kế và cộng đồng. Được cấp trên và đồng nghiệp tin cậy nhờ sự tận tụy.',
-    finance: 'Tài chính ổn định, nguồn tiền chủ yếu phục vụ việc mua sắm tiện nghi gia đình, chăm sóc người thân hoặc đầu tư cho con cái học hành.',
-    social: 'Đóng vai trò người anh, người chị chia sẻ và nâng đỡ bạn bè; các mối quan hệ được xây dựng trên sự chân thành.',
-    learning: 'Học về tâm lý học gia đình, nghệ thuật nuôi dạy con, thẩm mỹ và chăm sóc sức khỏe toàn diện.',
-    family: 'Trọng tâm số một của năm. Tổ chức các buổi sum họp gia đình, trang hoàng nhà cửa ấm cúng.',
-    nextYearPreview: 'Năm số 7 tới sẽ đưa bạn vào giai đoạn chiêm nghiệm sâu sắc, nâng cao chuyên môn và tĩnh tâm.',
-    afterNextYearPreview: 'Năm số 8 sau đó sẽ là năm đại thắng về tài chính, quyền lực và vị thế điều hành.',
+    love: 'Gắn kết bền chặt, sẵn sàng cam kết lâu dài và chăm lo cho tổ ấm.',
+    career: 'Gánh vác vai trò quản lý, dẫn dắt đội ngũ bằng sự tận tâm và uy tín.',
+    finance: 'Chi tiêu cho gia đình, nhà ở; quản lý tài chính an toàn, ổn định.',
+    social: 'Giúp đỡ cộng đồng, xây dựng quan hệ dựa trên sự chân thành và tương trợ.',
+    learning: 'Phát triển kỹ năng quản lý nhân sự, tư vấn, chăm sóc và thẩm mỹ.',
+    family: 'Trọng tâm trọn vẹn dành cho tổ ấm, con cái và người thân.',
+    nextYearPreview: 'Năm số 7 tới: Dành không gian tĩnh lặng nâng cao trí tuệ.',
+    afterNextYearPreview: 'Năm số 8 sau đó: Gặt hái thành quả uy tín và tài chính.',
   },
   7: {
     yearNumber: 7,
     theme: 'Chiêm Nghiệm Nội Tâm, Nâng Cao Trí Tuệ & Tĩnh Lặng Chữa Lành',
-    love: 'Cần không gian riêng tư cho bản thân. Tránh gây áp lực lên đối phương; đây là lúc cả hai học cách thấu hiểu chiều sâu tâm hồn của nhau thay vì đòi hỏi hình thức bề ngoài.',
-    career: 'Không nên mở rộng quy mô ồ ạt hay đầu tư liều lĩnh. Tập trung nghiên cứu, cải tiến quy trình, nâng cao bằng cấp và rèn luyện kỹ năng chuyên môn cốt lõi.',
-    finance: 'Bảo toàn vốn là ưu tiên hàng đầu. Tránh các dự án đầu cơ rủi ro; học cách chi tiêu tối giản để giải phóng tâm trí.',
-    social: 'Thu hẹp các cuộc gặp gỡ vô bổ; chỉ giữ lại những người bạn tri kỷ có thể đàm đạo về nhân sinh và tri thức.',
-    learning: 'Thời điểm tốt nhất trong chu kỳ 9 năm để đọc sách, thiền định, nghiên cứu chuyên sâu hoặc học lên cao.',
-    family: 'Lắng nghe và thấu hiểu người thân trong tĩnh lặng; giữ hòa khí bằng sự bao dung và điềm đạm.',
-    nextYearPreview: 'Năm số 8 tới sẽ là năm bùng nổ thành tựu vật chất, thu hoạch quả ngọt và độc lập tài chính.',
-    afterNextYearPreview: 'Năm số 9 sau đó sẽ khép lại chu kỳ để dọn dẹp, buông bỏ và chuẩn bị hành trình mới.',
+    love: 'Cần không gian riêng tư; đối thoại chiều sâu về giá trị tinh thần.',
+    career: 'Nghiên cứu chuyên sâu, hoàn thiện năng lực thay vì mở rộng ồ ạt.',
+    finance: 'Quản lý an toàn, tránh đầu tư mạo hiểm; đầu tư cho học vấn.',
+    social: 'Thu hẹp giao tế hình thức, giữ kết nối với tri kỷ và bậc tiền bối.',
+    learning: 'Nghiên cứu triết học, chuyên môn học thuật, thiền định và nội tâm.',
+    family: 'Lắng nghe, thấu hiểu và chia sẻ sự bình an tinh thần với người thân.',
+    nextYearPreview: 'Năm số 8 tới: Bước ra gặt hái thành quả vật chất và vị thế.',
+    afterNextYearPreview: 'Năm số 9 sau đó: Tổng kết, thanh lọc và bao dung.',
   },
   8: {
     yearNumber: 8,
     theme: 'Đỉnh Cao Tài Chính, Quyền Lực Điều Hành & Độc Lập Kinh Tế',
-    love: 'Cần cân bằng giữa tham vọng công việc và sự dịu dàng với người yêu. Dùng sự thành đạt để đem lại cuộc sống tốt đẹp cho người bạn đời nhưng đừng mang tư duy kiểm soát về nhà.',
-    career: 'Năm gặt hái thành quả lớn nhất chu kỳ. Thăng quan tiến chức, mở rộng doanh nghiệp, ký kết các hợp đồng thương mại lớn và khẳng định vị thế uy quyền trong ngành.',
-    finance: 'Tài chính thăng hoa, cơ hội gia tăng tài sản đáng kể từ công sức tích lũy nhiều năm. Đầu tư thông minh và minh bạch sẽ mang lại nguồn lợi bền vững.',
-    social: 'Gặp gỡ các nhà lãnh đạo, chuyên gia cấp cao và đối tác tầm cỡ. Tầm ảnh hưởng xã hội của bạn được nâng tầm.',
-    learning: 'Rèn luyện năng lực quản trị vĩ mô, chiến lược tài chính, nghệ thuật lãnh đạo và đàm phán cấp cao.',
-    family: 'Cung cấp nền tảng vật chất đủ đầy cho gia đình; cùng người thân tận hưởng những chuyến nghỉ dưỡng xứng đáng.',
-    nextYearPreview: 'Năm số 9 tới sẽ khép lại chu kỳ 9 năm, là lúc tổng kết, buông bỏ cái cũ và tích đức phụng sự.',
-    afterNextYearPreview: 'Năm số 1 sau đó sẽ mở ra một chu kỳ 9 năm hoàn toàn mới ở nấc thang cao hơn.',
+    love: 'Chủ động, rõ ràng; tránh để công việc và áp lực tài chính lấn át tình cảm.',
+    career: 'Hiện thực hóa các mục tiêu lớn, khẳng định vị thế và uy tín lãnh đạo.',
+    finance: 'Dòng tiền cực thịnh; quản trị rủi ro chặt chẽ và giữ gìn đạo đức.',
+    social: 'Mở rộng mạng lưới lãnh đạo, doanh nhân và đối tác tầm cỡ.',
+    learning: 'Nâng tầm tư duy tài chính, quản trị doanh nghiệp và chiến lược.',
+    family: 'Đảm bảo đời sống vật chất sung túc; dành thời gian chất lượng cho người thân.',
+    nextYearPreview: 'Năm số 9 tới: Khép lại chu kỳ, thanh lọc và tri ân.',
+    afterNextYearPreview: 'Năm số 1 sau đó: Khởi đầu chu kỳ 9 năm hoàn toàn mới.',
   },
   9: {
     yearNumber: 9,
     theme: 'Tổng Kết Chu Kỳ, Buông Bỏ Điều Cũ & Phụng Sự Nhân Đạo',
-    love: 'Thanh lọc những mối quan hệ độc hại đã làm bạn tổn thương. Những tình cảm chân thành sẽ được củng cố bền chặt hơn; học cách tha thứ để trái tim được thanh thản.',
-    career: 'Hoàn thành nốt các dự án dở dang, nghiệm thu công việc và đóng gói thành quả. Chưa nên khởi công dự án mới quy mô lớn mà hãy chuẩn bị tinh thần và nguồn lực.',
-    finance: 'Trích một phần tài chính làm việc thiện nguyện, giúp đỡ người có hoàn cảnh khó khăn để tích phúc đức cho chu kỳ mới.',
-    social: 'Bao dung với mọi người, lan tỏa năng lượng tích cực và tham gia các hoạt động cộng đồng nhân văn.',
-    learning: 'Tổng kết bài học của 9 năm qua, học về sự buông bỏ, lòng trắc ẩn và chuẩn bị tầm nhìn mới.',
-    family: 'Hóa giải mọi bất hòa xưa cũ, tha thứ cho người thân và cùng nhau đón nhận vận hội tươi sáng phía trước.',
-    nextYearPreview: 'Năm số 1 tới sẽ bắt đầu một vòng xoáy tiến hóa mới với những cơ hội khởi sắc vượt bậc.',
-    afterNextYearPreview: 'Năm số 2 sau đó sẽ là năm của sự hợp tác và nuôi dưỡng những mối liên kết bền chặt.',
+    love: 'Bao dung, thứ tha; buông bỏ tổn thương cũ để đón nhận khởi đầu mới.',
+    career: 'Hoàn tất các dự án tồn đọng, chuyển giao nhiệm vụ và thanh lọc mục tiêu.',
+    finance: 'Đóng lại các khoản nợ cũ, cân đối ngân sách và trích quỹ thiện nguyện.',
+    social: 'Tri ân người đồng hành, chia sẻ giá trị nhân văn tới cộng đồng.',
+    learning: 'Đúc kết bài học sau 9 năm, rèn luyện tâm thái bao dung và buông bỏ.',
+    family: 'Hàn gắn các khúc mắc gia đình, tổ chức sum họp ấm cúng.',
+    nextYearPreview: 'Năm số 1 tới: Gieo mầm hạt giống mới cho chu kỳ 9 năm tiếp theo.',
+    afterNextYearPreview: 'Năm số 2 sau đó: Nuôi dưỡng hạt mầm và hợp tác kiên nhẫn.',
   },
 };
 
@@ -1055,164 +1057,23 @@ export const LIFE_PATH_INTERPRETATIONS: Record<
     strengths: string;
     challenges: string;
   }
-> = {
-  1: {
-    title: 'Người Tiên Phong Độc Lập',
-    meaning:
-      'Số 1 là con số của sự khởi xướng, tinh thần tiên phong và năng lực tự lập mạnh mẽ. Bạn sinh ra để tự mở lối và làm chủ vận mệnh của mình.',
-    layman:
-      'Bạn có cá tính rất tự lập, quyết đoán và ghét sự ỷ lại. Bạn thích tự mình đưa ra quyết định và có tố chất đứng đầu trong mọi việc.',
-    mechanism:
-      'Thuộc Trục Thể Chất (1-4-7) Pythagoras. Năng lượng biểu thị bản ngã cá nhân độc lập và sức mạnh hành động trực tiếp.',
-    advice:
-      'Học cách lắng nghe và phối hợp với tập thể; giảm bớt tính hiếu thắng để trở thành một nhà lãnh đạo có sức thuyết phục và thu phục nhân tâm.',
-    strengths: 'Ý chí kiên cường, dám chịu trách nhiệm, tư duy đột phá, quyết tâm cao.',
-    challenges: 'Dễ độc đoán, khó chấp nhận ý kiến trái chiều hoặc tự cô lập mình khi gặp áp lực.',
-  },
-  2: {
-    title: 'Người Sứ Giả Hòa Bình & Trực Giác',
-    meaning:
-      'Số 2 đại diện cho sự hòa giải, độ nhạy cảm tinh tế, trực giác sâu sắc và khát khao gắn kết hòa thuận giữa con người với con người.',
-    layman:
-      'Bạn giàu lòng trắc ẩn, biết lắng nghe, khéo léo trong ứng xử và rất quan tâm đến cảm xúc của đối phương. Bạn tạo cảm giác an tâm cho mọi người.',
-    mechanism:
-      'Nằm trên Trục Tâm Hồn (2-5-8) Pythagoras. Năng lượng tiếp nhận, thấu cảm và nhạy bén với những dòng chảy tâm lý vi tế.',
-    advice:
-      'Tự tin khẳng định tiếng nói của bản thân; học cách từ chối những đòi hỏi vô lý để tránh bị người khác lợi dụng lòng tốt.',
-    strengths: 'Trực giác nhạy bén, khả năng lắng nghe tuyệt vời, tinh tế, hòa nhã.',
-    challenges: 'Dễ xúc động, hay phụ thuộc cảm xúc vào người khác, sợ đối đầu và thiếu quyết đoán.',
-  },
-  3: {
-    title: 'Người Truyền Cảm Hứng & Trí Tuệ',
-    meaning:
-      'Số 3 là con số của tư duy sắc sảo, năng lượng hài hước, tài năng ngôn ngữ và khả năng truyền cảm hứng sáng tạo tuyệt vời.',
-    layman:
-      'Bạn thông minh, hoạt ngôn, vui vẻ và có khả năng khuấy động không khí. Bạn tư duy rất nhanh và luôn có nhiều ý tưởng sáng tạo thú vị.',
-    mechanism:
-      'Thuộc Trục Thần Trí (3-6-9) Pythagoras. Đại diện cho bán cầu não trái năng động, tư duy phản biện và năng khiếu biểu đạt ngôn từ.',
-    advice:
-      'Duy trì sự tập trung và tính kỷ luật; kiên trì theo đuổi mục tiêu đến cùng thay vì dễ chán nản khi công việc bước vào giai đoạn lặp lại.',
-    strengths: 'Hoạt ngôn, sáng tạo không giới hạn, lạc quan, truyền cảm hứng mạnh mẽ.',
-    challenges: 'Dễ lan man thiếu kỷ luật, cảm xúc thất thường, hay bỏ dở giữa chừng.',
-  },
-  4: {
-    title: 'Người Kiến Tạo Nền Tảng Kỷ Luật',
-    meaning:
-      'Số 4 là con số của sự thực tế, kỷ luật, quy chuẩn và khả năng xây dựng nền móng bền vững cho công việc và gia đình.',
-    layman:
-      'Bạn sống rất thực tế, cẩn thận, có trách nhiệm và luôn làm việc theo kế hoạch rõ ràng. Bạn ghét sự mơ hồ và thiếu chắc chắn.',
-    mechanism:
-      'Thuộc Trục Thể Chất (1-4-7) Pythagoras. Biểu thị tính ổn định của đất, logic thực nghiệm và trật tự có tổ chức.',
-    advice:
-      'Học cách thả lỏng và linh hoạt trước những thay đổi bất ngờ; mở lòng đón nhận các góc nhìn mới mẻ ngoài khuôn khổ quen thuộc.',
-    strengths: 'Tổ chức tỉ mỉ, đáng tin cậy tuyệt đối, kiên trì, trung thành.',
-    challenges: 'Bảo thủ, cứng nhắc, khó thích nghi với đổi mới, dễ tạo áp lực cho người xung quanh.',
-  },
-  5: {
-    title: 'Người Khám Phá Tự Do & Đổi Mới',
-    meaning:
-      'Số 5 tượng trưng cho tinh thần phiêu lưu, khát vọng tự do, tính linh hoạt và khả năng thích ứng tuyệt vời với mọi biến đổi.',
-    layman:
-      'Bạn yêu thích tự do, ghét sự gò bó đơn điệu và luôn tò mò khám phá những chân trời mới. Bạn thích trải nghiệm cuộc sống đa sắc màu.',
-    mechanism:
-      'Tọa lạc tại trung tâm Trục Tâm Hồn (2-5-8) Pythagoras. Tâm điểm cân bằng kết nối mọi trục năng lượng.',
-    advice:
-      'Rèn luyện tính tự giác và kiểm soát ham muốn tức thời; xác định mục tiêu trọng tâm để không lãng phí năng lượng vào những thú vui ngắn hạn.',
-    strengths: 'Thích nghi nhanh, tư duy mở, giàu năng lượng sống, nhiều tài lẻ.',
-    challenges: 'Cả thèm chóng chán, thiếu kiên nhẫn, dễ bị xao nhãng và bốc đồng.',
-  },
-  6: {
-    title: 'Người Nuôi Dưỡng & Vun Đắp Yêu Thương',
-    meaning:
-      'Số 6 là con số của tình mẫu tử/phụ tử, lòng nhân ái, trách nhiệm gia đình và năng khiếu thẩm mỹ nghệ thuật.',
-    layman:
-      'Bạn là chỗ dựa ấm áp cho gia đình và người thân. Bạn chu đáo, thích chăm sóc người khác và luôn muốn kiến tạo một không gian bình an, thẩm mỹ.',
-    mechanism:
-      'Tâm điểm của Trục Thần Trí (3-6-9) Pythagoras. Đại diện cho não phải, tư duy hình tượng, lòng trắc ẩn và cảm quan cái đẹp.',
-    advice:
-      'Học cách buông bớt sự lo lắng thái quá; chấp nhận sự không hoàn hảo của người khác và dành thời gian yêu thương chính bản thân mình.',
-    strengths: 'Tận tụy, giàu tình cảm, có khiếu thẩm mỹ, tinh thần trách nhiệm cao.',
-    challenges: 'Hay ôm đồm, lo lắng thái quá, dễ can thiệp sâu vào cuộc sống của người khác.',
-  },
-  7: {
-    title: 'Người Chiêm Nghiệm & Khai Sáng Tri Thức',
-    meaning:
-      'Số 7 là con số của triết học, tư duy chiều sâu, khả năng tự học tự chiêm nghiệm và khám phá những chân lý vũ trụ.',
-    layman:
-      'Bạn là người sâu sắc, thích suy nghĩ một mình và muốn hiểu bản chất gốc rễ của mọi sự việc. Bạn không dễ tin người khác nếu chưa tự mình kiểm chứng.',
-    mechanism:
-      'Đỉnh cao của Trục Thể Chất (1-4-7) Pythagoras. Tần số của sự đúc kết kinh nghiệm qua những trải nghiệm thực tế cá nhân.',
-    advice:
-      'Mở lòng chia sẻ hiểu biết của mình với cộng đồng; hòa mình vào cuộc sống đời thường thay vì tự khép kín trong tháp ngà tri thức.',
-    strengths: 'Tư duy phân tích sắc bén, trực giác tâm linh nhạy bén, độc lập, uyên bác.',
-    challenges: 'Khép kín, đa nghi, khó gần, dễ bi quan khi thất vọng về thực tại.',
-  },
-  8: {
-    title: 'Người Điều Hành & Hiện Thực Hóa Tài Lộc',
-    meaning:
-      'Số 8 là biểu tượng của quyền lực, thành tựu tài chính, năng lực quản trị quy mô lớn và sự cân bằng giữa vật chất và tinh thần.',
-    layman:
-      'Bạn có tư duy kinh doanh nhạy bén, khát vọng thành công lớn và năng lực tổ chức điều hành xuất sắc. Bạn coi trọng hiệu quả công việc.',
-    mechanism:
-      'Đỉnh cao Trục Tâm Hồn (2-5-8) Pythagoras. Khả năng làm chủ và chuyển hóa năng lượng cảm xúc thành sức mạnh hành động thực tiễn.',
-    advice:
-      'Duy trì chữ tín và đạo đức làm gốc trong kinh doanh; sử dụng tài chính và quyền lực để phụng sự xã hội thay vì chỉ vì danh vọng cá nhân.',
-    strengths: 'Ý chí mạnh mẽ, tầm nhìn chiến lược, quản trị tài chính giỏi, quyết đoán.',
-    challenges: 'Thực dụng, dễ coi trọng vật chất, khó bày tỏ cảm xúc mềm mỏng.',
-  },
-  9: {
-    title: 'Người Phụng Sự & Nhân Đạo Toàn Cầu',
-    meaning:
-      'Số 9 là con số hoàn thiện, biểu trưng cho lòng bao dung vô bờ, lý tưởng nhân đạo cao đẹp và sứ mệnh phụng sự cộng đồng.',
-    layman:
-      'Bạn sống nhân hậu, hào hiệp và luôn mong muốn xã hội tốt đẹp hơn. Bạn dễ đồng cảm với những người kém may mắn và có uy tín tự nhiên.',
-    mechanism:
-      'Đỉnh cao Trục Thần Trí (3-6-9) Pythagoras. Tần số tổng hòa tinh hoa của toàn bộ chu kỳ số học từ 1 đến 9.',
-    advice:
-      'Tập trung vào những hành động thực tế trong khả năng; học cách buông bỏ quá khứ và không để lòng trắc ẩn bị lợi dụng bởi người xấu.',
-    strengths: 'Bao dung, trách nhiệm cao cả, tầm nhìn nhân văn, đáng kính trọng.',
-    challenges: 'Mơ mộng viển vông, dễ thất vọng về lòng người, nặng gánh quá khứ.',
-  },
-  11: {
-    title: 'Bậc Thầy Trực Giác & Soi Đường (Master Number 11/2)',
-    meaning:
-      'Con số Master 11 mang năng lượng tâm linh bậc cao, trực giác siêu việt và khả năng truyền cảm hứng thức tỉnh mạnh mẽ.',
-    layman:
-      'Bạn có linh cảm rất nhạy bén, có thể cảm nhận được suy nghĩ và cảm xúc của người khác. Bạn sinh ra để kết nối và nâng đỡ tinh thần cho cộng đồng.',
-    mechanism:
-      'Số Master tiềm ẩn: Mang sức mạnh gấp đôi của số 1 (tiên phong) và tổng hòa vào số 2 (hòa giải).',
-    advice:
-      'Học cách làm chủ hệ thần kinh nhạy cảm bằng thiền định hoặc lối sống lành mạnh; biến các linh cảm tinh tế thành hành động thực tế có ích.',
-    strengths: 'Trực giác kỳ diệu, lý tưởng cao đẹp, khả năng soi sáng tâm hồn người khác.',
-    challenges: 'Dễ căng thẳng thần kinh, nhạy cảm quá mức, hay rơi vào khủng hoảng lý tưởng.',
-  },
-  22: {
-    title: 'Bậc Thầy Kiến Thiết Thế Giới (Master Number 22/4)',
-    meaning:
-      'Được mệnh danh là Master Builder, số 22 có năng lực biến những giấc mơ vĩ đại nhất thành công trình hiện thực bền vững.',
-    layman:
-      'Bạn vừa có tầm nhìn vĩ mô vượt thời đại, vừa có đôi bàn tay thực tế để biến những kế hoạch phức tạp nhất thành hiện thực. Tiềm năng thành tựu rất lớn.',
-    mechanism:
-      'Số Master đỉnh cao: Gấp đôi năng lượng hợp tác số 2 và kết tinh vào kỷ luật vững chãi của số 4.',
-    advice:
-      'Kiên trì bước từng bước một; không để sức ép từ trách nhiệm lớn làm bạn kiệt sức; luôn giữ vững sự chính trực trong mọi quyết định.',
-    strengths: 'Năng lực tổ chức siêu việt, tầm nhìn thực tế phi thường, sức bền ý chí.',
-    challenges: 'Áp lực tự thân quá lớn, độc đoán khi mất kiên nhẫn, tham vọng quá tầm kiểm soát.',
-  },
-  33: {
-    title: 'Bậc Thầy Chữa Lành & Yêu Thương Vô Điều Kiện (Master Number 33/6)',
-    meaning:
-      'Con số Master hiếm hoi nhất, biểu thị cho tình yêu thương vô lượng, năng lực chữa lành nỗi đau tinh thần và lòng nhân từ bao la.',
-    layman:
-      'Bạn có tấm lòng Bồ Tát bao dung, luôn muốn xoa dịu nỗi đau của nhân gian. Sự hiện diện ấm áp của bạn tự nó đã mang lại sự an ủi lớn cho người khác.',
-    mechanism:
-      'Số Master từ bi: Gấp đôi năng lượng trí tuệ số 3 và hòa quyện vào tình yêu vô điều kiện số 6.',
-    advice:
-      'Thiết lập ranh giới bảo vệ năng lượng cá nhân; nhớ rằng bạn chỉ có thể chữa lành người khác khi chính bạn được bình an và khỏe mạnh.',
-    strengths: 'Lòng từ bi sâu sắc, sự hiện diện bình an, năng lượng chữa lành tự nhiên.',
-    challenges: 'Dễ hy sinh thân mình mù quáng, kiệt quệ năng lượng, mang gánh nặng của người khác.',
-  },
-};
+> = Object.fromEntries(
+  Object.entries(NUMEROLOGY_NUMBER_PROFILES).map(([numStr, profile]) => {
+    const num = Number(numStr);
+    return [
+      num,
+      {
+        title: profile.name,
+        meaning: `Số ${num}: Trụ cột năng lượng xoay quanh ${profile.themes.join(", ")}.`,
+        layman: `Bạn thể hiện phẩm chất ${profile.constructive.slice(0, 2).join(" và ")}. Động lực: ${profile.dynamics.join(", ")}.`,
+        mechanism: `Mặt phẳng ${profile.plane} theo trường phái Pythagoras. Cơ chế vận hành: ${profile.dynamics.join(", ")}.`,
+        advice: `Phát huy ${profile.constructive[0] || "nội lực"}, kiểm soát nguy cơ ${profile.shadow[0] || "cực đoan"}.`,
+        strengths: profile.constructive.join(", "),
+        challenges: profile.shadow.join(", "),
+      },
+    ];
+  })
+);
 
 export const PERSONAL_YEAR_INTERPRETATIONS: Record<
   number,
@@ -1220,66 +1081,48 @@ export const PERSONAL_YEAR_INTERPRETATIONS: Record<
 > = {
   1: {
     theme: 'Năm Khởi Đầu Mới & Tự Chủ',
-    meaning:
-      'Bắt đầu chu kỳ 9 năm mới. Năng lượng gieo hạt, khai phá các dự án mới và tự tin nắm lấy cơ hội dẫn đầu.',
-    advice:
-      'Hãy chủ động hành động, đừng chần chừ. Đây là năm tuyệt vời để khởi nghiệp, học kỹ năng mới hoặc bắt đầu một lối sống mới.',
+    meaning: 'Bắt đầu chu kỳ 9 năm mới: Gieo hạt, khai phá các dự án mới và tự tin dẫn đầu.',
+    advice: 'Chủ động hành động, học kỹ năng mới và bắt đầu một lối sống mới.',
   },
   2: {
     theme: 'Năm Hợp Tác, Chờ Đợi & Nuôi Dưỡng',
-    meaning:
-      'Hạt giống năm 1 đang nảy mầm ngầm dưới lòng đất. Năng lượng đòi hỏi sự kiên nhẫn, hòa giải và mở rộng các mối quan hệ đồng hành.',
-    advice:
-      'Tập trung lắng nghe, kiểm soát cái tôi; tránh nóng vội đốt cháy giai đoạn. Vun đắp tình cảm và tìm kiếm đối tác đáng tin cậy.',
+    meaning: 'Hạt giống năm 1 đang nảy mầm ngầm: Đòi hỏi sự kiên nhẫn, hòa giải và gắn kết đồng hành.',
+    advice: 'Tập trung lắng nghe, kiểm soát cái tôi, vun đắp tình cảm và đối tác tin cậy.',
   },
   3: {
     theme: 'Năm Tỏa Sáng, Sáng Tạo & Mở Rộng Giao Tiếp',
-    meaning:
-      'Mầm cây nhú lên đón ánh mặt trời. Năng lượng bùng nổ về mặt biểu đạt, học tập, giao tế xã hội và phát triển tư duy sáng tạo.',
-    advice:
-      'Tự tin xuất hiện trước công chúng; học thêm kiến thức mới; chú ý kiểm soát chi tiêu và duy trì sự tập trung vào mục tiêu trọng tâm.',
+    meaning: 'Mầm cây đón ánh mặt trời: Năng lượng bùng nổ về biểu đạt, học tập và sáng tạo.',
+    advice: 'Tự tin xuất hiện trước công chúng, học tri thức mới, duy trì sự tập trung.',
   },
   4: {
     theme: 'Năm Củng Cố Nền Móng & Rèn Luyện Kỷ Luật',
-    meaning:
-      'Năm của sự nỗ lực làm việc bền bỉ, chỉnh đốn trật tự nội tại, chăm sóc sức khỏe và xây dựng quy trình ổn định.',
-    advice:
-      'Hạn chế đầu tư mạo hiểm; quản lý tài chính chặt chẽ; kiên trì hoàn thiện từng chi tiết công việc và rèn luyện thể chất đều đặn.',
+    meaning: 'Nỗ lực làm việc bền bỉ, chỉnh đốn trật tự nội tại và quy trình ổn định.',
+    advice: 'Quản lý tài chính chặt chẽ, hoàn thiện chi tiết công việc và rèn luyện thể chất.',
   },
   5: {
     theme: 'Năm Đổi Mới, Bứt Phá & Trải Nghiệm Tự Do',
-    meaning:
-      'Trung tâm của chu kỳ 9 năm. Những thay đổi bất ngờ mang lại cơ hội mở rộng tầm mắt, du lịch hoặc chuyển hướng công việc.',
-    advice:
-      'Linh hoạt đón nhận sự đổi mới; dũng cảm bước ra khỏi vùng an toàn nhưng cần giữ cái đầu lạnh trước những cám dỗ bốc đồng.',
+    meaning: 'Trung tâm chu kỳ 9 năm: Thay đổi bất ngờ mở rộng tầm mắt, du lịch hoặc chuyển hướng.',
+    advice: 'Linh hoạt đón nhận đổi mới, bước ra khỏi vùng an toàn nhưng giữ cái đầu lạnh.',
   },
   6: {
     theme: 'Năm Trách Nhiệm, Gia Đình & Vun Đắp Yêu Thương',
-    meaning:
-      'Năng lượng quay về tổ ấm, hòa giải các mối quan hệ thân tộc, trang hoàng nhà cửa và gánh vác trách nhiệm chăm sóc người thân.',
-    advice:
-      'Dành thời gian chất lượng cho gia đình; học cách thứ tha và tạo dựng không gian sống an yên, thẩm mỹ; không nên ôm đồm quá sức.',
+    meaning: 'Quay về tổ ấm, hòa giải quan hệ thân tộc, trang hoàng nhà cửa và chăm sóc người thân.',
+    advice: 'Dành thời gian chất lượng cho gia đình, tạo không gian sống an yên, không ôm đồm.',
   },
   7: {
     theme: 'Năm Chiêm Nghiệm, Nâng Cao Trí Tuệ & Nội Lực',
-    meaning:
-      'Năm của sự lắng đọng tâm hồn. Thích hợp cho việc nghiên cứu chuyên sâu, học hỏi triết lý, thiền định và chữa lành tâm thức.',
-    advice:
-      'Dành không gian tĩnh lặng cho riêng mình; không nên mở rộng quy mô kinh doanh ồ ạt; đầu tư cho trí tuệ và sự bình an nội tại.',
+    meaning: 'Lắng đọng tâm hồn: Thích hợp nghiên cứu chuyên sâu, học triết lý, thiền định.',
+    advice: 'Dành không gian tĩnh lặng, đầu tư cho trí tuệ và sự bình an nội tại.',
   },
   8: {
     theme: 'Năm Thu Hoạch Thành Quả & Làm Chủ Tài Chính',
-    meaning:
-      'Đỉnh cao thu hoạch của chu kỳ 9 năm. Những nỗ lực từ các năm trước sẽ đơm hoa kết trái thành uy tín, quyền lực và tài chính.',
-    advice:
-      'Tập trung hiện thực hóa các mục tiêu tài chính; quản trị hiệu quả; đối nhân xử thế công bằng, giữ vững đạo đức nghề nghiệp.',
+    meaning: 'Đỉnh cao thu hoạch: Nỗ lực trước đó đơm hoa kết trái thành uy tín, quyền lực và tài chính.',
+    advice: 'Tập trung hiện thực hóa mục tiêu tài chính, quản trị hiệu quả, giữ đạo đức nghề nghiệp.',
   },
   9: {
     theme: 'Năm Tổng Kết, Bao Dung & Chuyển Giao Chu Kỳ',
-    meaning:
-      'Khép lại chu kỳ 9 năm. Thời điểm dọn dẹp những điều cũ kỹ, thanh lọc các mối quan hệ độc hại và chuẩn bị tâm thế cho khởi đầu mới.',
-    advice:
-      'Học cách buông bỏ những điều không còn phục vụ sự phát triển của bạn; tham gia các hoạt động thiện nguyện; tha thứ và biết ơn.',
+    meaning: 'Khép lại chu kỳ 9 năm: Dọn dẹp điều cũ, thanh lọc quan hệ và chuẩn bị khởi đầu mới.',
+    advice: 'Buông bỏ điều không còn phù hợp, tham gia thiện nguyện, tha thứ và biết ơn.',
   },
 };
 
@@ -1293,95 +1136,23 @@ export const PINNACLE_INTERPRETATIONS: Record<
     challenges: string;
     advice: string;
   }
-> = {
-  1: {
-    theme: 'Đỉnh Cao Khởi Xướng & Độc Lập Tự Thân',
-    layman: 'Giai đoạn bạn buộc phải đứng vững trên đôi chân của mình, tự quyết định hướng đi và không dựa dẫm vào người khác.',
-    details: 'Rung động số 1 tôi luyện bản lĩnh người mở đường. Bạn được trao cơ hội đứng mũi chịu sào, khởi xướng các công trình hay con đường mới.',
-    strengths: 'Ý chí độc lập, dũng cảm đối mặt nghịch cảnh, khả năng tự lực cánh sinh.',
-    challenges: 'Dễ rơi vào thế cô đơn hoặc độc đoán nếu không biết lắng nghe đồng sự.',
-    advice: 'Chủ động nắm bắt cơ hội, rèn luyện tính quyết đoán; áp dụng nguyên tắc hành động dứt khoát không trì hoãn.',
-  },
-  2: {
-    theme: 'Đỉnh Cao Hợp Tác & Kiên Nhẫn Ngoại Giao',
-    layman: 'Giai đoạn học cách hòa hợp, làm việc nhóm, xây dựng các liên minh bền chặt và rèn luyện sự khéo léo.',
-    details: 'Rung động số 2 đòi hỏi sự nhạy cảm và thấu hiểu. Thành công lớn nhất trong giai đoạn này đến từ tài ngoại giao và liên kết lòng người.',
-    strengths: 'Trực giác tinh tế, khả năng hòa giải mâu thuẫn, xây dựng lòng tin tập thể.',
-    challenges: 'Dễ trở nên quá nhạy cảm trước lời phê bình hoặc thiếu quyết đoán khi phải tranh chấp.',
-    advice: 'Tìm kiếm đối tác có chung hệ giá trị; học cách đặt ranh giới cá nhân rõ ràng trong mọi thỏa thuận hợp tác.',
-  },
-  3: {
-    theme: 'Đỉnh Cao Sáng Tạo & Lan Tỏa Xã Hội',
-    layman: 'Thời kỳ tài năng biểu đạt, nghệ thuật, giao tiếp và uy tín cá nhân của bạn nở rộ rực rỡ nhất.',
-    details: 'Rung động số 3 kích hoạt ngọn lửa sáng tạo và khả năng kết nối đại chúng. Bạn có nhiều cơ hội xuất hiện trước đám đông.',
-    strengths: 'Tư duy biểu đạt phong phú, khiếu thẩm mỹ, sự hoạt bát truyền cảm hứng.',
-    challenges: 'Dễ bị phân tán vào quá nhiều dự án hào nhoáng bề nổi mà thiếu chiều sâu hoàn thiện.',
-    advice: 'Chọn lọc một lĩnh vực chuyên môn cụ thể để đào sâu; chuyển hóa ý tưởng thành sản phẩm hoàn chỉnh.',
-  },
-  4: {
-    theme: 'Đỉnh Cao Xây Nền Đắp Móng & Kỷ Luật Vững Vàng',
-    layman: 'Giai đoạn lao động nghiêm túc để kiến tạo gia sản, tích lũy tài sản và đặt nền móng chắc chắn cho tương lai.',
-    details: 'Rung động số 4 đại diện cho cấu trúc kim tự tháp vững chãi. Bạn cần sự tỉ mỉ, kiên nhẫn và tuân thủ chặt chẽ các quy trình chuẩn mực.',
-    strengths: 'Kỷ luật thép, tư duy thực tế, tính tổ chức và năng lực tích lũy tài chính bài bản.',
-    challenges: 'Áp lực công việc đè nặng dễ sinh bảo thủ, cứng nhắc hoặc kiệt sức.',
-    advice: 'Lập kế hoạch tài chính và sự nghiệp 5 năm; kiên định thực thi từng tuần và bảo vệ sức khỏe thể chất.',
-  },
-  5: {
-    theme: 'Đỉnh Cao Bứt Phá & Mở Rộng Trải Nghiệm',
-    layman: 'Thời kỳ bạn thoát khỏi lối mòn cũ, thích ứng với nhiều biến động và mở rộng tầm nhìn cuộc sống.',
-    details: 'Rung động số 5 mang đến những chuyến đi, sự đổi mới công việc hoặc mở rộng địa bàn hoạt động. Đây là lúc tư duy linh hoạt giúp bạn chiến thắng.',
-    strengths: 'Khả năng thích ứng siêu việt, tư duy đổi mới, mở rộng mạng lưới giao lưu đa dạng.',
-    challenges: 'Dễ bị cám dỗ bởi sự bốc đồng, thay đổi liên tục dẫn đến thiếu sự bền vững.',
-    advice: 'Tận dụng sự đổi mới để bứt phá nhưng phải giữ vững các nguyên tắc đạo đức và an toàn tài chính cốt lõi.',
-  },
-  6: {
-    theme: 'Đỉnh Cao Trách Nhiệm Gia Đình & Phụng Sự Xã Hội',
-    layman: 'Thời kỳ năng lượng yêu thương, chăm sóc gia đình, cống hiến cho cộng đồng và gánh vác trách nhiệm lớn.',
-    details: 'Rung động số 6 đưa trọng tâm về mái ấm, tổ chức và sự hàn gắn. Bạn trở thành chỗ dựa tinh thần và vật chất vững chắc cho người khác.',
-    strengths: 'Lòng trắc ẩn bao dung, khiếu thẩm mỹ, khả năng quy tụ và bảo bọc tập thể.',
-    challenges: 'Gánh nặng trách nhiệm người khác dễ gây áp lực tinh thần và mệt mỏi nội tâm.',
-    advice: 'Chăm sóc bản thân trước khi gánh vác việc người khác; học cách nói không với những đòi hỏi vô lý.',
-  },
-  7: {
-    theme: 'Đỉnh Cao Chiêm Nghiệm & Trí Tuệ Chiều Sâu',
-    layman: 'Giai đoạn đúc kết kinh nghiệm sống, học hỏi tri thức sâu sắc và tìm kiếm ý nghĩa chân thực của bản thân.',
-    details: 'Rung động số 7 của trục thể chất và tâm trí thúc đẩy bạn nhìn sâu vào bản chất sự vật. Đây là lúc nghiên cứu, chuyên môn hóa đỉnh cao.',
-    strengths: 'Tư duy triết lý sâu sắc, trực giác bén nhạy, sự độc lập và năng lực tự học phi thường.',
-    challenges: 'Xu hướng cô lập bản thân, hoài nghi quá mức hoặc xa rời thực tế đời thường.',
-    advice: 'Dành không gian yên tĩnh để nâng cao chuyên môn; ghi chép nhật ký chiêm nghiệm và chia sẻ tri thức cho thế hệ sau.',
-  },
-  8: {
-    theme: 'Đỉnh Cao Thành Tựu Vật Chất & Khẳng Định Vị Thế',
-    layman: 'Thời kỳ thu hoạch tài chính lớn, nắm giữ quyền quản trị và khẳng định quyền lực thực tiễn trong xã hội.',
-    details: 'Rung động số 8 đưa bạn lên vị trí điều hành, làm chủ dòng tiền và quy mô tổ chức. Thành quả đạt được tương xứng với nỗ lực bền bỉ trước đó.',
-    strengths: 'Tư duy thương mại lớn, năng lực phán đoán thị trường, khả năng quản trị con người và tài sản.',
-    challenges: 'Tham vọng quá mức dễ dẫn đến căng thẳng, bất đồng quyền lợi hoặc đánh đổi các giá trị tinh thần.',
-    advice: 'Sử dụng uy tín và nguồn lực tài chính để kiến tạo giá trị nhân văn bền vững; giữ chữ tín làm kim chỉ nam.',
-  },
-  9: {
-    theme: 'Đỉnh Cao Nhân Đạo & Hoàn Tất Sứ Mệnh Lớn',
-    layman: 'Thời kỳ bao dung rộng lượng, cống hiến vì đại chúng, hoàn tất một giai đoạn lịch sử của đời bạn.',
-    details: 'Rung động số 9 mang tầm vóc toàn cầu và lòng vị tha. Bạn được trao cơ hội lan tỏa giá trị tích cực đến số đông người trong xã hội.',
-    strengths: 'Tầm nhìn bao quát, tâm thế phụng sự, uy tín đạo đức và lòng trắc ẩn không biên giới.',
-    challenges: 'Khó khăn trong việc buông bỏ những kỳ vọng cũ hoặc người thân cận không cùng chí hướng.',
-    advice: 'Sẵn sàng khép lại các chương cũ không còn phù hợp; tham gia các dự án vì cộng đồng với sự tỉnh táo.',
-  },
-  11: {
-    theme: 'Đỉnh Cao Trực Giác Master & Khai Sáng Tâm Trí',
-    layman: 'Giai đoạn thức tỉnh tiềm năng tâm lý, trực giác phi thường và truyền cảm hứng mạnh mẽ cho cộng đồng.',
-    details: 'Số Master 11/2 khuếch đại sự nhạy bén và nhận thức tinh thần. Bạn trở thành ngọn đèn chỉ đường cho những người đang tìm kiếm hướng đi.',
-    strengths: 'Trực giác thấu thị, tầm nhìn tâm lý sâu rộng, sức lan tỏa tinh thần tự nhiên.',
-    challenges: 'Sự nhạy cảm thần kinh cao dễ gây căng thẳng, mất ngủ nếu môi trường xung quanh nhiều tiêu cực.',
-    advice: 'Thực hành các phương pháp tĩnh tâm, rèn luyện thân thể vững chãi và giữ cho tâm trí luôn thanh tịnh.',
-  },
-  22: {
-    theme: 'Đỉnh Cao Nhà Kiến Tạo Vĩ Mô (Master Builder)',
-    layman: 'Giai đoạn bạn có đủ tầm nhìn lớn và bàn tay thực tế để xây dựng những công trình, tổ chức tầm cỡ để đời.',
-    details: 'Số Master 22/4 kết tinh lý tưởng cao đẹp vào cấu trúc vật chất thực tiễn. Cơ hội để lại di sản dài hạn cho thế hệ mai sau.',
-    strengths: 'Tầm nhìn chiến lược phi thường, khả năng biến ý tưởng trừu tượng thành công trình cụ thể vĩ đại.',
-    challenges: 'Gánh nặng sứ mệnh và kỳ vọng cực lớn dễ khiến bạn kiệt quệ nếu ôm đồm một mình.',
-    advice: 'Xây dựng đội ngũ kế thừa tài năng; phân quyền thông minh và kiên trì từng bước vững chắc.',
-  },
-};
+> = Object.fromEntries(
+  Object.entries(NUMEROLOGY_NUMBER_PROFILES)
+    .filter(([n]) => Number(n) <= 9 || [11, 22].includes(Number(n)))
+    .map(([numStr, profile]) => {
+      const num = Number(numStr);
+      return [
+        num,
+        {
+          theme: `Đỉnh cao chặng số ${num}: ${profile.themes[0] || 'Phát triển'}`,
+          layman: `Giai đoạn tập trung ${profile.constructive.slice(0, 2).join(' và ')}.`,
+          details: `Năng lượng đỉnh cao vận hành theo cơ chế: ${profile.dynamics.join(', ')}.`,
+          strengths: profile.constructive.join(', '),
+          challenges: profile.shadow.join(', '),
+          advice: `Phát huy ${profile.constructive[0] || 'thế mạnh'}, hóa giải ${profile.shadow[0] || 'thách thức'}.`,
+        },
+      ];
+    })
+);
 
 

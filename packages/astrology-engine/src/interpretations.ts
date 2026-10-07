@@ -1,3 +1,8 @@
+import {
+  ASTROLOGY_PLANET_PROFILES,
+  ASTROLOGY_ZODIAC_PROFILES,
+} from './semantic-profiles.js';
+
 export const ZODIAC_VN: Record<string, string> = {
   ARIES: 'Bạch Dương (Aries)',
   TAURUS: 'Kim Ngưu (Taurus)',
@@ -355,4 +360,292 @@ export const PLANET_GLYPHS: Record<string, string> = {
   chiron: '⚷',
 };
 
-export * from './planetary-interpretations.js';
+export interface PlanetaryInsight {
+  signKey: string;
+  signNameVn: string;
+  meaning: string;
+  layman: string;
+  strengths: string[];
+  pitfalls: string[];
+  advice: string;
+  headline?: string;
+  beginnerGuide?: string;
+}
+
+export interface AspectInsight {
+  aspectType: 'CONJUNCTION' | 'SEXTILE' | 'SQUARE' | 'TRINE' | 'OPPOSITION';
+  aspectNameVn: string;
+  isHarmonious: boolean;
+  angle: number;
+  symbol: string;
+  headline: string;
+  mechanism: string;
+  lifeEffect: string;
+  advice: string;
+}
+
+export const ASCENDANT_SIGN_INTERPRETATIONS: Record<string, PlanetaryInsight> = Object.fromEntries(
+  Object.entries(ASTROLOGY_ZODIAC_PROFILES).map(([signKey, profile]) => [
+    signKey,
+    {
+      signKey,
+      signNameVn: profile.name,
+      meaning: `Cung Mọc tại ${profile.name}: Phong thái mang đặc trưng ${profile.constructive.join(', ')}.`,
+      layman: `Bạn thể hiện phong thái ${profile.constructive.slice(0, 2).join(' và ')} với thế giới bên ngoài.`,
+      strengths: profile.constructive,
+      pitfalls: profile.shadow,
+      advice: `Phát huy ${profile.constructive[0] || 'thế mạnh'}, lưu ý tránh ${profile.shadow[0] || 'cực đoan'}.`,
+    },
+  ])
+);
+
+export function getPlanetInSignInsight(
+  planetKey: string,
+  signKey: string,
+  houseNumber?: number | null
+): {
+  headline: string;
+  beginnerGuide: string;
+  layman: string;
+  advice: string;
+  strengths: string[];
+  pitfalls: string[];
+} {
+  const pKey = planetKey.toLowerCase();
+  const sKey = signKey.toUpperCase();
+  const planetProfile = ASTROLOGY_PLANET_PROFILES[pKey];
+  const signProfile = ASTROLOGY_ZODIAC_PROFILES[sKey];
+  const houseText = houseNumber ? ` ngụ tại Nhà ${houseNumber}` : '';
+  const planetName = planetProfile?.name || PLANET_NAMES_VN[pKey] || planetKey;
+  const signName = signProfile?.name || ZODIAC_VN[sKey] || signKey;
+  const beginnerGuide =
+    PLANET_BEGINNER_GUIDES[pKey] ||
+    `${planetName} đại diện cho nguồn năng lượng ${planetProfile?.themes?.join(', ') || ''}.`;
+
+  const strengths = signProfile?.constructive || planetProfile?.constructive || [];
+  const pitfalls = signProfile?.shadow || planetProfile?.shadow || [];
+
+  if (pKey === 'sun' && SUN_SIGN_INTERPRETATIONS[sKey]) {
+    const sunInterp = SUN_SIGN_INTERPRETATIONS[sKey]!;
+    return {
+      headline: `${planetName} tại ${signName}${houseText}`,
+      beginnerGuide,
+      layman: sunInterp.layman,
+      advice: sunInterp.advice,
+      strengths,
+      pitfalls,
+    };
+  }
+
+  if (pKey === 'moon' && MOON_SIGN_INTERPRETATIONS[sKey]) {
+    const moonInterp = MOON_SIGN_INTERPRETATIONS[sKey]!;
+    return {
+      headline: `${planetName} tại ${signName}${houseText}`,
+      beginnerGuide,
+      layman: moonInterp.layman,
+      advice: moonInterp.advice,
+      strengths,
+      pitfalls,
+    };
+  }
+
+  const layman = `${planetName} tại ${signName} biểu thị phong cách vận hành hướng đến ${strengths.slice(0, 2).join(', ')}.`;
+  const advice = `Phát huy tính chất ${strengths[0] || 'tích cực'}, điều hòa nguy cơ ${pitfalls[0] || 'tiêu cực'}.`;
+
+  return {
+    headline: `${planetName} tại ${signName}${houseText}`,
+    beginnerGuide,
+    layman,
+    advice,
+    strengths,
+    pitfalls,
+  };
+}
+
+export function getAspectInsight(
+  planet1: string,
+  planet2: string,
+  aspectType: string,
+  orb: number
+): {
+  headline: string;
+  isHarmonious: boolean;
+  beginnerGuide: string;
+  layman: string;
+  advice: string;
+} {
+  const p1 = planet1.toLowerCase();
+  const p2 = planet2.toLowerCase();
+  const typeUpper = aspectType.toUpperCase();
+  const isHarmonious = ['TRINE', 'SEXTILE', 'CONJUNCTION'].includes(typeUpper);
+
+  const ASPECT_DEFS: Record<string, { symbol: string; nameVn: string; guide: string }> = {
+    CONJUNCTION: { symbol: '☌', nameVn: 'Góc Trùng (Conjunction 0°)', guide: 'Hai hành tinh hội tụ, khuếch đại năng lượng lẫn nhau.' },
+    SEXTILE: { symbol: '⚹', nameVn: 'Góc Lục Hợp (Sextile 60°)', guide: 'Góc hỗ trợ mở ra cơ hội tương tác thuận lợi.' },
+    SQUARE: { symbol: '□', nameVn: 'Góc Vuông (Square 90°)', guide: 'Góc cọ xát tạo áp lực và động lực bứt phá.' },
+    TRINE: { symbol: '△', nameVn: 'Góc Tam Hợp (Trine 120°)', guide: 'Dòng chảy thuận hòa tự nhiên giữa các nguyên tố đồng điệu.' },
+    OPPOSITION: { symbol: '☍', nameVn: 'Góc Đối Đỉnh (Opposition 180°)', guide: 'Trục đối kháng đòi hỏi sự cân bằng và dung hòa.' },
+  };
+
+  const def = ASPECT_DEFS[typeUpper] || { symbol: '⚹', nameVn: typeUpper, guide: 'Góc chiếu giữa hai thiên thể.' };
+  const p1Name = PLANET_NAMES_VN[p1] || planet1;
+  const p2Name = PLANET_NAMES_VN[p2] || planet2;
+  const headline = `${p1Name} ${def.symbol} ${def.nameVn} ${p2Name}`;
+  const orbText = `(Sai số góc: ${orb.toFixed(2)}°)`;
+
+  let layman = '';
+  let advice = '';
+  if (isHarmonious) {
+    layman = `Đây là một liên kết tương sinh thuận hòa giữa ${p1Name} và ${p2Name}. Năng lượng hai thiên thể hòa nhập tự nhiên, bổ trợ nhịp nhàng.`;
+    advice = `Tận dụng tối đa sự liên kết này trong các dự án đòi hỏi sự phối hợp giữa bản lĩnh và nhận thức cá nhân.`;
+  } else {
+    layman = `Đây là một trục cọ xát thách thức giữa ${p1Name} và ${p2Name}. Cần sự giằng co và thôi thúc nội tâm để vượt qua.`;
+    advice = `Xem góc cọ xát này như lò luyện ý chí; học cách điều hòa và phân bổ thời gian hợp lý cho cả hai nhu cầu.`;
+  }
+
+  return {
+    headline: `${headline} ${orbText}`,
+    isHarmonious,
+    beginnerGuide: def.guide,
+    layman,
+    advice,
+  };
+}
+
+export function synthesizeNatalChart(
+  bodies: Record<string, any>,
+  _houses: Array<any>,
+  aspects: Array<any>
+): {
+  elementSummary: {
+    dominant: string;
+    dominantVn: string;
+    deficient: string;
+    deficientVn: string;
+    counts: Record<string, number>;
+    description: string;
+    remedyAdvice: string;
+  };
+  modalitySummary: {
+    dominant: string;
+    dominantVn: string;
+    counts: Record<string, number>;
+    description: string;
+  };
+  corePatternStatement: string;
+  majorAspectTensionCount: number;
+  majorAspectHarmonyCount: number;
+} {
+  const ZODIAC_ELEMENT_MAP: Record<string, 'FIRE' | 'EARTH' | 'AIR' | 'WATER'> = {
+    ARIES: 'FIRE', LEO: 'FIRE', SAGITTARIUS: 'FIRE',
+    TAURUS: 'EARTH', VIRGO: 'EARTH', CAPRICORN: 'EARTH',
+    GEMINI: 'AIR', LIBRA: 'AIR', AQUARIUS: 'AIR',
+    CANCER: 'WATER', SCORPIO: 'WATER', PISCES: 'WATER',
+  };
+
+  const ZODIAC_MODALITY_MAP: Record<string, 'CARDINAL' | 'FIXED' | 'MUTABLE'> = {
+    ARIES: 'CARDINAL', CANCER: 'CARDINAL', LIBRA: 'CARDINAL', CAPRICORN: 'CARDINAL',
+    TAURUS: 'FIXED', LEO: 'FIXED', SCORPIO: 'FIXED', AQUARIUS: 'FIXED',
+    GEMINI: 'MUTABLE', VIRGO: 'MUTABLE', SAGITTARIUS: 'MUTABLE', PISCES: 'MUTABLE',
+  };
+
+  const elemCounts: Record<'FIRE' | 'EARTH' | 'AIR' | 'WATER', number> = { FIRE: 0, EARTH: 0, AIR: 0, WATER: 0 };
+  const modCounts: Record<'CARDINAL' | 'FIXED' | 'MUTABLE', number> = { CARDINAL: 0, FIXED: 0, MUTABLE: 0 };
+
+  const corePlanets = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto'];
+
+  for (const pKey of corePlanets) {
+    const pos = bodies[pKey] || bodies[pKey.toUpperCase()];
+    if (pos && pos.sign) {
+      const elem = ZODIAC_ELEMENT_MAP[pos.sign];
+      const mod = ZODIAC_MODALITY_MAP[pos.sign];
+      if (elem && elem in elemCounts) elemCounts[elem] = (elemCounts[elem] ?? 0) + 1;
+      if (mod && mod in modCounts) modCounts[mod] = (modCounts[mod] ?? 0) + 1;
+    }
+  }
+
+  const sortedElem = Object.entries(elemCounts).sort((a, b) => b[1] - a[1]);
+  const dominantElem = sortedElem[0]?.[0] ?? 'FIRE';
+  const deficientElem = sortedElem[sortedElem.length - 1]?.[0] ?? 'EARTH';
+
+  const elemNamesVn: Record<string, string> = {
+    FIRE: 'Lửa (Đam Mê, Hành Động, Nhiệt Huyết)',
+    EARTH: 'Đất (Thực Tế, Tài Chính, Kỷ Luật Bền Vững)',
+    AIR: 'Khí (Tư Duy, Giao Tiếp, Kết Nối Trí Tuệ)',
+    WATER: 'Nước (Cảm Xúc, Trực Giác, Thấu Cảm Sâu Sắc)',
+  };
+
+  let elemDesc = '';
+  let remedyAdvice = '';
+
+  if (dominantElem === 'FIRE') {
+    elemDesc = `Nguyên tố Lửa chiếm ưu thế (${elemCounts.FIRE} hành tinh): Bạn là người giàu nhiệt huyết, chủ động, thích dấn thân và hành động nhanh.`;
+  } else if (dominantElem === 'EARTH') {
+    elemDesc = `Nguyên tố Đất chiếm ưu thế (${elemCounts.EARTH} hành tinh): Bạn là người kiên định, thực tế, làm việc có phương pháp và rất có trách nhiệm.`;
+  } else if (dominantElem === 'AIR') {
+    elemDesc = `Nguyên tố Khí chiếm ưu thế (${elemCounts.AIR} hành tinh): Bạn có tư duy nhạy bén, hoạt ngôn, thích nghi nhanh và kết nối mạng lưới xuất sắc.`;
+  } else {
+    elemDesc = `Nguyên tố Nước chiếm ưu thế (${elemCounts.WATER} hành tinh): Bạn có trực giác nhạy cảm, giàu lòng trắc ẩn, thấu cảm sâu sắc.`;
+  }
+
+  if (deficientElem === 'EARTH') {
+    remedyAdvice = 'Nguyên tố Đất thấp: Cần rèn luyện thói quen ghi chép tài chính, lập thời gian biểu kỷ luật và đưa ra hạn chót cụ thể cho từng mục tiêu.';
+  } else if (deficientElem === 'WATER') {
+    remedyAdvice = 'Nguyên tố Nước thấp: Hãy cho phép mình được nghỉ ngơi, lắng nghe cảm xúc thật và kết nối ấm áp với người thân.';
+  } else if (deficientElem === 'FIRE') {
+    remedyAdvice = 'Nguyên tố Lửa thấp: Hãy rèn luyện thể thao thường xuyên, tập thói quen đưa ra quyết định nhanh hơn để kích hoạt nguồn năng lượng hành động.';
+  } else {
+    remedyAdvice = 'Nguyên tố Khí thấp: Cần dừng lại thu thập thêm dữ liệu thực tế và lắng nghe góc nhìn phản biện trước khi kết luận.';
+  }
+
+  const sortedMod = Object.entries(modCounts).sort((a, b) => b[1] - a[1]);
+  const dominantMod = sortedMod[0]?.[0] ?? 'CARDINAL';
+  const modNamesVn: Record<string, string> = {
+    CARDINAL: 'Tiên Phong (Cardinal — Khởi Xướng & Mở Lối)',
+    FIXED: 'Kiên Định (Fixed — Duy Trì & Bảo Vệ Thành Quả)',
+    MUTABLE: 'Linh Hoạt (Mutable — Thích Ứng & Biến Chuyển Khéo Léo)',
+  };
+
+  let modDesc = '';
+  if (dominantMod === 'CARDINAL') {
+    modDesc = 'Tính chất Tiên Phong nổi trội: Bạn xuất sắc trong việc khởi xướng dự án mới, dám dấn thân mở đường.';
+  } else if (dominantMod === 'FIXED') {
+    modDesc = 'Tính chất Kiên Định nổi trội: Bạn có sức bền, kiên trì theo đuổi mục tiêu đến cùng.';
+  } else {
+    modDesc = 'Tính chất Linh Hoạt nổi trội: Bạn thích ứng hoàn cảnh nhanh, xoay xở uyển chuyển trong mọi tình huống.';
+  }
+
+  let harmonyCount = 0;
+  let tensionCount = 0;
+
+  for (const asp of aspects) {
+    const t = (asp.aspectType || asp.type || '').toUpperCase();
+    if (['TRINE', 'SEXTILE', 'CONJUNCTION'].includes(t)) harmonyCount++;
+    if (['SQUARE', 'OPPOSITION'].includes(t)) tensionCount++;
+  }
+
+  const dominantElemName = elemNamesVn[dominantElem] ?? 'Lửa';
+  const dominantModName = modNamesVn[dominantMod] ?? 'Tiên Phong';
+  const corePatternStatement = `Bản đồ sao của bạn có cấu trúc năng lượng: Trụ cột dẫn dắt là ${dominantElemName.split(' (')[0]}, phong cách vận hành là ${dominantModName.split(' (')[0]}. Có ${harmonyCount} liên kết thuận hòa và ${tensionCount} trục cọ xát động lực.`;
+
+  return {
+    elementSummary: {
+      dominant: dominantElem,
+      dominantVn: elemNamesVn[dominantElem] ?? dominantElem,
+      deficient: deficientElem,
+      deficientVn: elemNamesVn[deficientElem] ?? deficientElem,
+      counts: elemCounts,
+      description: elemDesc,
+      remedyAdvice,
+    },
+    modalitySummary: {
+      dominant: dominantMod,
+      dominantVn: modNamesVn[dominantMod] ?? dominantMod,
+      counts: modCounts,
+      description: modDesc,
+    },
+    corePatternStatement,
+    majorAspectTensionCount: tensionCount,
+    majorAspectHarmonyCount: harmonyCount,
+  };
+}

@@ -1,8 +1,13 @@
 /**
  * Tu Vi Interpretations & Calculations Library
  * Full comprehensive, deterministic interpretations based on classical Nam Phai traditions.
- * 100% Free, Public, Unlocked.
+ * Semantic profile projections and formulaic indicators.
  */
+
+import {
+  TUVI_STAR_PROFILES,
+  TUVI_PALACE_PROFILES,
+} from './semantic-profiles.js';
 
 // 1. LỤC THẬP HOA GIÁP NẠP ÂM (60 CAN CHI)
 export interface NapAmInfo {
@@ -488,106 +493,18 @@ export const STAR_DETAILED_READINGS: Record<
     strengths: string;
     cautions: string;
   }
-> = {
-  TU_VI: {
-    title: 'Sao Tử Vi — Đế Tinh Tối Cao',
-    nature: 'Âm Thổ, Nam Bắc Đẩu Tinh, Vua của các vì sao, chủ tước lộc và phúc thọ.',
-    layman: 'Tử Vi là ngôi sao quyền uy và cao quý nhất trong Tử Vi Đẩu Số. Người có Tử Vi hội tụ thường có phong thái đàng hoàng, đĩnh đạc, được mọi người kính trọng và có tài năng lãnh đạo bẩm sinh.',
-    strengths: 'Chính trực, bao dung, có tầm nhìn chiến lược, khả năng hóa giải tai ương vượt trội.',
-    cautions: 'Cần tránh tự phụ, chuyên quyền hoặc xa cách quần chúng; nên lắng nghe ý kiến cộng sự.',
-  },
-  THIEN_PHU: {
-    title: 'Sao Thiên Phủ — Kho Vàng Trời & Lệnh Tinh',
-    nature: 'Dương Thổ, Nam Đẩu Tinh, Chưởng quản cung Tài Bạch & Điền Trạch, giữ kho của báu.',
-    layman: 'Thiên Phủ tượng trưng cho kho tài sản kiên cố, tính tình điềm đạm, trọng danh dự và rất có tài quản trị tiền bạc. Cuộc sống của người có Thiên Phủ thường sung túc, hậu vận no đủ.',
-    strengths: 'Quản lý tài chính cẩn trọng, uy tín vững vàng, sống chừng mực, gia đạo ấm êm.',
-    cautions: 'Đôi khi quá bảo thủ, ngại mạo hiểm đổi mới dẫn đến bỏ lỡ những vận hội lớn.',
-  },
-  THAI_DUONG: {
-    title: 'Sao Thái Dương — Mặt Trời Soi Sáng Nhân Gian',
-    nature: 'Dương Hỏa, Nam Đẩu Tinh, Chủ về Quang Minh, Quan Lộc và người cha / người chồng.',
-    layman: 'Thái Dương mang năng lượng của ánh sáng mặt trời: hào sảng, chính trực, nhiệt tình và thích giúp đỡ người khác mà không tính toán thiệt hơn. Thích hợp làm việc trong môi trường công chúng hoặc quản lý.',
-    strengths: 'Quang minh lỗi lạc, giàu lòng nhân ái, nhiệt huyết lan tỏa, có uy tín xã hội cao.',
-    cautions: 'Dễ nóng vội, làm việc theo cảm hứng nhất thời hoặc quá bộc trực gây mất lòng người khác.',
-  },
-  THAI_AM: {
-    title: 'Sao Thái Âm — Mặt Trăng Dịu Dàng & Trực Giác Tinh Tế',
-    nature: 'Âm Thủy, Bắc Đẩu Tinh, Chủ về Điền Sản, Tài Bạch và người mẹ / người vợ.',
-    layman: 'Thái Âm đại diện cho vầng trăng rằm: dịu dàng, lãng mạn, thông minh và có trực giác thấu hiểu tâm lý cực nhạy. Người có Thái Âm thường yêu cái đẹp, khéo léo trong giao tiếp và tích lũy điền sản rất giỏi.',
-    strengths: 'Trực giác bén nhạy, giàu tình cảm, có mắt thẩm mỹ, khả năng tích lũy tài sản bền vững.',
-    cautions: 'Tâm trạng dễ dao động theo cảm xúc, hay suy nghĩ nhiều về đêm hoặc thiếu quyết đoán.',
-  },
-  VU_KHUC: {
-    title: 'Sao Vũ Khúc — Tài Tinh Cương Trực & Năng Lực Hành Động',
-    nature: 'Âm Kim, Bắc Đẩu Tinh, Chủ về Tài Bạch, tiền bạc và sự quả cảm.',
-    layman: 'Vũ Khúc là thần tài thực tế và quả cảm. Người có sao này rất chăm chỉ, coi trọng chữ tín, làm việc dứt khoát và có đầu óc tính toán tài chính kinh doanh sắc bén.',
-    strengths: 'Quyết đoán, kiên định, có năng khiếu kinh doanh và tài chính, nói ít làm nhiều.',
-    cautions: 'Tính cách hơi khô khan, ít bộc lộ cảm xúc yêu thương, dễ bị hiểu lầm là lạnh lùng.',
-  },
-  THIEN_DONG: {
-    title: 'Sao Thiên Đồng — Phúc Tinh Hỷ Lạc & Tâm Hồn Trong Sáng',
-    nature: 'Dương Thủy, Nam Đẩu Tinh, Chủ về Phúc Đức, hòa nhã và niềm vui sống.',
-    layman: 'Thiên Đồng là ngôi sao của sự trẻ trung, lạc quan và giàu lòng nhân ái. Người có Thiên Đồng dễ gần, biết tận hưởng cuộc sống, hay gặp may mắn và luôn tìm thấy niềm vui trong những điều giản dị.',
-    strengths: 'Hòa nhã, thích nghi nhanh, tấm lòng thiện lương, hậu vận hưởng an nhàn phúc thọ.',
-    cautions: 'Dễ cả thèm chóng chán, thiếu tính kỷ luật sắt đá khi gặp công việc khô khan, lặp lại.',
-  },
-  THIEN_TUONG: {
-    title: 'Sao Thiên Tướng — Vị Tướng Quân Nhân Ái & Trượng Nghĩa',
-    nature: 'Dương Thủy, Nam Đẩu Tinh, Chủ về Ấn Tín, công danh và lòng trung thành.',
-    layman: 'Thiên Tướng là vị tể tướng trượng nghĩa, có phong thái đường hoàng, thích bênh vực kẻ yếu và có tinh thần trách nhiệm rất cao. Bạn là cánh tay đắc lực trong mọi tổ chức lớn.',
-    strengths: 'Trung thực, lịch thiệp, có tài tổ chức và điều phối, uy tín cao trong tập thể.',
-    cautions: 'Dễ nể nang người khác, khó từ chối những lời thỉnh cầu dẫn đến rước họa vào thân.',
-  },
-  THIEN_LUONG: {
-    title: 'Sao Thiên Lương — Ấm Tinh Trưởng Bối & Lòng Từ Bi Bác Ái',
-    nature: 'Dương Thổ, Nam Đẩu Tinh, Chủ về Thọ Mệnh, phúc thọ và sự che chở.',
-    layman: 'Thiên Lương là bậc trưởng lão đức độ, có tâm hồn lương thiện, thích nghiên cứu triết lý, y học, giáo dục và giúp đỡ cộng đồng. Gặp nguy hiểm thường được quý nhân phù trợ tai qua nạn khỏi.',
-    strengths: 'Nhân từ, thấu cảm sâu sắc, có tư chất người thầy, khả năng hóa giải nguy nan.',
-    cautions: 'Đôi lúc có phần bảo thủ, hay giáo huấn người khác hoặc suy nghĩ quá nhiều về đạo lý.',
-  },
-  THAM_LANG: {
-    title: 'Sao Tham Lang — Đào Hoa Tinh Đa Tài & Khao Khát Trải Nghiệm',
-    nature: 'Dương Mộc / Âm Thủy, Bắc Đẩu Tinh, Chủ về Họa Phúc, dục vọng và nghệ thuật.',
-    layman: 'Tham Lang là ngôi sao đa tài, đa nghệ, năng động và có sức hút quyến rũ đặc biệt. Bạn có nhiều tham vọng, thích trải nghiệm những điều mới lạ và rất giỏi nắm bắt tâm lý người khác.',
-    strengths: 'Năng động, tài hoa, giao thiệp rộng rãi, khả năng thích ứng tuyệt vời.',
-    cautions: 'Cần kiểm soát lòng tham và các thú vui nhất thời để không làm phân tán nguồn lực cốt lõi.',
-  },
-  CU_MON: {
-    title: 'Sao Cự Môn — Ám Tinh Trí Tuệ, Hùng Biện & Tư Duy Phản Biện',
-    nature: 'Âm Thủy, Bắc Đẩu Tinh, Chủ về Ngôn Ngữ, khẩu tài và sự phân tích sâu.',
-    layman: 'Cự Môn là cánh cổng lớn của tri thức và ngôn từ. Người có Cự Môn có năng khiếu hùng biện, tư duy phản biện sắc sảo, thích tìm hiểu đến tận cội nguồn sự việc và có khả năng nghiên cứu sâu.',
-    strengths: 'Ăn nói lưu loát, tư duy logic phản biện bén nhạy, quan sát tinh tế.',
-    cautions: 'Dễ vướng vào thị phi khẩu thiệt do lời nói thẳng thắn; cần học cách uốn lưỡi trước khi nói.',
-  },
-  THAT_SAT: {
-    title: 'Sao Thất Sát — Dũng Tướng Tiên Phong & Ý Chí Thép',
-    nature: 'Dương Kim / Hỏa, Nam Đẩu Tinh, Chủ về Uy Quyền, sát phạt và đột phá.',
-    layman: 'Thất Sát là thanh gươm báu xông pha trận mạc. Bạn có ý chí sắt đá, quyết đoán, dám nghĩ dám làm và không bao giờ chùn bước trước bất kỳ khó khăn thử thách nào.',
-    strengths: 'Dũng cảm, quyết đoán, dám chịu trách nhiệm, khả năng đột phá xoay chuyển cục diện.',
-    cautions: 'Tính cách có phần nóng nảy, độc đoán; cần rèn thêm sự điềm tĩnh và lắng nghe.',
-  },
-  PHA_QUAN: {
-    title: 'Sao Phá Quân — Ngôi Sao Cách Mạng & Đổi Mới Toàn Diện',
-    nature: 'Âm Thủy, Bắc Đẩu Tinh, Chủ về Hao Tán, phá cũ dựng mới và sáng tạo.',
-    layman: 'Phá Quân là nhà cách mạng táo bạo, dám đập tan những lối mòn cũ kỹ để xây dựng lại từ đầu. Cuộc đời bạn thường trải qua những bước ngoặt lớn đầy kịch tính nhưng mang lại thành tựu rực rỡ.',
-    strengths: 'Sáng tạo đột phá, không ngại thay đổi, ý chí quật cường, bản lĩnh tiên phong.',
-    cautions: 'Tránh tính khí thất thường hoặc mạo hiểm thái quá; cần có kế hoạch dự phòng an toàn.',
-  },
-  LIEM_TRINH: {
-    title: 'Sao Liêm Trinh — Tù Tinh Cương Nghị & Nguyên Tắc Sắt Đá',
-    nature: 'Âm Hỏa, Bắc Đẩu Tinh, Chủ về Quan Lộc, pháp luật và sự liêm khiết.',
-    layman: 'Liêm Trinh đại diện cho sự liêm chính, kỷ luật thép và tinh thần trách nhiệm cao. Người có Liêm Trinh rất trọng chữ tín, làm việc nghiêm túc, có phong thái tự tin và năng lực quản lý xuất sắc.',
-    strengths: 'Chính trực, nguyên tắc, mẫn cán, có óc quan sát và kỷ luật tự giác cao.',
-    cautions: 'Đôi lúc quá khắt khe với bản thân và người xung quanh; cần mở lòng bao dung hơn.',
-  },
-  THIEN_CO: {
-    title: 'Sao Thiên Cơ — Thiện Tinh Mưu Lược & Trí Tuệ Siêu Việt',
-    nature: 'Âm Mộc, Nam Đẩu Tinh, Chủ về Trí Tuệ, mưu lược và sự linh hoạt.',
-    layman: 'Thiên Cơ là quân sư thông thái, có bộ óc tính toán siêu việt, tiếp thu thông tin nhanh chóng và luôn có giải pháp cho mọi tình huống khó khăn. Thích hợp với công việc cố vấn, nghiên cứu, công nghệ.',
-    strengths: 'Thông minh, quyền biến, sáng tạo, mưu lược sắc sảo, học một biết mười.',
-    cautions: 'Dễ suy nghĩ quá nhiều dẫn đến căng thẳng thần kinh; cần tập trung hành động dứt khoát.',
-  },
-};
+> = Object.fromEntries(
+  Object.entries(TUVI_STAR_PROFILES).map(([code, profile]) => [
+    code,
+    {
+      title: `Sao ${profile.name} (${profile.yinYang === "DUONG" ? "Dương" : "Âm"} ${profile.element})`,
+      nature: `${profile.category} hành ${profile.element}, âm dương ${profile.yinYang}. Chủ quản ${profile.themes.join(", ")}.`,
+      layman: `Biểu trưng cho ${profile.constructive.slice(0, 2).join(" và ")}. Động lực: ${profile.dynamics.join(", ")}.`,
+      strengths: profile.constructive.join(", "),
+      cautions: profile.shadow.join(", "),
+    },
+  ])
+);
 
 export const BRANCH_VN: Record<string, string> = {
   TY_RAT: 'Tý',
@@ -651,104 +568,17 @@ export const PALACE_INFO: Record<
     coreAdvice: string;
     challenges: string;
   }
-> = {
-  MENH: {
-    meaning: 'Cốt cách, bản tính, tư chất và vận mệnh tổng quan cả đời',
-    beginnerGuide:
-      'Cung Mệnh là cung quan trọng nhất trong lá số Tử Vi, ví như gốc rễ của một cái cây. Nó quyết định diện mạo, tính khí bẩm sinh, tài năng và khả năng vượt qua nghịch cảnh của bạn.',
-    coreAdvice:
-      'Bạn sở hữu nội lực thâm hậu, chữ tín cao và khả năng dẫn dắt tốt. Hãy kiên định với mục tiêu dài hạn và luôn trau dồi tri thức.',
-    challenges: 'Đôi khi quá nguyên tắc hoặc tự tạo áp lực lớn cho bản thân.',
-  },
-  PHU_MAU: {
-    meaning: 'Tình cảm với cha mẹ, phúc ấm gia đình và sự nâng đỡ của bậc tiền bối',
-    beginnerGuide:
-      'Cung Phụ Mẫu phản ánh sự gắn kết giữa bạn và đấng sinh thành, mức độ thừa hưởng phúc đức, giáo dục gia đình và sự trợ giúp của cấp trên.',
-    coreAdvice:
-      'Hiếu kính với cha mẹ và luôn lắng nghe lời chỉ dạy từ những người đi trước giàu kinh nghiệm để tránh vấp ngã.',
-    challenges: 'Khoảng cách thế hệ đôi lúc gây bất đồng quan điểm, cần kiên nhẫn đối thoại.',
-  },
-  PHUC_DUC: {
-    meaning: 'Phúc phận tổ tiên, đời sống tinh thần và sự an lạc tâm hồn',
-    beginnerGuide:
-      'Cung Phúc Đức là linh hồn của lá số, quyết định bạn có được an vui, may mắn lúc hoạn nạn hay không. Phúc Đức tốt có thể hóa giải nhiều tai ương.',
-    coreAdvice:
-      'Tích đức hành thiện, giữ tâm hồn thanh thản, chăm sóc gia tiên và nuôi dưỡng đời sống nội tâm phong phú.',
-    challenges: 'Dễ suy nghĩ nhiều hoặc lo âu viển vông khi gặp nghịch cảnh.',
-  },
-  DIEN_TRACH: {
-    meaning: 'Nhà cửa, đất đai, bất động sản và môi trường an cư',
-    beginnerGuide:
-      'Cung Điền Trạch cho biết khả năng tự mua nhà, tích lũy đất đai, nơi ăn chốn ở và phong thủy không gian sống của bạn.',
-    coreAdvice:
-      'Tích lũy tài sản an toàn, hướng đến việc sở hữu bất động sản dài hạn thay vì lướt sóng mạo hiểm.',
-    challenges: 'Tránh tranh chấp giấy tờ pháp lý liên quan đến đất đai và tài sản gia đình.',
-  },
-  QUAN_LOC: {
-    meaning: 'Công danh, sự nghiệp, học vấn và vị thế công việc',
-    beginnerGuide:
-      'Cung Quan Lộc xem đường học tập, thi cử, việc làm, cơ hội thăng tiến và phong cách làm việc chuyên môn của bạn.',
-    coreAdvice:
-      'Phát huy thế mạnh chuyên môn, kiên trì theo đuổi 1-2 lĩnh vực mũi nhọn để đạt vị trí vững chắc trong xã hội.',
-    challenges: 'Tránh nôn nóng muốn thành công nhanh hoặc đứng núi này trông núi nọ.',
-  },
-  NO_BOC: {
-    meaning: 'Bạn bè, đồng nghiệp, cấp dưới và các mối quan hệ xã giao',
-    beginnerGuide:
-      'Cung Nô Bộc (còn gọi là Cung Giao Hữu) phản ánh bạn bè xung quanh, thuộc cấp dưới quyền và những người bạn tiếp xúc thường nhật.',
-    coreAdvice:
-      'Chọn bạn mà chơi, đối đãi với cấp dưới và đồng nghiệp bằng sự công tâm, chân thành và tôn trọng.',
-    challenges: 'Cẩn trọng với những lời tâng bốc và tránh cho vay mượn tiền bạc không minh bạch.',
-  },
-  THIEN_DI: {
-    meaning: 'Giao tiếp xã hội bên ngoài, đi lại, xuất ngoại và cơ hội phương xa',
-    beginnerGuide:
-      'Cung Thiên Di đối chiếu trực tiếp với Cung Mệnh, phản ánh bạn khi bước chân ra xã hội: có được quý nhân giúp đỡ, có hợp xuất ngoại hay lập nghiệp phương xa.',
-    coreAdvice:
-      'Mạnh dạn bước ra thế giới, thích nghi linh hoạt với môi trường mới và mở rộng quan hệ đối ngoại.',
-    challenges: 'Chú ý an toàn khi đi xa và cẩn thận trong việc ký kết các thỏa thuận bên ngoài.',
-  },
-  TAT_ACH: {
-    meaning: 'Sức khỏe, thể trạng thể chất và các bệnh lý cần phòng ngừa',
-    beginnerGuide:
-      'Cung Tật Ách cho biết những cơ quan nội tạng dễ yếu ớt trong cơ thể và các rủi ro sức khỏe bạn cần chủ động phòng tránh.',
-    coreAdvice:
-      'Duy trì lối sống điều độ, khám sức khỏe định kỳ và rèn luyện thể dục thể thao mỗi ngày.',
-    challenges: 'Tránh làm việc kiệt sức hoặc bỏ qua những dấu hiệu cảnh báo sớm của cơ thể.',
-  },
-  TAI_BACH: {
-    meaning: 'Tiền tài, dòng tiền, cách kiếm tiền và khả năng tích lũy của cải',
-    beginnerGuide:
-      'Cung Tài Bạch xem nguồn tài lộc đến từ đâu, cách bạn chi tiêu và khả năng giữ tiền. Tiền bạc ở đây là tiền thực tế bạn làm ra.',
-    coreAdvice:
-      'Chi tiêu có kế hoạch, đa dạng hóa các nguồn thu nhập chính đáng và đầu tư dài hạn an toàn.',
-    challenges: 'Tránh tâm lý ham giàu nhanh vào các canh bạc đầu cơ rủi ro cao.',
-  },
-  TU_TUC: {
-    meaning: 'Con cái, đường sinh nở và sự thành đạt của thế hệ sau',
-    beginnerGuide:
-      'Cung Tử Tức phản ánh đường con cái, mức độ hiếu thảo, tính cách con trẻ và niềm vui bạn nhận được từ thế hệ tương lai.',
-    coreAdvice:
-      'Lắng nghe và làm bạn cùng con, đầu tư vào giáo dục nhân cách thay vì chỉ nuông chiều vật chất.',
-    challenges: 'Không nên áp đặt kỳ vọng của cha mẹ lên ước mơ của con cái.',
-  },
-  PHU_THE: {
-    meaning: 'Hôn nhân, tình cảm vợ chồng và phẩm hạnh người bạn đời',
-    beginnerGuide:
-      'Cung Phu Thê xem duyên nợ lứa đôi, tính cách và hoàn cảnh của người bạn đời, mức độ hòa thuận trong đời sống gia đình.',
-    coreAdvice:
-      'Tôn trọng sự khác biệt, bao dung với khuyết điểm của đối phương và duy trì sự đối thoại chân thành mỗi ngày.',
-    challenges: 'Cái tôi quá lớn dễ dẫn đến tranh cãi vặt, cần người này nóng thì người kia nên nhịn.',
-  },
-  HUYNH_DE: {
-    meaning: 'Anh chị em ruột thịt và tình cảm ruột thịt trong gia đình',
-    beginnerGuide:
-      'Cung Huynh Đệ phản ánh mối quan hệ giữa bạn và anh chị em ruột, mức độ nương tựa hỗ trợ lẫn nhau trong lúc khó khăn.',
-    coreAdvice:
-      'Gìn giữ tình cảm anh em hòa thuận, hỗ trợ lẫn nhau với tinh thần "lá lành đùm lá rách".',
-    challenges: 'Phân định rạch ròi giữa tình cảm gia đình và lợi ích tiền bạc để tránh bất hòa.',
-  },
-};
+> = Object.fromEntries(
+  Object.entries(TUVI_PALACE_PROFILES).map(([code, profile]) => [
+    code,
+    {
+      meaning: profile.coreFocus,
+      beginnerGuide: `Cung ${profile.name} chi phối ${profile.themes.join(", ")}. Cơ chế vận hành: ${profile.dynamics.join(", ")}.`,
+      coreAdvice: `Phát huy ${profile.constructive.join(", ")}.`,
+      challenges: `Lưu ý phòng ngừa ${profile.shadow.join(", ")}.`,
+    },
+  ])
+);
 
 // 8. TỨ HÓA THEO THIÊN CAN NĂM SINH
 export const TU_HOA_TABLE: Record<

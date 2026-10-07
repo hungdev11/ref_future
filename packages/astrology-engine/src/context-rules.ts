@@ -13,7 +13,7 @@ import {
   getPlanetInSignInsight,
   getAspectInsight,
   synthesizeNatalChart,
-} from './planetary-interpretations.js';
+} from './interpretations.js';
 
 export interface AstrologyContextEvaluation {
   signals: SemanticSignal[];
