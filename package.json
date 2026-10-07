@@ -10,7 +10,9 @@
   "scripts": {
     "dev": "npm run --workspace=@mystic/web dev",
     "clean": "npm run --workspace=@mystic/web clean",
-    "build": "npm run --workspaces build",
+    "prisma:generate": "npm run --workspace=@mystic/database prisma:generate",
+    "build:packages": "npm run --workspace=@mystic/core build && npm run prisma:generate && npm run --workspace=@mystic/database build && npm run --workspace=@mystic/knowledge-base build && npm run --workspace=@mystic/numerology-engine build && npm run --workspace=@mystic/tuvi-engine build && npm run --workspace=@mystic/tarot-engine build && npm run --workspace=@mystic/astrology-engine build && npm run --workspace=@mystic/rule-engine build && npm run --workspace=@mystic/template-engine build && npm run --workspace=@mystic/interpretation-engine build",
+    "build": "npm run build:packages && npm run --workspace=@mystic/web build",
     "test": "vitest run"
   },
   "devDependencies": {
