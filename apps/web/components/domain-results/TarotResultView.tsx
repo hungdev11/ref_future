@@ -2,13 +2,12 @@
 
 import React from 'react';
 import type { DeepMysticosResult } from '@mystic/core';
+import { humanizeCardCode } from '@mystic/interpretation-engine';
 import { PatternStory } from '../primitives/PatternStory';
 import { CardInteractionBlock } from '../primitives/CardInteractionBlock';
 import { InsightBlock } from '../primitives/InsightBlock';
 import { ScenarioBlock } from '../primitives/ScenarioBlock';
-import { NextQuestionBlock } from '../primitives/NextQuestionBlock';
 import { WhyDrawer } from '../primitives/WhyDrawer';
-import { TechnicalDetails } from '../result/TechnicalDetails';
 import { Compass, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 export interface TarotResultViewProps {
@@ -16,49 +15,20 @@ export interface TarotResultViewProps {
   className?: string;
 }
 
-const TAROT_CARD_NAMES: Record<string, string> = {
-  MAJOR_0: '0 — The Fool (Chàng Khờ)',
-  MAJOR_00_FOOL: '0 — The Fool (Chàng Khờ)',
-  MAJOR_1: 'I — The Magician (Pháp Sư)',
-  MAJOR_01_MAGICIAN: 'I — The Magician (Pháp Sư)',
-  MAJOR_2: 'II — The High Priestess (Nữ Giáo Hoàng)',
-  MAJOR_02_HIGH_PRIESTESS: 'II — The High Priestess (Nữ Giáo Hoàng)',
-  MAJOR_3: 'III — The Empress (Nữ Hoàng)',
-  MAJOR_03_EMPRESS: 'III — The Empress (Nữ Hoàng)',
-  MAJOR_4: 'IV — The Emperor (Hoàng Đế)',
-  MAJOR_04_EMPEROR: 'IV — The Emperor (Hoàng Đế)',
-  MAJOR_5: 'V — The Hierophant (Thầy Giáo Hoàng)',
-  MAJOR_05_HIEROPHANT: 'V — The Hierophant (Thầy Giáo Hoàng)',
-  MAJOR_6: 'VI — The Lovers (Người Tình)',
-  MAJOR_06_LOVERS: 'VI — The Lovers (Người Tình)',
-  MAJOR_7: 'VII — The Chariot (Cỗ Xe)',
-  MAJOR_07_CHARIOT: 'VII — The Chariot (Cỗ Xe)',
-  MAJOR_8: 'VIII — Strength (Sức Mạnh)',
-  MAJOR_08_STRENGTH: 'VIII — Strength (Sức Mạnh)',
-  MAJOR_9: 'IX — The Hermit (Ẩn Sĩ)',
-  MAJOR_09_HERMIT: 'IX — The Hermit (Ẩn Sĩ)',
-  MAJOR_16: 'XVI — The Tower (Tòa Tháp)',
-  MAJOR_16_TOWER: 'XVI — The Tower (Tòa Tháp)',
-  PENTACLES_7: '7 of Pentacles',
-  MINOR_PENTACLES_7: '7 of Pentacles',
-  CUPS_8: '8 of Cups',
-  MINOR_CUPS_8: '8 of Cups',
-  SWORDS_3: '3 of Swords',
-  MINOR_SWORDS_3: '3 of Swords',
-  WANDS_1: 'Ace of Wands',
-  MINOR_WANDS_1: 'Ace of Wands',
-};
-
 function formatCard(val: unknown): string {
   if (typeof val !== 'string') return String(val);
-  if (TAROT_CARD_NAMES[val]) return TAROT_CARD_NAMES[val];
-  const normalized = val.replace(/^MINOR_/, '');
-  if (TAROT_CARD_NAMES[normalized]) return TAROT_CARD_NAMES[normalized];
-  return val
-    .replace(/^MAJOR_/, 'Major Arcana ')
-    .replace(/^MINOR_/, '')
-    .replace(/_/g, ' ')
-    .trim();
+  const humanized = humanizeCardCode(val);
+  return humanized.title;
+}
+
+function formatInteractionName(sig: string): string {
+  const clean = sig.replace(/^SIG_CTX_|^SIG_/i, '').replace(/_/g, ' ').trim();
+  const cardMatch = sig.match(/(MAJOR_\d+|MINOR_[A-Z]+_\d+|[A-Z]+_\d+)/i);
+  if (cardMatch) {
+    const card = humanizeCardCode(cardMatch[1]);
+    return card.nameVn;
+  }
+  return clean;
 }
 
 export function TarotResultView({
@@ -74,20 +44,25 @@ export function TarotResultView({
 
   const school = result.metadata?.school || 'Rider-Waite-Smith';
 
-  // Extract card sequence from facts
-  const cardFacts = (result.facts || []).filter(
-    (f) =>
-      f.key === 'cardCode' ||
-      f.key.startsWith('card') ||
-      f.key.includes('cardName') ||
-      f.key.includes('card_')
-  );
+  // Extract clean card sequence from facts (exclude numeric card_number or meta keys)
+  const seenCards = new Set<string>();
+  const cardFacts = (result.facts || []).filter((f) => {
+    if (typeof f.value !== 'string') return false;
+    const str = f.value.toUpperCase();
+    if (!str.startsWith('MAJOR_') && !str.startsWith('MINOR_') && !str.includes('_')) return false;
+    if (f.key.includes('card_number') || f.key.includes('deck')) return false;
+    if (seenCards.has(str)) return false;
+    seenCards.add(str);
+    return true;
+  });
+
+  const SPREAD_ROLES = ['QUÁ KHỨ (CỘI NGUỒN)', 'HIỆN TẠI (ĐIỂM TỰA)', 'XU HƯỚNG TƯƠNG LAI', 'CĂN NGUYÊN', 'KẾT QUẢ'];
 
   const cardSequence =
     cardFacts.length > 0
       ? cardFacts.map((f, idx) => ({
           name: formatCard(f.value),
-          role: f.key === 'cardCode' ? `LÁ BÀI 0${idx + 1}` : f.key.toUpperCase(),
+          role: SPREAD_ROLES[idx] || `LÁ BÀI 0${idx + 1}`,
           tag: 'LÁ BÀI',
         }))
       : (result.primaryPatterns || []).map((p, idx) => ({
@@ -96,14 +71,18 @@ export function TarotResultView({
           tag: 'HÌNH THÁI',
         }));
 
-  // Map relationships to interactions
-  const cardInteractions = (result.relationships || []).map((r) => ({
-    source: r.sourceSignalId.replace(/^SIG_CTX_|^SIG_/i, '').replace(/_/g, ' '),
-    target: r.targetSignalId.replace(/^SIG_CTX_|^SIG_/i, '').replace(/_/g, ' '),
-    type: r.type,
-    description: r.description,
-    intensity: r.intensity,
-  }));
+  // Map relationships to interactions using clear card labels
+  const cardInteractions = (result.relationships || []).map((r, idx) => {
+    const cardA = cardSequence[idx]?.name || 'Lá Bài Khởi Đầu';
+    const cardB = cardSequence[idx + 1]?.name || 'Lá Bài Chuyển Tiếp';
+    return {
+      source: cardA.split('(')[0]?.trim() || cardA,
+      target: cardB.split('(')[0]?.trim() || cardB,
+      type: r.type,
+      description: r.description,
+      intensity: r.intensity,
+    };
+  });
 
   // Extract reflections / guidance
   const guidanceItems = result.guidance || [];
@@ -254,21 +233,13 @@ export function TarotResultView({
         </section>
       )}
 
-      {/* 7. Next Question Suggestions */}
-      {result.nextQuestions && result.nextQuestions.length > 0 && (
-        <section aria-label="Gợi Ý Khảo Cứu Tiếp Theo">
-          <NextQuestionBlock questions={result.nextQuestions} />
-        </section>
-      )}
-
-      {/* 8. Progressive Disclosure */}
-      <section aria-label="Minh Bạch & Kỹ Thuật" className="space-y-6">
+      {/* 7. Progressive Disclosure */}
+      <section aria-label="Minh Bạch Suy Luận" className="space-y-6">
         <WhyDrawer
           result={result}
           label="Vì sao tôi nhận được kết quả này?"
-          description="Truy vết tất định 100% qua 6 tầng lập luận logic và thư tịch cổ Rider-Waite."
+          description="Truy vết logic tất định 100% qua các lá bài thực tế và thư tịch kinh điển Rider-Waite 1911."
         />
-        <TechnicalDetails rawResult={result} />
       </section>
     </article>
   );

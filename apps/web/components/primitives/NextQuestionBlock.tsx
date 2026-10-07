@@ -12,6 +12,14 @@ export interface NextQuestionBlockProps {
   className?: string;
 }
 
+const DOMAIN_LABEL_VN: Record<string, string> = {
+  tuvi: 'Góc nhìn Tử Vi',
+  astrology: 'Chiêm Tinh Học',
+  tarot: 'Chiêm Nghiệm Tarot',
+  numerology: 'Thần Số Học',
+  compatibility: 'Độ Tương Hợp',
+};
+
 export function NextQuestionBlock({
   questions = [],
   onSelectQuestion,
@@ -69,8 +77,8 @@ export function NextQuestionBlock({
 
             <div className="flex items-center gap-2 shrink-0 pt-1">
               {q.targetDomain && (
-                <span className="font-mono text-[10px] text-stone uppercase tracking-wider hidden sm:inline-block">
-                  [{q.targetDomain}]
+                <span className="font-mono text-[10px] text-accentGold uppercase tracking-wider hidden sm:inline-block border border-borderDark px-2 py-0.5">
+                  {DOMAIN_LABEL_VN[q.targetDomain.toLowerCase()] || q.targetDomain}
                 </span>
               )}
               <span className="font-mono text-accentGold text-sm select-none">

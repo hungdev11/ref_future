@@ -17,6 +17,14 @@ import { ResultDepthEngine } from './depth-engine.js';
 import { QuestionReactiveEngine } from './question-reactive-engine.js';
 import { MainStoryEngine, CATEGORY_VN } from './main-story-engine.js';
 import { ScenarioEngine } from './scenario-engine.js';
+import {
+  resolveDomainContextAndEntities,
+  humanizeCardCode,
+  humanizeZodiac,
+  ZODIAC_VN_MAP,
+  TUVI_STAR_VN_MAP,
+  TUVI_PALACE_VN_MAP,
+} from './entity-humanizer.js';
 
 export { CATEGORY_VN };
 
@@ -93,6 +101,39 @@ function humanizeSemantic(tag: string): string {
 
 function humanizeSignal(sig: string): string {
   if (SIGNAL_DICTIONARY[sig]) return SIGNAL_DICTIONARY[sig];
+
+  const upper = sig.toUpperCase();
+
+  // Check tarot card code inside signal
+  const cardMatch = upper.match(/(?:CARDCODE_|CARD_)?(MAJOR_[A-Z0-9_]+|MINOR_[A-Z0-9_]+|[A-Z]+_\d+_[A-Z0-9]+)/);
+  if (cardMatch && cardMatch[1]) {
+    const card = humanizeCardCode(cardMatch[1]);
+    return `lá bài ${card.nameVn}`;
+  }
+
+  // Check position index
+  const posMatch = upper.match(/POSITION(?:INDEX)?_(\d+)/);
+  if (posMatch && posMatch[1]) {
+    const pIdx = parseInt(posMatch[1], 10);
+    const posNames = ['vị trí khởi đầu', 'điểm tựa hiện tại', 'xu hướng tương lai', 'nền tảng cốt lõi', 'kết quả tiềm năng'];
+    return posNames[pIdx] || `vị trí thứ ${pIdx + 1} trong trải bài`;
+  }
+
+  // Check zodiac
+  for (const [zKey, zName] of Object.entries(ZODIAC_VN_MAP)) {
+    if (upper.includes(zKey)) return `cung ${zName}`;
+  }
+
+  // Check Tu Vi star
+  for (const [sKey, sName] of Object.entries(TUVI_STAR_VN_MAP)) {
+    if (upper.includes(sKey)) return `sao ${sName}`;
+  }
+
+  // Check Tu Vi palace
+  for (const [pKey, pName] of Object.entries(TUVI_PALACE_VN_MAP)) {
+    if (upper.includes(pKey)) return pName;
+  }
+
   return sig
     .replace(/^SIG_CTX_|^SIG_/i, '')
     .replace(/_/g, ' ')
@@ -229,20 +270,144 @@ export class MysticosResultBuilder {
       });
     }
 
-    // 3. Relationships
+    // 3. Relationships with authentic causal dynamics
     const relationships: Relationship[] = [];
-    for (let i = 0; i < signals.length - 1; i++) {
-      const s1 = signals[i];
-      const s2 = signals[i + 1];
-      if (!s1 || !s2) continue;
-      relationships.push({
-        relationshipId: `REL_${i}`,
-        type: s1.polarity === s2.polarity ? 'reinforcement' : 'tension',
-        sourceSignalId: s1.signalId,
-        targetSignalId: s2.signalId,
-        description: `Tương tác giữa ${s1.type} và ${s2.type}`,
-        intensity: (s1.strength + s2.strength) / 2,
+
+    if (params.domain === 'tarot') {
+      const cardFacts = params.facts.filter((f) => {
+        const v = String(f.value).toUpperCase();
+        return (v.startsWith('MAJOR_') || v.startsWith('MINOR_')) && !f.key.includes('card_number');
       });
+
+      if (cardFacts.length >= 2) {
+        for (let i = 0; i < cardFacts.length - 1; i++) {
+          const c1 = humanizeCardCode(String(cardFacts[i]?.value));
+          const c2 = humanizeCardCode(String(cardFacts[i + 1]?.value));
+          const isTension = i % 2 === 0;
+          const relType = isTension ? 'tension' : 'reinforcement';
+
+          let description = '';
+          if (i === 0) {
+            description = `Nền tảng từ ${c1.nameVn} trực tiếp kích hoạt hoàn cảnh của ${c2.nameVn} ở chặng kế tiếp. Mọi biến chuyển đương thời đều bắt nguồn từ những hạt mầm kinh nghiệm đã xác lập trước đó.`;
+          } else if (i === cardFacts.length - 2) {
+            description = `Để tháo gỡ điểm nghẽn và hoàn tất chặng đường của ${c1.nameVn}, chiếc chìa khóa mở lối tất yếu nằm ở tinh thần của ${c2.nameVn} — chuyển hóa nhận thức thành hành động thực tế vững vàng.`;
+          } else {
+            description = `Sự tiếp nối giữa năng lượng của ${c1.nameVn} và ${c2.nameVn} đòi hỏi sự điều chỉnh nhịp điệu linh hoạt để duy trì đà phát triển ổn định qua từng chặng thử thách.`;
+          }
+
+          relationships.push({
+            relationshipId: `REL_TAROT_STEP_${i}_${i + 1}`,
+            type: relType,
+            sourceSignalId: String(cardFacts[i]?.value),
+            targetSignalId: String(cardFacts[i + 1]?.value),
+            description,
+            intensity: 0.85,
+          });
+        }
+      }
+    } else if (params.domain === 'astrology') {
+      const sunSign = params.facts.find((f) => f.key.includes('sun.sign') || f.key === 'sun')?.value;
+      const moonSign = params.facts.find((f) => f.key.includes('moon.sign') || f.key === 'moon')?.value;
+      const ascSign = params.facts.find((f) => f.key.toLowerCase().includes('ascendant') || f.key === 'asc')?.value;
+
+      if (sunSign && moonSign) {
+        const sVn = humanizeZodiac(String(sunSign));
+        const mVn = humanizeZodiac(String(moonSign));
+        relationships.push({
+          relationshipId: 'REL_ASTRO_SUN_MOON',
+          type: 'contrast',
+          sourceSignalId: `SUN_${sunSign}`,
+          targetSignalId: `MOON_${moonSign}`,
+          description: `Sự đối thoại giữa khát vọng tỏa sáng của Mặt Trời ${sVn} và nhu cầu an toàn nội tâm của Mặt Trăng ${mVn} đòi hỏi sự dung hòa giữa tham vọng lớn và sự bình an tâm lý.`,
+          intensity: 0.85,
+        });
+      }
+
+      if (sunSign && ascSign) {
+        const sVn = humanizeZodiac(String(sunSign));
+        const aVn = humanizeZodiac(String(ascSign));
+        relationships.push({
+          relationshipId: 'REL_ASTRO_SUN_ASC',
+          type: 'reinforcement',
+          sourceSignalId: `SUN_${sunSign}`,
+          targetSignalId: `ASC_${ascSign}`,
+          description: `Năng lượng cốt lõi của Mặt Trời ${sVn} tìm kiếm phương thức bộc lộ thông qua cánh cổng Cung Mọc ${aVn}, tạo nên phong cách tương tác đặc trưng với thế giới bên ngoài.`,
+          intensity: 0.8,
+        });
+      }
+    } else if (params.domain === 'tuvi') {
+      relationships.push({
+        relationshipId: 'REL_TUVI_MENH_THAN',
+        type: 'reinforcement',
+        sourceSignalId: 'MENH_CORE',
+        targetSignalId: 'THAN_CORE',
+        description: 'Sự chuyển giao vận trình từ Cung Mệnh sang Cung Thân: Khí chất bẩm sinh dần được tôi luyện thành bản lĩnh hành động thực tế từ trung vận.',
+        intensity: 0.85,
+      });
+
+      relationships.push({
+        relationshipId: 'REL_TUVI_TAM_PHUONG',
+        type: 'amplification',
+        sourceSignalId: 'MENH_CORE',
+        targetSignalId: 'QUAN_TAI_AXIS',
+        description: 'Năng lượng của chính tinh bản mệnh phối chiếu chặt chẽ với cung Quan Lộc và Tài Bạch, xác lập cơ chế chuyển hóa năng lực cá nhân thành thành tựu công danh và sinh kế thực chất.',
+        intensity: 0.8,
+      });
+    } else if (params.domain === 'numerology') {
+      const lp = params.facts.find((f) => f.key.toLowerCase().includes('lifepath') && typeof f.value === 'number')?.value;
+      const destiny = params.facts.find((f) => f.key.toLowerCase().includes('destiny') && typeof f.value === 'number')?.value;
+      const py = params.facts.find((f) => f.key.toLowerCase().includes('personalyear') && typeof f.value === 'number')?.value;
+
+      if (lp && destiny) {
+        relationships.push({
+          relationshipId: 'REL_NUM_LP_DESTINY',
+          type: 'reinforcement',
+          sourceSignalId: `LP_${lp}`,
+          targetSignalId: `DESTINY_${destiny}`,
+          description: `Con số Đường Đời ${lp} cung cấp con đường trải nghiệm và bài học trưởng thành, trong khi con số Sứ Mệnh ${destiny} trao tặng bộ công cụ và tài năng đặc thù để phụng sự mục tiêu sống.`,
+          intensity: 0.85,
+        });
+      }
+
+      if (lp && py) {
+        relationships.push({
+          relationshipId: 'REL_NUM_LP_PY',
+          type: 'tension',
+          sourceSignalId: `LP_${lp}`,
+          targetSignalId: `PY_${py}`,
+          description: `Sự cộng hưởng giữa tần số Đường Đời ${lp} và Năm Cá Nhân ${py} xác định chiến lược hành động thích hợp nhất trong năm: thời điểm thuận lợi để bứt phá hay cần củng cố nội lực.`,
+          intensity: 0.8,
+        });
+      }
+    } else if (params.domain === 'compatibility') {
+      relationships.push({
+        relationshipId: 'REL_COMPAT_DYNAMICS',
+        type: 'reinforcement',
+        sourceSignalId: 'PERSON_A',
+        targetSignalId: 'PERSON_B',
+        description: 'Mối quan hệ là tấm gương phản chiếu để cả hai cùng thấu hiểu, bổ khuyết điểm yếu và cộng hưởng thế mạnh trong mục đích đồng hành đã xác lập.',
+        intensity: 0.85,
+      });
+    }
+
+    // Fallback if domain had no specific relationships
+    if (relationships.length === 0) {
+      for (let i = 0; i < signals.length - 1; i++) {
+        const s1 = signals[i];
+        const s2 = signals[i + 1];
+        if (!s1 || !s2) continue;
+        const s1Name = humanizeSignal(s1.type);
+        const s2Name = humanizeSignal(s2.type);
+        const relTypeVn = s1.polarity === s2.polarity ? 'sự nâng đỡ tương hỗ' : 'khoảng giằng co thử thách';
+        relationships.push({
+          relationshipId: `REL_${i}`,
+          type: s1.polarity === s2.polarity ? 'reinforcement' : 'tension',
+          sourceSignalId: s1.signalId,
+          targetSignalId: s2.signalId,
+          description: `Mối liên hệ giữa ${s1Name} và ${s2Name} tạo nên ${relTypeVn} trong bối cảnh thực tế.`,
+          intensity: (s1.strength + s2.strength) / 2,
+        });
+      }
     }
 
     // 4. Patterns
@@ -261,32 +426,23 @@ export class MysticosResultBuilder {
         });
       });
     } else {
-      const primaryFacts =
-        params.facts.length > 0
-          ? params.facts
-          : [{ key: 'domain', value: params.domain, domain: params.domain, source: 'default' }];
-      const keyEntity = primaryFacts
-        .map((f) => `${f.key.split('.').pop()}_${f.value}`)
-        .join('_')
-        .toUpperCase()
-        .replace(/[^A-Z0-9_]+/g, '_');
-      const patternType = `CONTEXTUAL_${params.domain.toUpperCase()}_${keyEntity}`.slice(0, 48);
-      const headline = `Cấu Trúc Tự Nhiên ${params.domain.toUpperCase()}: ${primaryFacts
-        .map((f) => `${f.key.split('.').pop()}=${f.value}`)
-        .join(', ')}`;
+      const resolved = resolveDomainContextAndEntities(params.domain, params.facts);
+      const patternType = `CONTEXTUAL_${params.domain.toUpperCase()}`.slice(0, 48);
 
       patterns.push({
         patternId: `PAT_CTX_${params.domain.toUpperCase()}_0`,
         type: patternType,
-        headline,
+        headline: resolved.headline,
         signalIds: signals.map((s) => s.signalId),
         relationshipIds: relationships.map((r) => r.relationshipId),
-        dominance: 0.8,
-        contextFit: 0.85,
+        dominance: 0.85,
+        contextFit: 0.9,
       });
     }
 
     // 5. Interpretations
+    const resolvedContext = matchedRules.length === 0 ? resolveDomainContextAndEntities(params.domain, params.facts) : null;
+
     patterns.forEach((pat, idx) => {
       const matchedRule = matchedRules[idx];
       const polarity = matchedRule
@@ -297,12 +453,14 @@ export class MysticosResultBuilder {
         ? 'challenging'
         : 'supportive';
 
+      const statement = resolvedContext && idx === 0 ? resolvedContext.narrative : pat.headline;
+
       interpretations.push({
         interpretationId: `INT_${idx}`,
         dimension: 'overview',
         statementId: `STMT_${idx}`,
         headline: pat.headline,
-        statement: pat.headline,
+        statement,
         polarity,
         strength: pat.dominance,
         confidence: 0.95,
@@ -333,16 +491,18 @@ export class MysticosResultBuilder {
       const sigTexts = ruleSignals.map(humanizeSignal);
 
       let manifestation = '';
-      if (ruleNotes) {
-        manifestation = `Khuôn mẫu [${rulePattern}]: ${ruleNotes} Biểu hiện qua ${
+      if (resolvedContext && idx === 0) {
+        manifestation = resolvedContext.manifestation;
+      } else if (ruleNotes) {
+        manifestation = `${ruleNotes} Biểu hiện cụ thể qua ${
           semTexts.join(', ') || 'các đặc tính chủ đạo'
-        } trong đời sống và công việc.`;
+        } trong đời sống và các mối quan hệ thực tế.`;
       } else if (semTexts.length > 0) {
-        manifestation = `Khuôn mẫu [${rulePattern}] thể hiện rõ qua ${semTexts.join(' cùng ')}${
+        manifestation = `Xu thế ${rulePattern} thể hiện rõ nét qua ${semTexts.join(' cùng ')}${
           sigTexts.length > 0 ? `, nhận biết qua dấu hiệu ${sigTexts.join(', ')}` : ''
         }.`;
       } else {
-        manifestation = `Xu hướng biểu hiện cụ thể qua khuôn mẫu [${rulePattern}] trong các mối quan hệ và hành động thực tiễn.`;
+        manifestation = `Xu hướng biểu hiện cụ thể qua xu thế ${rulePattern} trong các mối quan hệ và hành động thực tiễn.`;
       }
 
       return {
@@ -375,7 +535,11 @@ export class MysticosResultBuilder {
       let whatToAdjustOrStop: string[];
       let rationale: string;
 
-      if (!isChallenging) {
+      if (resolvedContext && idx === 0) {
+        whatToContinue = resolvedContext.whatToContinue;
+        whatToAdjustOrStop = resolvedContext.whatToAdjustOrStop;
+        rationale = resolvedContext.rationale;
+      } else if (!isChallenging) {
         whatToContinue = [
           `Phát huy ${mainPositive} trong các mục tiêu và quyết định then chốt.`,
           `Duy trì ${secondaryPositive} để củng cố nền tảng phát triển bền vững.`,
@@ -535,23 +699,75 @@ export class MysticosResultBuilder {
     const primaryPatterns = patterns.length > 2 ? patterns.slice(0, 2) : patterns.slice(0, 1);
     const secondaryPatterns = patterns.length > 2 ? patterns.slice(2) : patterns.slice(1);
 
-    const candidateQuestions: NextSuggestedQuestion[] = [
-      {
-        question: `Những yếu tố nào củng cố thêm cho ${CATEGORY_VN[focus.category] || focus.category}?`,
-        context: 'Khảo sát chiều sâu năng lượng từ góc nhìn bổ trợ.',
-        targetDomain: params.domain === 'astrology' ? 'tuvi' : 'astrology',
-      },
-      {
-        question: 'Chu kỳ thời gian nào thích hợp nhất để kích hoạt chuyển biến?',
-        context: 'Nhịp điệu vận trình và dấu mốc chu kỳ thời gian.',
-        targetDomain: 'numerology',
-      },
-      {
-        question: 'Làm sao để hóa giải các điểm nghẽn tiềm ẩn khi triển khai thực tế?',
-        context: 'Chiến lược hành động và định vị thực tế.',
-        targetDomain: 'tarot',
-      },
-    ];
+    const categoryQuestions: Record<string, NextSuggestedQuestion[]> = {
+      career: [
+        {
+          question: 'Làm thế nào để hóa giải các điểm nghẽn tiềm ẩn khi triển khai dự án mới?',
+          context: 'Chiến lược ứng phó thử thách và tối ưu hành động.',
+          targetDomain: params.domain === 'tarot' ? 'astrology' : 'tarot',
+        },
+        {
+          question: 'Thời điểm nào trong chu kỳ thích hợp nhất để tăng tốc sự nghiệp?',
+          context: 'Nhịp điệu thời vận và cột mốc bứt phá.',
+          targetDomain: params.domain === 'numerology' ? 'tuvi' : 'numerology',
+        },
+      ],
+      love: [
+        {
+          question: 'Làm sao để đôi bên hóa giải bất đồng và gắn kết bền chặt hơn?',
+          context: 'Thấu hiểu khác biệt và điều chỉnh phương thức tương tác.',
+          targetDomain: params.domain === 'compatibility' ? 'tarot' : 'compatibility',
+        },
+        {
+          question: 'Nhu cầu an toàn cảm xúc nào cần được đôi bên tôn trọng trước tiên?',
+          context: 'Thế giới nội tâm và sự chữa lành trong mối quan hệ.',
+          targetDomain: params.domain === 'astrology' ? 'numerology' : 'astrology',
+        },
+      ],
+      finance: [
+        {
+          question: 'Chiến lược phân bổ nguồn lực nào giúp bảo toàn an toàn trước biến động?',
+          context: 'Quản trị rủi ro và củng cố nền tảng sinh kế.',
+          targetDomain: params.domain === 'tuvi' ? 'tarot' : 'tuvi',
+        },
+        {
+          question: 'Giai đoạn nào thích hợp để mở rộng đầu tư thay vì phòng thủ?',
+          context: 'Dấu mốc chu kỳ tài chính và vận hội phát triển.',
+          targetDomain: params.domain === 'numerology' ? 'astrology' : 'numerology',
+        },
+      ],
+      growth: [
+        {
+          question: 'Làm sao để chuyển hóa sự lo âu thành kỷ luật tự thân vững vàng?',
+          context: 'Rèn luyện nội lực và vượt qua rào cản tâm lý.',
+          targetDomain: params.domain === 'tarot' ? 'numerology' : 'tarot',
+        },
+        {
+          question: 'Bài học tiến hóa nhận thức lớn nhất trong giai đoạn hiện tại là gì?',
+          context: 'Định hướng cuộc sống và chiều sâu tâm thức.',
+          targetDomain: params.domain === 'astrology' ? 'tuvi' : 'astrology',
+        },
+      ],
+      general: [
+        {
+          question: 'Điểm tựa nào vững chắc nhất giúp bạn giữ thăng bằng trước các biến động?',
+          context: 'Khảo sát chiều sâu năng lượng từ góc nhìn bổ trợ.',
+          targetDomain: params.domain === 'astrology' ? 'tuvi' : 'astrology',
+        },
+        {
+          question: 'Chu kỳ thời gian nào thích hợp nhất để kích hoạt chuyển biến tích cực?',
+          context: 'Nhịp điệu vận trình và dấu mốc chu kỳ thời gian.',
+          targetDomain: params.domain === 'numerology' ? 'tarot' : 'numerology',
+        },
+        {
+          question: 'Làm sao để chuyển hóa điểm nghẽn hiện tại thành bước đệm phát triển?',
+          context: 'Chiến lược thích ứng và định vị thực tế.',
+          targetDomain: params.domain === 'tarot' ? 'compatibility' : 'tarot',
+        },
+      ],
+    };
+
+    const candidateQuestions = categoryQuestions[focus.category] || categoryQuestions.general || [];
     const nextQuestions = candidateQuestions.filter((q) => q.targetDomain !== params.domain);
 
     return {

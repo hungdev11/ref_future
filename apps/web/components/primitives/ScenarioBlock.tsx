@@ -40,11 +40,9 @@ export function ScenarioBlock({
             <span className="font-mono text-xs text-stone tracking-wider uppercase">
               KỊCH BẢN ĐỜI SỐNG 0{idx + 1}
             </span>
-            {item.scenarioId && (
-              <span className="font-mono text-[10px] text-stone">
-                ID: {item.scenarioId}
-              </span>
-            )}
+            <span className="font-mono text-[10px] text-accentGold uppercase">
+              TÌNH HUỐNG ỨNG DỤNG
+            </span>
           </div>
 
           <h4 className="text-lg sm:text-xl font-serif text-parchment font-medium tracking-tight">

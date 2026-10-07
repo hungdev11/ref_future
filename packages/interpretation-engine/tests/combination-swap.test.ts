@@ -41,11 +41,11 @@ describe('Combination Swap Verification Suite (Sections 44-49 & 67-70)', () => {
     const relDescriptionsB = resultB.relationships.map((r) => r.description);
 
     expect(relDescriptionsA).not.toEqual(relDescriptionsB);
-    expect(relDescriptionsA.some((d) => d.includes('SIG_REASSESSMENT_FATIGUE'))).toBe(true);
-    expect(relDescriptionsA.some((d) => d.includes('SIG_RESISTING_COLLAPSE'))).toBe(false);
+    expect(relDescriptionsA.some((d) => d.includes('Bảy Tiền') || d.includes('Pentacles') || d.includes('tái đánh giá'))).toBe(true);
+    expect(relDescriptionsA.some((d) => d.includes('Tòa Tháp') || d.includes('Tower') || d.includes('thay đổi tất yếu'))).toBe(false);
 
-    expect(relDescriptionsB.some((d) => d.includes('SIG_RESISTING_COLLAPSE'))).toBe(true);
-    expect(relDescriptionsB.some((d) => d.includes('SIG_REASSESSMENT_FATIGUE'))).toBe(false);
+    expect(relDescriptionsB.some((d) => d.includes('Tòa Tháp') || d.includes('Tower') || d.includes('thay đổi tất yếu'))).toBe(true);
+    expect(relDescriptionsB.some((d) => d.includes('Bảy Tiền') || d.includes('Pentacles') || d.includes('tái đánh giá'))).toBe(false);
 
     // 2. Central Tension Statements must be distinct
     expect(resultA.mainStory.centralTension).toBeDefined();

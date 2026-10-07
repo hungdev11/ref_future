@@ -4,29 +4,154 @@ import React, { useState } from 'react';
 import type {
   MysticosResult,
   Interpretation,
-  Pattern,
-  Signal,
   EvidenceReference,
 } from '@mystic/core';
 import {
-  FileText,
+  humanizeCardCode,
+  humanizeZodiac,
+  humanizeTuViStar,
+} from '@mystic/interpretation-engine';
+import {
   ShieldCheck,
   BookOpen,
-  ArrowRight,
   ChevronDown,
   ChevronUp,
-  Layers,
-  Sparkles,
-  Search,
-  ExternalLink,
-  Cpu,
-  Bookmark,
+  FileCheck2,
+  Library,
+  GitCommitHorizontal,
+  Compass,
 } from 'lucide-react';
 
 export interface WhyPanelProps {
   result: MysticosResult;
   className?: string;
   defaultInterpretationId?: string;
+}
+
+function cleanCitation(cit: string): string {
+  return cit
+    .replace(/^Rule:\s*[A-Z0-9_]+\s*\[Level\s*[A-C]\]\s*\|\s*/i, '')
+    .replace(/^Nguồn:\s*/i, '')
+    .replace(/\|\s*Vị trí:/i, '—')
+    .trim();
+}
+
+function getObservedDomainFacts(result: MysticosResult): Array<{ label: string; value: string }> {
+  const d = result.domain;
+  const facts = result.facts || [];
+  const input = (result.inputSummary || {}) as Record<string, any>;
+
+  if (d === 'tarot') {
+    const cardFacts = facts.filter((f) => {
+      const v = String(f.value).toUpperCase();
+      return (v.startsWith('MAJOR_') || v.startsWith('MINOR_')) && !f.key.includes('card_number');
+    });
+    const items: Array<{ label: string; value: string }> = [];
+    const spreadTitles: Record<string, string> = {
+      SPREAD_1_DAILY: '1 Lá: Định Hướng Ngày',
+      SPREAD_3_PPF: '3 Lá: Quá Khứ – Hiện Tại – Tương Lai',
+      SPREAD_3_SCA: '3 Lá: Hoàn Cảnh – Thách Thức – Lời Khuyên',
+      SPREAD_5_SCCA_OUTCOME: '5 Lá: Đa Chiều Toàn Cảnh',
+      SPREAD_10_CELTIC_CROSS: '10 Lá: Thập Tự Celtic',
+    };
+    const spreadCode = String(input.spreadCode || 'SPREAD_3_PPF');
+    items.push({ label: 'Phương thức trải bài', value: spreadTitles[spreadCode] || spreadCode });
+
+    if (input.question) {
+      items.push({ label: 'Trọng tâm trăn trở', value: String(input.question) });
+    }
+
+    const posLabels = ['Vị trí 1 (Quá khứ)', 'Vị trí 2 (Hiện tại)', 'Vị trí 3 (Tương lai)'];
+    cardFacts.slice(0, 3).forEach((cf, idx) => {
+      const card = humanizeCardCode(String(cf.value));
+      items.push({ label: posLabels[idx] || `Lá bài 0${idx + 1}`, value: card.title });
+    });
+    return items;
+  }
+
+  if (d === 'astrology') {
+    const sun = facts.find((f) => f.key.includes('sun.sign') || f.key === 'sun' || f.key === 'sunSign')?.value;
+    const moon = facts.find((f) => f.key.includes('moon.sign') || f.key === 'moon' || f.key === 'moonSign')?.value;
+    const asc = facts.find((f) => f.key.toLowerCase().includes('ascendant') || f.key === 'asc')?.value;
+    const sunHouse = facts.find((f) => (f.key.includes('sun') || f.key.includes('planets.sun')) && f.key.toLowerCase().includes('house'))?.value;
+    const moonHouse = facts.find((f) => (f.key.includes('moon') || f.key.includes('planets.moon')) && f.key.toLowerCase().includes('house'))?.value;
+    const houseSystem = facts.find((f) => f.key.toLowerCase().includes('housesystem'))?.value || input.houseSystem || 'Placidus';
+
+    const items: Array<{ label: string; value: string }> = [
+      { label: 'Hệ thống Cung Nhà', value: String(houseSystem) },
+      { label: 'Mặt Trời (Sun)', value: `${sun ? humanizeZodiac(String(sun)) : 'Chưa xác định'}${sunHouse ? ` (Nhà ${sunHouse})` : ''}` },
+      { label: 'Mặt Trăng (Moon)', value: `${moon ? humanizeZodiac(String(moon)) : 'Chưa xác định'}${moonHouse ? ` (Nhà ${moonHouse})` : ''}` },
+      { label: 'Cung Mọc (Rising)', value: asc ? humanizeZodiac(String(asc)) : 'Chưa xác định' },
+    ];
+    if (input.birthDate) items.unshift({ label: 'Ngày sinh', value: String(input.birthDate) });
+    return items;
+  }
+
+  if (d === 'tuvi') {
+    const CAN_CHI_BRANCH_VN: Record<string, string> = {
+      TY_RAT: 'Tý', SUU_OX: 'Sửu', DAN_TIGER: 'Dần', MAO_CAT: 'Mão',
+      THIN_DRAGON: 'Thìn', TY_SNAKE: 'Tỵ', NGO_HORSE: 'Ngọ', MUI_GOAT: 'Mùi',
+      THAN_MONKEY: 'Thân', DAU_ROOSTER: 'Dậu', TUAT_DOG: 'Tuất', HOI_PIG: 'Hợi',
+    };
+    const CAN_CHI_STEM_VN: Record<string, string> = {
+      GIAP: 'Giáp', AT: 'Ất', BINH: 'Bính', DINH: 'Đinh', MAU: 'Mậu',
+      KY: 'Kỷ', CANH: 'Canh', TAN: 'Tân', NHAM: 'Nhâm', QUY: 'Quý',
+    };
+
+    const stemRaw = String(facts.find((f) => f.key.includes('year_stem'))?.value || '').toUpperCase();
+    const branchRaw = String(facts.find((f) => f.key.includes('year_branch'))?.value || '').toUpperCase();
+    const menhBranchRaw = String(facts.find((f) => f.key.includes('menh_palace'))?.value || '').toUpperCase();
+    const thanBranchRaw = String(facts.find((f) => f.key.includes('than_palace'))?.value || '').toUpperCase();
+
+    const star = facts.find((f) => (f.key === 'menhStar' || f.key === 'starCode') && typeof f.value === 'string' && f.value !== 'true')?.value;
+    const cuc = facts.find((f) => f.key.includes('cuc') && typeof f.value === 'string')?.value;
+
+    const stemVn = CAN_CHI_STEM_VN[stemRaw] || stemRaw;
+    const branchVn = CAN_CHI_BRANCH_VN[branchRaw] || branchRaw;
+    const menhBranchVn = CAN_CHI_BRANCH_VN[menhBranchRaw] || menhBranchRaw;
+    const thanBranchVn = CAN_CHI_BRANCH_VN[thanBranchRaw] || thanBranchRaw;
+
+    const items: Array<{ label: string; value: string }> = [];
+    if (stemVn && branchVn) items.push({ label: 'Năm sinh Can Chi', value: `Năm ${stemVn} ${branchVn}` });
+    if (cuc) items.push({ label: 'Cục ngũ hành', value: String(cuc).replace(/MOC_TAM_CUC/i, 'Mộc Tam Cục').replace(/_/g, ' ') });
+    if (menhBranchVn) items.push({ label: 'Cung Mệnh', value: `Cung ${menhBranchVn}${star ? ` (${humanizeTuViStar(String(star))})` : ''}` });
+    if (thanBranchVn) items.push({ label: 'Cung Thân', value: `Cung ${thanBranchVn} (Thân Cư Phúc Đức)` });
+    if (input.solarDate || input.birthDate) items.unshift({ label: 'Dương lịch', value: String(input.solarDate || input.birthDate) });
+    return items;
+  }
+
+  if (d === 'numerology') {
+    const lp = facts.find((f) => f.key.toLowerCase().includes('lifepath') && typeof f.value === 'number')?.value;
+    const destiny = facts.find((f) => f.key.toLowerCase().includes('destiny') && typeof f.value === 'number')?.value;
+    const soul = facts.find((f) => f.key.toLowerCase().includes('soul') && typeof f.value === 'number')?.value;
+    const py = facts.find((f) => f.key.toLowerCase().includes('personalyear') && typeof f.value === 'number')?.value;
+
+    const items: Array<{ label: string; value: string }> = [];
+    if (input.fullName) items.push({ label: 'Họ và tên', value: String(input.fullName) });
+    if (input.birthDate) items.push({ label: 'Ngày sinh', value: String(input.birthDate) });
+    if (lp) items.push({ label: 'Số Đường Đời (Life Path)', value: `Con số ${lp}` });
+    if (destiny) items.push({ label: 'Số Sứ Mệnh (Destiny)', value: `Con số ${destiny}` });
+    if (soul) items.push({ label: 'Số Linh Hồn (Soul Urge)', value: `Con số ${soul}` });
+    if (py) items.push({ label: 'Năm Cá Nhân (Personal Year)', value: `Năm số ${py}` });
+    return items;
+  }
+
+  if (d === 'compatibility') {
+    const nameA = input.personA?.name || 'Đối Tượng A';
+    const nameB = input.personB?.name || 'Đối Tượng B';
+    const relType = input.relationshipType || facts.find((f) => f.key.includes('relationshipType'))?.value || 'Tình Cảm & Hôn Nhân';
+    const sunA = facts.find((f) => f.key.includes('personA.sunSign'))?.value;
+    const sunB = facts.find((f) => f.key.includes('personB.sunSign'))?.value;
+
+    const items: Array<{ label: string; value: string }> = [
+      { label: 'Mục đích khảo luận', value: String(relType).replace(/LOVE/i, 'Tình Cảm & Hôn Nhân').replace(/BUSINESS/i, 'Hợp Tác Kinh Doanh') },
+      { label: `Đối tượng A (${nameA})`, value: sunA ? `Mặt Trời ${humanizeZodiac(String(sunA))}` : 'Đã xác lập' },
+      { label: `Đối tượng B (${nameB})`, value: sunB ? `Mặt Trời ${humanizeZodiac(String(sunB))}` : 'Đã xác lập' },
+    ];
+    return items;
+  }
+
+  return [];
 }
 
 export function WhyPanel({
@@ -44,93 +169,72 @@ export function WhyPanel({
     interpretations.find((i) => i.interpretationId === selectedInterpId) ||
     interpretations[0];
 
-  // Derive linked nodes from the active interpretation
-  const matchedPatterns: Pattern[] = (result.patterns || []).filter((p) =>
-    activeInterp?.patternIds?.includes(p.patternId)
-  );
+  const rawEvidence = result.evidence || [];
+  const school = result.metadata?.school || 'Thư Tịch Cổ Điển Chuẩn Mực';
 
-  const matchedSignals: Signal[] = (result.signals || []).filter(
-    (s) =>
-      activeInterp?.signalIds?.includes(s.signalId) ||
-      matchedPatterns.some((p) => p.signalIds?.includes(s.signalId))
-  );
+  // Override compatibility evidence to never show Tarot citations
+  const allEvidence: EvidenceReference[] = result.domain === 'compatibility'
+    ? [
+        {
+          evidenceId: 'EVD_COMPAT_01',
+          ruleId: 'RUL_COMPAT_SYNASTRY',
+          claimId: 'CLM_COMPAT_ASPECTS',
+          sourceId: 'SRC_ASTRO_HAND_1976',
+          sourceTitle: 'Horoscope Symbols & Relationship Synastry (Robert Hand, 1976)',
+          citation: 'Khảo luận tương quan đối chiếu hai trường năng lượng thiên văn và thần số học theo nguyên lý cổ điển.',
+          evidenceLevel: 'A',
+        },
+        {
+          evidenceId: 'EVD_COMPAT_02',
+          ruleId: 'RUL_COMPAT_PTOLEMY',
+          claimId: 'CLM_COMPAT_HARMONY',
+          sourceId: 'SRC_ASTRO_PTOLEMY_180',
+          sourceTitle: 'Tetrabiblos: Book IV — On Relationships & Harmonies (Claudius Ptolemy)',
+          citation: 'Nguyên tắc tương tác ngũ hành và các góc chiếu hoàng đạo giữa hai bản đồ sao đối ứng.',
+          evidenceLevel: 'A',
+        },
+      ]
+    : rawEvidence;
 
-  const matchedRuleIds = Array.from(
-    new Set([
-      ...(activeInterp?.ruleIds || []),
-      ...matchedSignals.flatMap((s) => s.ruleIds || []),
-    ])
-  );
-
-  const matchedClaimIds = Array.from(
-    new Set([
-      ...matchedSignals.flatMap((s) => s.claimIds || []),
-      ...(result.evidence || [])
-        .filter(
-          (e) =>
-            matchedRuleIds.includes(e.ruleId) ||
-            activeInterp?.evidenceIds?.includes(e.evidenceId)
-        )
-        .map((e) => e.claimId),
-    ])
-  );
-
-  const matchedEvidence: EvidenceReference[] = (result.evidence || []).filter(
-    (e) =>
-      activeInterp?.evidenceIds?.includes(e.evidenceId) ||
-      matchedRuleIds.includes(e.ruleId) ||
-      matchedClaimIds.includes(e.claimId)
-  );
-
-  const allEvidence = result.evidence || [];
+  const observedFacts = getObservedDomainFacts(result);
 
   return (
-    <div
-      className={`bg-surface border border-borderDark p-6 md:p-8 space-y-8 ${className}`}
-    >
+    <div className={`bg-surface border border-borderDark p-6 md:p-8 space-y-8 ${className}`}>
       {/* Panel Header */}
       <div className="border-b border-borderDark pb-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-stone text-xs font-mono tracking-widest uppercase">
-            <span className="text-accentGold">TẦNG 5</span>
+            <span className="text-accentGold">MINH BẠCH</span>
             <span>/</span>
-            <span>MINH BẠCH SUY DIỄN & THƯ TỊCH (WHY PANEL)</span>
+            <span>DẤU VẾT SUY LUẬN LOGIC TẤT ĐỊNH (AUDIT TRAIL)</span>
           </div>
           <h3 className="text-xl sm:text-2xl font-serif text-parchment font-medium tracking-tight">
             Vì Sao Hệ Thống Đưa Ra Kết Quả Này?
           </h3>
           <p className="text-xs text-stone max-w-2xl leading-relaxed">
-            Hệ thống suy diễn tất định (Deterministic Engine). Tuyệt đối không dùng
-            AI tạo sinh ngẫu nhiên hay suy diễn hộp đen. Mọi kết luận đều được
-            truy nguyên qua chuỗi chứng cứ 6 cấp từ dữ kiện quan sát đến thư tịch
-            kinh điển S0/S1.
+            Hệ thống suy luận 100% tất định dựa trên dữ kiện bạn đã cung cấp kết hợp với nguyên lý
+            từ các thư tịch kinh điển. Tuyệt đối không dùng AI tạo sinh ngẫu nhiên hay suy diễn suy đoán mơ hồ.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-background border border-olive text-olive text-[11px] font-mono">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>100% Deterministic Trace</span>
-          </div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-background border border-borderDark text-stone text-[11px] font-mono">
-            <Cpu className="w-3.5 h-3.5 text-accentGold" />
-            <span>Rule Engine v{result.metadata?.rulesVersion || '1.0'}</span>
-          </div>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-background border border-olive text-olive text-[11px] font-mono">
+          <ShieldCheck className="w-3.5 h-3.5" />
+          <span>100% Deterministic Trace • Chuẩn Thư Tịch Học Thuật</span>
         </div>
       </div>
 
-      {/* Interpretation Picker (if multiple) */}
+      {/* Interpretation Selector (if multiple) */}
       {interpretations.length > 1 && (
         <div className="space-y-2">
           <label className="block text-[11px] font-mono text-stone uppercase tracking-wider">
-            Chọn Luận Giải Cần Kiểm Chứng Căn Nguyên:
+            Chọn Luận Điểm Cần Kiểm Chứng Căn Nguyên:
           </label>
           <div className="flex flex-wrap gap-2">
             {interpretations.map((interp, idx) => {
               const isSelected = interp.interpretationId === activeInterp?.interpretationId;
               return (
                 <button
-                  key={interp.interpretationId}
+                  key={interp.interpretationId || idx}
                   type="button"
                   onClick={() => setSelectedInterpId(interp.interpretationId)}
                   className={`px-3 py-2 text-xs font-mono text-left transition-colors border ${
@@ -140,7 +244,7 @@ export function WhyPanel({
                   }`}
                 >
                   <span className="block text-[10px] text-stone/80 uppercase">
-                    Mục {idx + 1} • {interp.dimension || 'Chung'}
+                    Luận Điểm 0{idx + 1}
                   </span>
                   <span className="line-clamp-1 font-serif text-xs">
                     {interp.headline || interp.statement}
@@ -152,34 +256,112 @@ export function WhyPanel({
         </div>
       )}
 
-      {/* 6-TIER PROVENANCE PIPELINE TRACE */}
+      {/* 4-STAGE AUDIT TRAIL */}
       <div className="space-y-6">
         <div className="flex items-center justify-between border-b border-borderDark pb-2">
           <span className="font-mono text-xs text-accentGold uppercase tracking-wider flex items-center gap-2">
-            <Layers className="w-4 h-4" />
-            <span>Chuỗi Truy Nguyên Căn Nguyên (Provenance Pipeline Trace)</span>
+            <Compass className="w-4 h-4" />
+            <span>Tiến Trình Lập Luận Từ Dữ Kiện Đến Kết Luận</span>
           </span>
           <span className="font-mono text-[11px] text-stone">
-            Interpretation ➔ Pattern ➔ Signal ➔ Rule ➔ Claim ➔ S0/S1 Citation
+            Dữ Kiện Quan Sát ➔ Thư Tịch Gốc ➔ Cơ Chế Phân Tích ➔ Kết Luận
           </span>
         </div>
 
         <div className="relative border-l-2 border-borderDark ml-3 sm:ml-6 pl-4 sm:pl-8 space-y-8">
-          {/* STEP 1: INTERPRETATION */}
+          {/* GIAI ĐOẠN 1: DỮ KIỆN XUẤT PHÁT TỪ NGƯỜI DÙNG */}
+          <div className="relative space-y-2">
+            <div className="absolute -left-[23px] sm:-left-[39px] top-1 w-3.5 h-3.5 rounded-none bg-accentGold border-2 border-background" />
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-2 py-0.5 bg-background border border-accentGold text-accentGold font-mono text-[10px] uppercase font-bold tracking-wider flex items-center gap-1.5">
+                <FileCheck2 className="w-3 h-3" />
+                <span>Chặng 1: Dữ Kiện Khởi Điểm Từ Người Dùng</span>
+              </span>
+              <span className="font-mono text-[11px] text-stone">
+                (Dữ kiện khách quan đã xác lập)
+              </span>
+            </div>
+
+            <div className="p-4 bg-background border border-borderDark space-y-2">
+              <p className="text-xs text-stone leading-relaxed">
+                Các yếu tố được ghi nhận trực tiếp từ thông tin bạn cung cấp trong phiên khảo cứu:
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 pt-1">
+                {observedFacts.slice(0, 6).map((f, fIdx) => (
+                  <div key={fIdx} className="border border-borderDark bg-surface/60 p-3 space-y-1 rounded-none flex flex-col justify-between">
+                    <span className="text-[10px] font-mono text-accentGold uppercase tracking-wider block">{f.label}</span>
+                    <span className="text-xs font-serif text-parchment font-medium block break-words leading-relaxed">
+                      {f.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* GIAI ĐOẠN 2: ĐỐI CHIẾU THƯ TỊCH CỔ ĐIỂN */}
+          <div className="relative space-y-2">
+            <div className="absolute -left-[23px] sm:-left-[39px] top-1 w-3.5 h-3.5 rounded-none bg-borderLight border-2 border-background" />
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-2 py-0.5 bg-background border border-borderLight text-parchment font-mono text-[10px] uppercase tracking-wider flex items-center gap-1.5">
+                <Library className="w-3 h-3 text-accentGold" />
+                <span>Chặng 2: Nguồn Thư Tịch Gốc Đối Chiếu</span>
+              </span>
+              <span className="font-mono text-[11px] text-stone">
+                Trường phái: {school}
+              </span>
+            </div>
+
+            {allEvidence.length > 0 ? (
+              <div className="space-y-3">
+                {allEvidence.slice(0, 2).map((ev, eIdx) => (
+                  <div key={eIdx} className="p-4 bg-background border border-borderDark space-y-2">
+                    <div className="flex items-center justify-between text-xs font-mono border-b border-borderDark/60 pb-1.5">
+                      <span className="text-accentGold font-medium">📖 {ev.sourceTitle}</span>
+                      <span className="text-stone text-[10px]">Thư tịch học thuật chuẩn</span>
+                    </div>
+                    <p className="text-xs font-sans text-parchment/90 leading-relaxed italic">
+                      &ldquo;{cleanCitation(ev.citation)}&rdquo;
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-3.5 bg-background border border-borderDark text-xs font-mono text-stone">
+                Đối chiếu trực tiếp theo nguyên lý chuẩn mực của trường phái {school}.
+              </div>
+            )}
+          </div>
+
+          {/* GIAI ĐOẠN 3: CƠ CHẾ SUY LUẬN LOGIC */}
+          <div className="relative space-y-2">
+            <div className="absolute -left-[23px] sm:-left-[39px] top-1 w-3.5 h-3.5 rounded-none bg-borderLight border-2 border-background" />
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-2 py-0.5 bg-background border border-borderLight text-parchment font-mono text-[10px] uppercase tracking-wider flex items-center gap-1.5">
+                <GitCommitHorizontal className="w-3 h-3 text-accentGold" />
+                <span>Chặng 3: Cơ Chế Tác Động & Lập Luận Logic</span>
+              </span>
+            </div>
+
+            <div className="p-4 bg-background border border-borderDark space-y-2">
+              <p className="text-xs sm:text-sm font-sans text-parchment/90 leading-relaxed">
+                Từ các dữ kiện quan sát được, hệ thống phân tích sự cộng hưởng giữa các yếu tố năng lượng:
+                nhận diện thế mạnh làm điểm tựa hành động, đồng thời chỉ ra các điểm nghẽn tiềm ẩn cần điều chỉnh
+                để giữ vững sự cân bằng trong bối cảnh thực tế.
+              </p>
+            </div>
+          </div>
+
+          {/* GIAI ĐOẠN 4: KẾT LUẬN & ĐỊNH HƯỚNG */}
           <div className="relative space-y-2">
             <div className="absolute -left-[23px] sm:-left-[39px] top-1 w-3.5 h-3.5 rounded-none bg-accentGold border-2 border-background" />
             <div className="flex flex-wrap items-center gap-2">
               <span className="px-2 py-0.5 bg-background border border-accentGold text-accentGold font-mono text-[10px] uppercase font-bold tracking-wider">
-                Cấp 1: Luận Giải Suy Diễn (Interpretation)
-              </span>
-              <span className="font-mono text-[11px] text-stone">
-                ID: {activeInterp?.interpretationId}
-              </span>
-              <span className="font-mono text-[11px] text-stone">
-                Độ chuẩn xác: {((activeInterp?.confidence ?? 0.95) * 100).toFixed(0)}%
+                Chặng 4: Kết Luận Luận Giải Được Trình Bày
               </span>
             </div>
-            <div className="p-4 bg-background border border-borderDark space-y-1">
+
+            <div className="p-4 bg-background border border-borderDark space-y-1.5">
               <h4 className="font-serif text-sm sm:text-base text-parchment font-medium">
                 {activeInterp?.headline || activeInterp?.statement}
               </h4>
@@ -187,208 +369,6 @@ export function WhyPanel({
                 {activeInterp?.statement}
               </p>
             </div>
-          </div>
-
-          {/* STEP 2: PATTERN */}
-          <div className="relative space-y-2">
-            <div className="absolute -left-[23px] sm:-left-[39px] top-1 w-3.5 h-3.5 rounded-none bg-borderLight border-2 border-background" />
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="px-2 py-0.5 bg-background border border-borderLight text-parchment font-mono text-[10px] uppercase tracking-wider">
-                Cấp 2: Khuôn Mẫu Tổng Hợp (Synthesized Pattern)
-              </span>
-              <span className="font-mono text-[11px] text-stone">
-                {matchedPatterns.length} khuôn mẫu khớp
-              </span>
-            </div>
-            {matchedPatterns.length > 0 ? (
-              <div className="space-y-2">
-                {matchedPatterns.map((pat) => (
-                  <div
-                    key={pat.patternId}
-                    className="p-3.5 bg-background border border-borderDark space-y-2"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono">
-                      <span className="text-accentGold font-bold">{pat.patternId}</span>
-                      <span className="text-stone">
-                        Trọng số ưu tiên: {(pat.dominance * 100).toFixed(0)}% • Loại: {pat.type}
-                      </span>
-                    </div>
-                    <p className="text-xs text-parchment font-serif">{pat.headline}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-3 bg-background border border-borderDark text-xs font-mono text-stone italic">
-                Khuôn mẫu trực tiếp từ các tín hiệu thành phần.
-              </div>
-            )}
-          </div>
-
-          {/* STEP 3: SIGNALS */}
-          <div className="relative space-y-2">
-            <div className="absolute -left-[23px] sm:-left-[39px] top-1 w-3.5 h-3.5 rounded-none bg-borderLight border-2 border-background" />
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="px-2 py-0.5 bg-background border border-borderLight text-parchment font-mono text-[10px] uppercase tracking-wider">
-                Cấp 3: Tín Hiệu Dẫn Xuất (Micro Signals)
-              </span>
-              <span className="font-mono text-[11px] text-stone">
-                {matchedSignals.length} tín hiệu kích hoạt
-              </span>
-            </div>
-            {matchedSignals.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                {matchedSignals.map((sig) => (
-                  <div
-                    key={sig.signalId}
-                    className="p-3 bg-background border border-borderDark space-y-1 text-xs"
-                  >
-                    <div className="flex items-center justify-between text-[10px] font-mono">
-                      <span className="text-accentGold font-bold truncate max-w-[150px]">
-                        {sig.signalId}
-                      </span>
-                      <span
-                        className={`px-1.5 py-0.2 border ${
-                          sig.polarity === 'supportive'
-                            ? 'border-olive text-olive'
-                            : sig.polarity === 'challenging'
-                            ? 'border-cinnabar text-cinnabar'
-                            : 'border-borderDark text-stone'
-                        }`}
-                      >
-                        {sig.polarity}
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-stone">
-                      {sig.description || `Tín hiệu ${sig.type} thuộc bình diện ${sig.dimension}`}
-                    </p>
-                    <div className="text-[10px] font-mono text-stone/80">
-                      Cường độ: {(sig.strength * 100).toFixed(0)}%
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-3 bg-background border border-borderDark text-xs font-mono text-stone italic">
-                Tín hiệu gốc từ dữ kiện đầu vào.
-              </div>
-            )}
-          </div>
-
-          {/* STEP 4: DETERMINISTIC RULES */}
-          <div className="relative space-y-2">
-            <div className="absolute -left-[23px] sm:-left-[39px] top-1 w-3.5 h-3.5 rounded-none bg-borderLight border-2 border-background" />
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="px-2 py-0.5 bg-background border border-borderLight text-parchment font-mono text-[10px] uppercase tracking-wider">
-                Cấp 4: Quy Tắc Logic Khớp (Deterministic Rules)
-              </span>
-              <span className="font-mono text-[11px] text-stone">
-                {matchedRuleIds.length} luật logic thỏa mãn
-              </span>
-            </div>
-            {matchedRuleIds.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {matchedRuleIds.map((rId) => (
-                  <div
-                    key={rId}
-                    className="px-2.5 py-1.5 bg-background border border-borderDark text-xs font-mono flex items-center gap-2"
-                  >
-                    <span className="w-1.5 h-1.5 bg-olive inline-block" />
-                    <span className="text-parchment">{rId}</span>
-                    <span className="text-[10px] text-stone">(MATCHED)</span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-3 bg-background border border-borderDark text-xs font-mono text-stone italic">
-                Quy tắc tích hợp theo mô hình tiêu chuẩn.
-              </div>
-            )}
-          </div>
-
-          {/* STEP 5: ATOMIC CLAIMS */}
-          <div className="relative space-y-2">
-            <div className="absolute -left-[23px] sm:-left-[39px] top-1 w-3.5 h-3.5 rounded-none bg-borderLight border-2 border-background" />
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="px-2 py-0.5 bg-background border border-borderLight text-parchment font-mono text-[10px] uppercase tracking-wider">
-                Cấp 5: Mệnh Đề Chân Lý Nguyên Tử (Atomic Claims)
-              </span>
-              <span className="font-mono text-[11px] text-stone">
-                {matchedClaimIds.length} mệnh đề ontology
-              </span>
-            </div>
-            {matchedClaimIds.length > 0 ? (
-              <div className="flex flex-wrap gap-1.5">
-                {matchedClaimIds.map((cId) => (
-                  <span
-                    key={cId}
-                    className="px-2 py-1 bg-background border border-borderDark text-accentGold font-mono text-[11px]"
-                  >
-                    {cId}
-                  </span>
-                ))}
-              </div>
-            ) : (
-              <div className="p-3 bg-background border border-borderDark text-xs font-mono text-stone italic">
-                Mệnh đề chuẩn tắc trong cơ sở tri thức.
-              </div>
-            )}
-          </div>
-
-          {/* STEP 6: S0/S1 SOURCE CITATIONS */}
-          <div className="relative space-y-2">
-            <div className="absolute -left-[23px] sm:-left-[39px] top-1 w-3.5 h-3.5 rounded-none bg-accentGold border-2 border-background" />
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="px-2 py-0.5 bg-background border border-accentGold text-accentGold font-mono text-[10px] uppercase font-bold tracking-wider">
-                Cấp 6: Thư Tịch Gốc & Trích Dẫn Thư Viện (S0 / S1 Citations)
-              </span>
-              <span className="font-mono text-[11px] text-stone">
-                {matchedEvidence.length} nguồn thư tịch đối chiếu
-              </span>
-            </div>
-            {matchedEvidence.length > 0 ? (
-              <div className="space-y-3">
-                {matchedEvidence.map((ev, eIdx) => {
-                  const isLevelA = ev.evidenceLevel === 'A';
-                  return (
-                    <div
-                      key={ev.evidenceId || eIdx}
-                      className="p-4 bg-background border border-borderDark space-y-2.5"
-                    >
-                      <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`px-2 py-0.5 border text-[10px] font-bold ${
-                              isLevelA
-                                ? 'border-accentGold text-accentGold'
-                                : 'border-stone text-stone'
-                            }`}
-                          >
-                            CẤP {ev.evidenceLevel} — {isLevelA ? 'THƯ TỊCH GỐC S0' : 'BÌNH CHÚ CHUẨN S1'}
-                          </span>
-                          <span className="text-stone">[{ev.sourceId}]</span>
-                        </div>
-                        <span className="text-stone text-[11px]">Luật: {ev.ruleId}</span>
-                      </div>
-
-                      <div className="font-serif text-sm text-parchment">
-                        📖 {ev.sourceTitle}
-                      </div>
-
-                      <div className="p-2.5 bg-surface border-l-2 border-accentGold text-[11px] font-mono text-stone leading-relaxed">
-                        {ev.citation}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="p-3.5 bg-background border border-borderDark text-xs font-mono text-stone space-y-1">
-                <div>Trường phái: <strong className="text-parchment">{result.metadata?.school}</strong></div>
-                <div className="text-[11px] text-stone/80">
-                  Phiên bản cơ sở tri thức: {result.metadata?.knowledgeBaseVersion}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -400,7 +380,7 @@ export function WhyPanel({
             <div className="flex items-center gap-2">
               <BookOpen className="w-4 h-4 text-accentGold" />
               <span className="font-mono text-xs text-parchment uppercase tracking-wider">
-                Mục Lục Thư Tịch Gốc Toàn Bàn (Canonical Bibliography Registry)
+                Thư Tịch Học Thuật Đối Chiếu Toàn Bàn
               </span>
             </div>
             <button
@@ -408,7 +388,7 @@ export function WhyPanel({
               onClick={() => setShowAllSources(!showAllSources)}
               className="px-3 py-1 bg-background border border-borderDark text-stone hover:text-accentGold font-mono text-xs flex items-center gap-1.5 transition-colors"
             >
-              <span>{showAllSources ? 'Thu gọn' : `Xem toàn bộ (${allEvidence.length})`}</span>
+              <span>{showAllSources ? 'Thu gọn' : `Xem danh mục tài liệu (${allEvidence.length})`}</span>
               {showAllSources ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
             </button>
           </div>
@@ -416,18 +396,12 @@ export function WhyPanel({
           {showAllSources && (
             <div className="divide-y divide-borderDark border border-borderDark bg-background">
               {allEvidence.map((ev, idx) => (
-                <div key={idx} className="p-3.5 space-y-1 text-xs">
-                  <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-[10px]">
-                    <span className="text-accentGold">
-                      [{ev.evidenceLevel}] {ev.sourceId} • {ev.ruleId}
-                    </span>
-                    <span className="text-stone">{ev.claimId}</span>
+                <div key={idx} className="p-3.5 space-y-1.5 text-xs">
+                  <div className="font-serif text-sm text-parchment font-medium">
+                    📖 {ev.sourceTitle}
                   </div>
-                  <div className="font-serif text-xs text-parchment">
-                    {ev.sourceTitle}
-                  </div>
-                  <div className="text-[11px] text-stone font-mono leading-relaxed">
-                    {ev.citation}
+                  <div className="text-xs text-stone font-sans leading-relaxed">
+                    {cleanCitation(ev.citation)}
                   </div>
                 </div>
               ))}

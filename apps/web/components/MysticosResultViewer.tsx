@@ -17,7 +17,6 @@ import {
   WatchFor,
   PracticalGuidance,
   WhyThisResult,
-  TechnicalDetails,
 } from './result';
 
 export interface MysticosResultViewerProps {
@@ -54,7 +53,6 @@ export function MysticosResultViewer({
           <WatchFor tensions={viewModel.tensions} />
           <PracticalGuidance guidance={viewModel.guidance} />
           <WhyThisResult rawResult={viewModel.rawResult} />
-          <TechnicalDetails rawResult={viewModel.rawResult} />
         </article>
       );
     }

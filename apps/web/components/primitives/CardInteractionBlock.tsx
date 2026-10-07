@@ -22,6 +22,14 @@ export interface CardInteractionBlockProps {
   className?: string;
 }
 
+const INTERACTION_TYPE_VN: Record<string, string> = {
+  reinforcement: 'TƯƠNG HỖ',
+  tension: 'XUNG ĐỘT',
+  contrast: 'TƯƠNG PHẢN',
+  amplification: 'KHUẾCH ĐẠI',
+  harmonious: 'HÒA HỢP',
+};
+
 export function CardInteractionBlock({
   sequence = [],
   interactions = [],
@@ -106,7 +114,7 @@ export function CardInteractionBlock({
                   </div>
                   {inter.type && (
                     <span className="text-[10px] uppercase tracking-wider text-accentGold">
-                      [{inter.type}]
+                      [{INTERACTION_TYPE_VN[inter.type.toLowerCase()] || inter.type}]
                     </span>
                   )}
                 </div>

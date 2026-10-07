@@ -36,7 +36,6 @@ export async function POST(request: Request) {
         const pVn = pKey === 'MENH' ? 'Mệnh' : pKey === 'TAI_BACH' ? 'Tài Bạch' : pKey === 'TAT_ACH' ? 'Tật Ách' : pKey;
         for (const s of palace.stars || []) {
           facts.push(
-            { key: `palace_${pKey}_star_${s.code}`, value: true, domain: 'tuvi', source: 'chart' },
             { key: `star_${s.code}_palace`, value: pKey, domain: 'tuvi', source: 'chart' }
           );
           if (s.code === 'TU_VI' && (pKey === 'MENH' || pKey === 'Mệnh')) {

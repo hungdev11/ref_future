@@ -12,3 +12,4 @@ export * from './depth-engine.js';
 export * from './question-reactive-engine.js';
 export * from './main-story-engine.js';
 export * from './scenario-engine.js';
+export * from './entity-humanizer.js';

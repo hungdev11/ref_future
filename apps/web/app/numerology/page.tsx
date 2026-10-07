@@ -14,6 +14,31 @@ import type { MysticosResult } from '@mystic/core';
 import { DateInput } from '@/components/DateInput';
 import { MysticosResultViewer } from '@/components/MysticosResultViewer';
 
+const CORE_FACT_LABELS: Record<string, string> = {
+  life_path: 'Số Đường Đời (Life Path)',
+  destiny: 'Số Sứ Mệnh (Destiny)',
+  expression: 'Số Biểu Đạt (Expression)',
+  soul_urge: 'Số Linh Hồn (Soul Urge)',
+  personality: 'Số Tính Cách (Personality)',
+  maturity: 'Số Trưởng Thành (Maturity)',
+  birthday: 'Số Ngày Sinh (Birthday)',
+  current_year: 'Năm Hiện Tại',
+  personal_year: 'Năm Cá Nhân (Personal Year)',
+  karmic_debts: 'Nợ Nghiệp (Karmic Debts)',
+  master_numbers: 'Số Bậc Thầy (Master Numbers)',
+  attitude: 'Số Thái Độ (Attitude)',
+};
+
+function formatCoreFactValue(val: any): string {
+  if (Array.isArray(val)) {
+    return val.length > 0 ? val.join(', ') : 'Không có';
+  }
+  if (typeof val === 'object' && val !== null) {
+    return String(val.value ?? val.finalValue ?? JSON.stringify(val));
+  }
+  return String(val);
+}
+
 export default function NumerologyPage() {
   const [fullName, setFullName] = useState('Nguyễn Văn Đức');
   const [birthDate, setBirthDate] = useState('1990-11-29');
@@ -221,16 +246,20 @@ export default function NumerologyPage() {
               {showCoreFacts && (
                 <div className="pt-3 border-t border-borderDark space-y-3 animate-in fade-in duration-200">
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {Object.entries(rawCore).map(([k, v]: [string, any]) => (
-                      <div key={k} className="p-3 bg-background border border-borderDark space-y-1">
-                        <span className="text-[10px] font-mono text-stone block uppercase truncate">
-                          {k}
-                        </span>
-                        <span className="text-lg font-serif text-accentGold font-bold">
-                          {v?.value ?? String(v)}
-                        </span>
-                      </div>
-                    ))}
+                    {Object.entries(rawCore).map(([k, v]: [string, any]) => {
+                      const label = CORE_FACT_LABELS[k.toLowerCase()] || k.replace(/_/g, ' ').toUpperCase();
+                      const displayVal = formatCoreFactValue(v);
+                      return (
+                        <div key={k} className="p-3 bg-background border border-borderDark space-y-1">
+                          <span className="text-[10px] font-mono text-stone block uppercase break-words leading-tight">
+                            {label}
+                          </span>
+                          <span className="text-lg font-serif text-accentGold font-bold block pt-0.5">
+                            {displayVal}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}

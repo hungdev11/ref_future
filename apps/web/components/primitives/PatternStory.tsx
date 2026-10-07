@@ -38,9 +38,13 @@ export function PatternStory({
           <span className="text-borderLight">/</span>
           <span>CỐT TRUYỆN DIỄN TIẾN TRỌNG TÂM (MAIN STORY ARC)</span>
         </div>
-        {activeEntity && (
+        {activeEntity && !activeEntity.startsWith('CONTEXTUAL_') && !activeEntity.startsWith('PAT_') ? (
           <span className="text-stone tracking-wide">
             TRỌNG TÂM: <span className="text-parchment font-mono">{activeEntity}</span>
+          </span>
+        ) : (
+          <span className="text-accentGold tracking-wider font-mono text-[11px] uppercase">
+            [MẠCH CHUYỂN BIẾN CHỦ ĐẠO]
           </span>
         )}
       </div>

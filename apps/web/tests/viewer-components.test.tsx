@@ -27,23 +27,26 @@ describe('Frontend Pure Viewer Components', () => {
     school: 'Modern Humanistic Astrology',
   });
 
-  it('renders WhyPanel with 6-tier provenance trace', () => {
+  it('renders WhyPanel with logical provenance trace', () => {
     const html = renderToStaticMarkup(<WhyPanel result={tarotResult} />);
 
     // Header & Badge
     expect(html).toContain('Vì Sao Hệ Thống Đưa Ra Kết Quả Này?');
     expect(html).toContain('100% Deterministic Trace');
 
-    // 6 tiers in pipeline
-    expect(html).toContain('Cấp 1: Luận Giải Suy Diễn (Interpretation)');
-    expect(html).toContain('Cấp 2: Khuôn Mẫu Tổng Hợp (Synthesized Pattern)');
-    expect(html).toContain('Cấp 3: Tín Hiệu Dẫn Xuất (Micro Signals)');
-    expect(html).toContain('Cấp 4: Quy Tắc Logic Khớp (Deterministic Rules)');
-    expect(html).toContain('Cấp 5: Mệnh Đề Chân Lý Nguyên Tử (Atomic Claims)');
-    expect(html).toContain('Cấp 6: Thư Tịch Gốc &amp; Trích Dẫn Thư Viện (S0 / S1 Citations)');
+    // Logical stages in pipeline
+    expect(html).toContain('Chặng 1: Dữ Kiện Khởi Điểm Từ Người Dùng');
+    expect(html).toContain('Chặng 2: Nguồn Thư Tịch Gốc Đối Chiếu');
+    expect(html).toContain('Chặng 3: Cơ Chế Tác Động &amp; Lập Luận Logic');
+    expect(html).toContain('Chặng 4: Kết Luận Luận Giải Được Trình Bày');
 
     // Citations
     expect(html).toContain('The Pictorial Key to the Tarot');
+
+    // Zero technical ID leakage
+    expect(html).not.toContain('SIG_CTX_');
+    expect(html).not.toContain('RUL_CTX_');
+    expect(html).not.toContain('CLM_CTX_');
   });
 
   it('renders MysticosResultViewer across focused editorial sections', () => {
@@ -60,8 +63,8 @@ describe('Frontend Pure Viewer Components', () => {
     // Why This Result disclosure trigger
     expect(html).toContain('Vì sao tôi nhận được kết quả này?');
 
-    // Technical Details disclosure trigger
-    expect(html).toContain('Chi Tiết Kỹ Thuật &amp; Tọa Độ Gốc (3 Dữ Kiện)');
+    // Technical Details must be completely removed
+    expect(html).not.toContain('Chi Tiết Kỹ Thuật &amp; Tọa Độ Gốc');
   });
 
   it('renders MysticosResultViewer for astrology domain without errors', () => {
@@ -69,6 +72,6 @@ describe('Frontend Pure Viewer Components', () => {
     expect(html).toContain('01');
     expect(html).toContain('Bản Đồ Sao Chiêm Tinh Học');
     expect(html).toContain('Modern Humanistic Astrology');
-    expect(html).toContain('Chi Tiết Kỹ Thuật &amp; Tọa Độ Gốc (2 Dữ Kiện)');
+    expect(html).not.toContain('Chi Tiết Kỹ Thuật &amp; Tọa Độ Gốc');
   });
 });

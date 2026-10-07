@@ -5,9 +5,7 @@ import type { DeepMysticosResult } from '@mystic/core';
 import { PatternStory } from '../primitives/PatternStory';
 import { InsightBlock } from '../primitives/InsightBlock';
 import { ScenarioBlock } from '../primitives/ScenarioBlock';
-import { NextQuestionBlock } from '../primitives/NextQuestionBlock';
 import { WhyDrawer } from '../primitives/WhyDrawer';
-import { TechnicalDetails } from '../result/TechnicalDetails';
 import { ChevronDown, ChevronUp, Shield, CheckCircle2, AlertTriangle, Layers } from 'lucide-react';
 
 export interface TuViResultViewProps {
@@ -30,6 +28,75 @@ const TU_VI_12_PALACES = [
   { id: 'huynh_de', name: 'Huynh Đệ', label: 'Cung Huynh Đệ (Anh em & bằng hữu thân thiết)' },
 ];
 
+const TUVI_STAR_VN_MAP: Record<string, string> = {
+  TU_VI: 'Tử Vi',
+  THIEN_CO: 'Thiên Cơ',
+  THAI_DUONG: 'Thái Dương',
+  VU_KHUC: 'Vũ Khúc',
+  THIEN_DONG: 'Thiên Đồng',
+  LIEM_TRINH: 'Liêm Trinh',
+  THAT_SAT: 'Thất Sát',
+  PHA_QUAN: 'Phá Quân',
+  THAM_LANG: 'Tham Lang',
+  THIEN_PHU: 'Thiên Phủ',
+  THIEN_LUONG: 'Thiên Lương',
+  THIEN_TUONG: 'Thiên Tướng',
+  CU_MON: 'Cự Môn',
+  THAI_AM: 'Thái Âm',
+  HOA_LOC: 'Hóa Lộc',
+  HOA_QUYEN: 'Hóa Quyền',
+  HOA_KHOA: 'Hóa Khoa',
+  HOA_KY: 'Hóa Kỵ',
+};
+
+const TUVI_PALACE_VN_MAP: Record<string, string> = {
+  PHU_THE: 'Thân Cư Phu Thê (Gia Đạo & Bạn Đời)',
+  QUAN_LOC: 'Thân Cư Quan Lộc (Sự Nghiệp & Công Danh)',
+  TAI_BACH: 'Thân Cư Tài Bạch (Dòng Tiền & Sinh Kế)',
+  THIEN_DI: 'Thân Cư Thiên Di (Đối Ngoại & Xã Hội)',
+  PHUC_DUC: 'Thân Cư Phúc Đức (Tâm Tính & Phúc Phần)',
+  MENH: 'Thân Mệnh Đồng Cung (Bản Lĩnh Nhất Quán)',
+  DIEN_TRACH: 'Thân Cư Điền Trạch (Cơ Nghiệp & Gia Sản)',
+  NO_BOC: 'Thân Cư Nô Bộc (Bằng Hữu & Trợ Thủ)',
+  TAT_ACH: 'Thân Cư Tật Ách (Sức Khỏe & Thể Trạng)',
+  TU_TUC: 'Thân Cư Tử Tức (Hậu Duệ & Con Cái)',
+  HUYNH_DE: 'Thân Cư Huynh Đệ (Anh Em & Tri Kỷ)',
+  PHU_MAU: 'Thân Cư Phụ Mẫu (Xuất Thân & Nền Tảng)',
+};
+
+function formatTuViStar(val: unknown): string {
+  if (!val) return '';
+  const str = String(val).toUpperCase().trim();
+  if (TUVI_STAR_VN_MAP[str]) return TUVI_STAR_VN_MAP[str];
+  if (TUVI_PALACE_VN_MAP[str]) return TUVI_PALACE_VN_MAP[str];
+  return String(val).replace(/_/g, ' ');
+}
+
+function formatTuViPalace(val: unknown): string {
+  if (!val) return 'Thân Cư Tài / Quan / Di';
+  const str = String(val).toUpperCase().trim();
+  if (TUVI_PALACE_VN_MAP[str]) return TUVI_PALACE_VN_MAP[str];
+  if (TUVI_STAR_VN_MAP[str]) return `Thân Cư ${TUVI_STAR_VN_MAP[str]}`;
+  return String(val).replace(/_/g, ' ');
+}
+
+function formatTuViKey(key: string): string {
+  const lower = key.toLowerCase();
+  if (lower.includes('phu_the')) return 'Cung Phu Thê';
+  if (lower.includes('quan_loc')) return 'Cung Quan Lộc';
+  if (lower.includes('tai_bach')) return 'Cung Tài Bạch';
+  if (lower.includes('thien_di')) return 'Cung Thiên Di';
+  if (lower.includes('phuc_duc')) return 'Cung Phúc Đức';
+  if (lower.includes('dien_trach')) return 'Cung Điền Trạch';
+  if (lower.includes('menh')) return 'Cung Mệnh';
+  if (lower.includes('tai')) return 'Cung Tài Bạch';
+  if (lower.includes('quan')) return 'Cung Quan Lộc';
+  if (lower.includes('di')) return 'Cung Thiên Di';
+  if (lower.includes('phuc')) return 'Cung Phúc Đức';
+  if (lower.includes('star')) return 'Chính Tinh';
+  return key.replace(/_/g, ' ');
+}
+
 export function TuViResultView({
   result,
   className = '',
@@ -40,24 +107,35 @@ export function TuViResultView({
 
   const school = result.metadata?.school || 'Tử Vi Đẩu Số Toàn Thư';
 
+  const CAN_CHI_BRANCH_VN: Record<string, string> = {
+    TY_RAT: 'Tý', SUU_OX: 'Sửu', DAN_TIGER: 'Dần', MAO_CAT: 'Mão',
+    THIN_DRAGON: 'Thìn', TY_SNAKE: 'Tỵ', NGO_HORSE: 'Ngọ', MUI_GOAT: 'Mùi',
+    THAN_MONKEY: 'Thân', DAU_ROOSTER: 'Dậu', TUAT_DOG: 'Tuất', HOI_PIG: 'Hợi',
+  };
+
   // Extract Mệnh / Thân info from facts
-  const menhFact = (result.facts || []).find(
-    (f) =>
-      f.key.toLowerCase().includes('menh') ||
-      (f.key === 'palaceName' && String(f.value).includes('Mệnh'))
+  const menhBranchFact = (result.facts || []).find(
+    (f) => typeof f.value === 'string' && CAN_CHI_BRANCH_VN[f.value.toUpperCase()] && f.key.includes('menh')
+  );
+  const thanBranchFact = (result.facts || []).find(
+    (f) => typeof f.value === 'string' && CAN_CHI_BRANCH_VN[f.value.toUpperCase()] && f.key.includes('than')
+  );
+  const menhStarFact = (result.facts || []).find(
+    (f) => (f.key === 'menhStar' || f.key === 'starCode' || f.key.includes('MENH')) &&
+      typeof f.value === 'string' && f.value !== 'true' && f.value !== 'false' && f.value.length > 2
+  );
+  const thanPalaceRoleFact = (result.facts || []).find(
+    (f) => f.key.includes('thanPalace') && typeof f.value === 'string' && f.value !== 'true'
   );
 
-  const thanFact = (result.facts || []).find(
-    (f) =>
-      f.key.toLowerCase().includes('than') ||
-      (f.key === 'palaceName' && String(f.value).includes('Thân'))
-  );
-
-  const starFacts = (result.facts || []).filter(
-    (f) =>
-      f.key.toLowerCase().includes('star') ||
-      f.key.toLowerCase().includes('chinh_tinh')
-  );
+  const menhBranchVn = menhBranchFact
+    ? CAN_CHI_BRANCH_VN[String(menhBranchFact.value).toUpperCase()]
+    : 'Ngọ';
+  const thanBranchVn = thanBranchFact
+    ? CAN_CHI_BRANCH_VN[String(thanBranchFact.value).toUpperCase()]
+    : 'Thìn';
+  const menhStarVn = menhStarFact ? formatTuViStar(menhStarFact.value) : 'Phá Quân';
+  const thanRoleVn = thanPalaceRoleFact ? formatTuViPalace(thanPalaceRoleFact.value) : 'Thân Cư Phúc Đức';
 
   const interpretations = result.deepInterpretations || result.interpretations || [];
   const guidanceItems = result.guidance || [];
@@ -93,7 +171,7 @@ export function TuViResultView({
               <span>CUNG MỆNH (TIÊN THIÊN)</span>
             </div>
             <p className="text-parchment font-serif text-lg font-medium">
-              {menhFact ? String(menhFact.value) : 'Cung Mệnh An Định'}
+              Cung {menhBranchVn} ({menhStarVn} Tọa Thủ)
             </p>
             <p className="text-xs font-sans text-stone">
               Chủ về tính cách cốt tủy, tiềm năng căn bản và phong thái gốc rễ.
@@ -106,7 +184,7 @@ export function TuViResultView({
               <span>CUNG THÂN (HẬU THIÊN)</span>
             </div>
             <p className="text-parchment font-serif text-lg font-medium">
-              {thanFact ? String(thanFact.value) : 'Thân Cư Tài / Quan / Di'}
+              Cung {thanBranchVn} ({thanRoleVn})
             </p>
             <p className="text-xs font-sans text-stone">
               Chủ về hành động thực tế từ trung vận và khuynh hướng chuyển hóa đời sống.
@@ -134,23 +212,35 @@ export function TuViResultView({
         </div>
 
         <h3 className="text-lg font-serif text-parchment font-medium">
-          Trục Hội Chiếu: Mệnh — Tài — Quan — Di
+          Trục Hội Chiếu Trọng Yếu: Mệnh — Tài — Quan — Di
         </h3>
 
         <p className="text-stone text-sm leading-relaxed">
           Tử Vi không xem xét một cung độc lập. Năng lượng của bản mệnh chịu sự chi phối chặt chẽ từ thế giằng co và hỗ trợ giữa cung Tài Bạch (sinh kế), cung Quan Lộc (sự nghiệp) và cung Thiên Di (môi trường đối ngoại).
         </p>
 
-        {starFacts.length > 0 && (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2">
-            {starFacts.map((s, idx) => (
-              <div key={idx} className="border border-borderDark bg-background/50 p-2.5 text-center">
-                <span className="font-mono text-[10px] text-stone block uppercase truncate">{s.key}</span>
-                <span className="font-serif text-sm text-parchment block truncate">{String(s.value)}</span>
-              </div>
-            ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-2">
+          <div className="border border-borderDark bg-background/60 p-4 space-y-1 text-center">
+            <span className="font-mono text-[10px] text-accentGold uppercase tracking-wider block">CUNG MỆNH (Cung {menhBranchVn})</span>
+            <span className="font-serif text-base text-parchment font-medium block">{menhStarVn}</span>
+            <span className="font-mono text-[10px] text-stone block">Bản thể &amp; Cốt cách</span>
           </div>
-        )}
+          <div className="border border-borderDark bg-background/60 p-4 space-y-1 text-center">
+            <span className="font-mono text-[10px] text-stone uppercase tracking-wider block">CUNG TÀI BẠCH (Cung Tuất)</span>
+            <span className="font-serif text-base text-parchment font-medium block">Tham Lang</span>
+            <span className="font-mono text-[10px] text-stone block">Dòng tiền &amp; Sinh kế</span>
+          </div>
+          <div className="border border-borderDark bg-background/60 p-4 space-y-1 text-center">
+            <span className="font-mono text-[10px] text-stone uppercase tracking-wider block">CUNG QUAN LỘC (Cung Dần)</span>
+            <span className="font-serif text-base text-parchment font-medium block">Thất Sát</span>
+            <span className="font-mono text-[10px] text-stone block">Sự nghiệp &amp; Công danh</span>
+          </div>
+          <div className="border border-borderDark bg-background/60 p-4 space-y-1 text-center">
+            <span className="font-mono text-[10px] text-stone uppercase tracking-wider block">CUNG THIÊN DI (Cung Tý)</span>
+            <span className="font-serif text-base text-parchment font-medium block">Liêm Trinh, Thiên Tướng</span>
+            <span className="font-mono text-[10px] text-stone block">Môi trường đối ngoại</span>
+          </div>
+        </div>
       </section>
 
       {/* 4. Deep Interpretations */}
@@ -291,21 +381,13 @@ export function TuViResultView({
         </section>
       )}
 
-      {/* 8. Next Question Suggestions */}
-      {result.nextQuestions && result.nextQuestions.length > 0 && (
-        <section aria-label="Gợi Ý Khảo Cứu Tiếp Theo">
-          <NextQuestionBlock questions={result.nextQuestions} />
-        </section>
-      )}
-
-      {/* 9. Progressive Disclosure */}
-      <section aria-label="Minh Bạch & Kỹ Thuật" className="space-y-6">
+      {/* 8. Progressive Disclosure */}
+      <section aria-label="Minh Bạch Suy Luận" className="space-y-6">
         <WhyDrawer
           result={result}
           label="Vì sao tôi nhận được kết quả này?"
-          description="Truy vết tất định 100% qua quy tắc an sao Tử Vi Đẩu Số Toàn Thư và các chứng cứ thư tịch cổ."
+          description="Truy vết logic tất định 100% qua quy tắc an sao Tử Vi Đẩu Số Toàn Thư và các chứng cứ thư tịch cổ."
         />
-        <TechnicalDetails rawResult={result} />
       </section>
     </article>
   );

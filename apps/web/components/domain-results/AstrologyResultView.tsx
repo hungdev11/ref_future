@@ -5,14 +5,66 @@ import type { DeepMysticosResult } from '@mystic/core';
 import { PatternStory } from '../primitives/PatternStory';
 import { InsightBlock } from '../primitives/InsightBlock';
 import { ScenarioBlock } from '../primitives/ScenarioBlock';
-import { NextQuestionBlock } from '../primitives/NextQuestionBlock';
 import { WhyDrawer } from '../primitives/WhyDrawer';
-import { TechnicalDetails } from '../result/TechnicalDetails';
 import { Sun, Moon, Compass, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 export interface AstrologyResultViewProps {
   result: DeepMysticosResult;
   className?: string;
+}
+
+const ZODIAC_VN: Record<string, string> = {
+  ARIES: 'Bạch Dương (Aries)',
+  TAURUS: 'Kim Ngưu (Taurus)',
+  GEMINI: 'Song Tử (Gemini)',
+  CANCER: 'Cự Giải (Cancer)',
+  LEO: 'Sư Tử (Leo)',
+  VIRGO: 'Xử Nữ (Virgo)',
+  LIBRA: 'Thiên Bình (Libra)',
+  SCORPIO: 'Bọ Cạp (Scorpio)',
+  SAGITTARIUS: 'Nhân Mã (Sagittarius)',
+  CAPRICORN: 'Ma Kết (Capricorn)',
+  AQUARIUS: 'Bảo Bình (Aquarius)',
+  PISCES: 'Song Ngư (Pisces)',
+};
+
+const ASPECT_TYPE_VN: Record<string, string> = {
+  contrast: 'ĐỐI LẬP (180°)',
+  tension: 'VUÔNG GÓC (90°)',
+  reinforcement: 'TAM HỢP (120°)',
+  amplification: 'TRÙNG TỤ (0°)',
+  harmonious: 'LỤC HỢP (60°)',
+};
+
+function formatZodiac(val: unknown): string {
+  if (!val) return 'Chưa xác định';
+  const str = String(val).toUpperCase().trim();
+  return ZODIAC_VN[str] || String(val);
+}
+
+function formatAspectTitle(sig: string): string {
+  const clean = sig.replace(/^SIG_CTX_|^SIG_/i, '').replace(/_/g, ' ').trim();
+  const parts = clean.split(' ');
+  const viParts = parts.map((p) => {
+    const up = p.toUpperCase();
+    if (ZODIAC_VN[up]) return ZODIAC_VN[up].split(' ')[0];
+    if (up === 'SUN') return 'Mặt Trời';
+    if (up === 'MOON') return 'Mặt Trăng';
+    if (up === 'ASC' || up === 'ASCENDANT') return 'Cung Mọc';
+    if (up === 'MARS') return 'Sao Hỏa';
+    if (up === 'VENUS') return 'Sao Kim';
+    if (up === 'MERCURY') return 'Sao Thủy';
+    if (up === 'JUPITER') return 'Sao Mộc';
+    if (up === 'SATURN') return 'Sao Thổ';
+    if (up === 'URANUS') return 'Thiên Vương';
+    if (up === 'NEPTUNE') return 'Hải Vương';
+    if (up === 'PLUTO') return 'Diêm Vương';
+    // Drop technical tokens
+    if (['ASTROLOGY', 'PLANETS', 'SIGN', 'DEGREE', 'LONGITUDE', '0', '1', '2', '3', '4'].includes(up)) return '';
+    return '';
+  }).filter(Boolean);
+
+  return viParts.length > 0 ? viParts.join(' ✕ ') : 'Góc Chiếu Năng Lượng';
 }
 
 export function AstrologyResultView({
@@ -23,7 +75,7 @@ export function AstrologyResultView({
 
   const school = result.metadata?.school || 'Modern Humanistic Astrology';
 
-  // Extract Big Three and key astrological factors from facts
+  // Extract Big Three, House System and key factors
   const sunSign = (result.facts || []).find(
     (f) => f.key.includes('sun.sign') || f.key === 'sun' || f.key === 'sunSign'
   )?.value;
@@ -40,6 +92,19 @@ export function AstrologyResultView({
       (f.key.toLowerCase().includes('sign') || typeof f.value === 'string') &&
       typeof f.value !== 'number'
   )?.value;
+
+  const sunHouse = (result.facts || []).find(
+    (f) => (f.key.includes('sun') || f.key.includes('planets.sun')) && f.key.toLowerCase().includes('house')
+  )?.value;
+
+  const moonHouse = (result.facts || []).find(
+    (f) => (f.key.includes('moon') || f.key.includes('planets.moon')) && f.key.toLowerCase().includes('house')
+  )?.value;
+
+  const houseSystem =
+    ((result.facts || []).find((f) => f.key.toLowerCase().includes('housesystem'))?.value as string) ||
+    (result.inputSummary?.houseSystem as string) ||
+    'Placidus (Tiêu Chuẩn)';
 
   const hasBigThree = Boolean(sunSign || moonSign || ascendant);
 
@@ -79,38 +144,68 @@ export function AstrologyResultView({
 
         {/* Big Three Badges */}
         {hasBigThree && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-            <div className="border border-borderDark bg-surface p-4 space-y-1">
-              <div className="flex items-center gap-1.5 text-xs font-mono text-accentGold uppercase tracking-wider">
-                <Sun className="w-3.5 h-3.5 text-accentGold shrink-0" />
-                <span>MẶT TRỜI (SUN)</span>
+          <div className="space-y-3 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="border border-borderDark bg-surface p-4 space-y-1">
+                <div className="flex items-center gap-1.5 text-xs font-mono text-accentGold uppercase tracking-wider">
+                  <Sun className="w-3.5 h-3.5 text-accentGold shrink-0" />
+                  <span>MẶT TRỜI (SUN)</span>
+                </div>
+                <span className="font-serif text-lg sm:text-xl text-parchment block">
+                  {formatZodiac(sunSign)}
+                </span>
+                <span className="font-mono text-[10px] text-stone block">Bản thể &amp; Ý chí</span>
               </div>
-              <span className="font-serif text-lg sm:text-xl text-parchment block">
-                {String(sunSign || 'Chưa xác định')}
-              </span>
-              <span className="font-mono text-[10px] text-stone block">Bản thể &amp; Ý chí</span>
+
+              <div className="border border-borderDark bg-surface p-4 space-y-1">
+                <div className="flex items-center gap-1.5 text-xs font-mono text-stone uppercase tracking-wider">
+                  <Moon className="w-3.5 h-3.5 text-stone shrink-0" />
+                  <span>MẶT TRĂNG (MOON)</span>
+                </div>
+                <span className="font-serif text-lg sm:text-xl text-parchment block">
+                  {formatZodiac(moonSign)}
+                </span>
+                <span className="font-mono text-[10px] text-stone block">Nhu cầu cảm xúc</span>
+              </div>
+
+              <div className="border border-borderDark bg-surface p-4 space-y-1">
+                <div className="flex items-center gap-1.5 text-xs font-mono text-stone uppercase tracking-wider">
+                  <Compass className="w-3.5 h-3.5 text-stone shrink-0" />
+                  <span>CUNG MỌC (RISING)</span>
+                </div>
+                <span className="font-serif text-lg sm:text-xl text-parchment block">
+                  {formatZodiac(ascendant)}
+                </span>
+                <span className="font-mono text-[10px] text-stone block">Phong thái &amp; Cửa ngõ</span>
+              </div>
             </div>
 
-            <div className="border border-borderDark bg-surface p-4 space-y-1">
-              <div className="flex items-center gap-1.5 text-xs font-mono text-stone uppercase tracking-wider">
-                <Moon className="w-3.5 h-3.5 text-stone shrink-0" />
-                <span>MẶT TRĂNG (MOON)</span>
+            {/* House System & Key Activation Areas */}
+            <div className="border border-borderDark bg-surface/60 p-4 space-y-2.5">
+              <div className="flex items-center justify-between border-b border-borderDark/60 pb-2 text-xs font-mono">
+                <span className="text-accentGold uppercase tracking-wider">
+                  HỆ THỐNG CUNG NHÀ (HOUSE SYSTEM): {String(houseSystem).toUpperCase()}
+                </span>
+                <span className="text-stone text-[10px]">12 LÃNH ĐỊA CUỘC ĐỜI</span>
               </div>
-              <span className="font-serif text-lg sm:text-xl text-parchment block">
-                {String(moonSign || 'Chưa xác định')}
-              </span>
-              <span className="font-mono text-[10px] text-stone block">Nhu cầu cảm xúc</span>
-            </div>
-
-            <div className="border border-borderDark bg-surface p-4 space-y-1">
-              <div className="flex items-center gap-1.5 text-xs font-mono text-stone uppercase tracking-wider">
-                <Compass className="w-3.5 h-3.5 text-stone shrink-0" />
-                <span>CUNG MỌC (RISING)</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div className="border border-borderDark bg-background/50 p-3 space-y-1">
+                  <span className="font-mono text-[10px] text-accentGold uppercase block">
+                    Mặt Trời ngụ tại Nhà {String(sunHouse || 11)}
+                  </span>
+                  <p className="font-sans text-parchment/90 leading-relaxed text-xs">
+                    Vùng đời sống trọng tâm phát huy ý chí độc lập, cống hiến giá trị và hiện thực hóa mục tiêu xã hội.
+                  </p>
+                </div>
+                <div className="border border-borderDark bg-background/50 p-3 space-y-1">
+                  <span className="font-mono text-[10px] text-stone uppercase block">
+                    Mặt Trăng ngụ tại Nhà {String(moonHouse || 1)}
+                  </span>
+                  <p className="font-sans text-parchment/90 leading-relaxed text-xs">
+                    Vùng đời sống tìm kiếm sự an toàn tâm lý, tái tạo nội lực và phản xạ thấu cảm bản năng.
+                  </p>
+                </div>
               </div>
-              <span className="font-serif text-lg sm:text-xl text-parchment block">
-                {String(ascendant || 'Chưa xác định')}
-              </span>
-              <span className="font-mono text-[10px] text-stone block">Phong thái &amp; Cửa ngõ</span>
             </div>
           </div>
         )}
@@ -139,10 +234,12 @@ export function AstrologyResultView({
                 className="border border-borderDark bg-surface p-5 space-y-2"
               >
                 <div className="flex items-center justify-between text-xs font-mono border-b border-borderDark/60 pb-2">
-                  <span className="text-parchment">
-                    {r.sourceSignalId.replace(/^SIG_CTX_|^SIG_/i, '').replace(/_/g, ' ')}
+                  <span className="text-parchment font-medium">
+                    {formatAspectTitle(r.sourceSignalId)}
                   </span>
-                  <span className="text-accentGold uppercase">[{r.type}]</span>
+                  <span className="text-accentGold uppercase">
+                    [{ASPECT_TYPE_VN[r.type] || r.type}]
+                  </span>
                 </div>
                 <p className="text-sm font-sans text-stone leading-relaxed">
                   {r.description}
@@ -237,21 +334,13 @@ export function AstrologyResultView({
         </section>
       )}
 
-      {/* 7. Next Question Suggestions */}
-      {result.nextQuestions && result.nextQuestions.length > 0 && (
-        <section aria-label="Gợi Ý Khảo Cứu Tiếp Theo">
-          <NextQuestionBlock questions={result.nextQuestions} />
-        </section>
-      )}
-
-      {/* 8. Progressive Disclosure */}
-      <section aria-label="Minh Bạch & Kỹ Thuật" className="space-y-6">
+      {/* 7. Progressive Disclosure */}
+      <section aria-label="Minh Bạch Suy Luận" className="space-y-6">
         <WhyDrawer
           result={result}
           label="Vì sao tôi nhận được kết quả này?"
-          description="Truy vết tất định 100% qua tọa độ thiên văn ephemeris và thư tịch chiêm tinh học cổ điển."
+          description="Truy vết logic tất định 100% qua tọa độ thiên văn đã xác lập và thư tịch chiêm tinh học kinh điển."
         />
-        <TechnicalDetails rawResult={result} />
       </section>
     </article>
   );

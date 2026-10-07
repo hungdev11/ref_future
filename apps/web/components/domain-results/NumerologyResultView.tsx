@@ -6,9 +6,7 @@ import { PatternStory } from '../primitives/PatternStory';
 import { TensionBlock } from '../primitives/TensionBlock';
 import { InsightBlock } from '../primitives/InsightBlock';
 import { ScenarioBlock } from '../primitives/ScenarioBlock';
-import { NextQuestionBlock } from '../primitives/NextQuestionBlock';
 import { WhyDrawer } from '../primitives/WhyDrawer';
-import { TechnicalDetails } from '../result/TechnicalDetails';
 import { Sparkles, Calendar, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 export interface NumerologyResultViewProps {
@@ -16,22 +14,22 @@ export interface NumerologyResultViewProps {
   className?: string;
 }
 
-const NUMBER_LABELS: Record<string, string> = {
-  lifePathNumber: 'SỐ ĐƯỜNG ĐỜI (LIFE PATH)',
-  lifePath: 'SỐ ĐƯỜNG ĐỜI (LIFE PATH)',
-  destinyNumber: 'SỐ SỨ MỆNH (DESTINY)',
-  destiny: 'SỐ SỨ MỆNH (DESTINY)',
-  soulUrgeNumber: 'SỐ LINH HỒN (SOUL URGE)',
-  soulNumber: 'SỐ LINH HỒN (SOUL URGE)',
-  soul: 'SỐ LINH HỒN (SOUL URGE)',
-  personalityNumber: 'SỐ TÍNH CÁCH (PERSONALITY)',
-  personality: 'SỐ TÍNH CÁCH (PERSONALITY)',
-  attitudeNumber: 'SỐ THÁI ĐỘ (ATTITUDE)',
-  birthDayNumber: 'SỐ NGÀY SINH (BIRTHDAY)',
-  maturityNumber: 'SỐ TRƯỞNG THÀNH (MATURITY)',
-  personalYear: 'NĂM CÁ NHÂN (PERSONAL YEAR)',
-  currentYear: 'NĂM HIỆN TẠI',
-  'results.lifePath.finalValue': 'SỐ ĐƯỜNG ĐỜI (LIFE PATH)',
+const NUMBER_LABELS: Record<string, { vn: string; en: string }> = {
+  lifepath: { vn: 'SỐ ĐƯỜNG ĐỜI', en: 'LIFE PATH' },
+  lifepathnumber: { vn: 'SỐ ĐƯỜNG ĐỜI', en: 'LIFE PATH' },
+  destiny: { vn: 'SỐ SỨ MỆNH', en: 'DESTINY' },
+  destinynumber: { vn: 'SỐ SỨ MỆNH', en: 'DESTINY' },
+  soul: { vn: 'SỐ LINH HỒN', en: 'SOUL URGE' },
+  soulnumber: { vn: 'SỐ LINH HỒN', en: 'SOUL URGE' },
+  soulurge: { vn: 'SỐ LINH HỒN', en: 'SOUL URGE' },
+  soulurgenumber: { vn: 'SỐ LINH HỒN', en: 'SOUL URGE' },
+  personality: { vn: 'SỐ TÍNH CÁCH', en: 'PERSONALITY' },
+  personalitynumber: { vn: 'SỐ TÍNH CÁCH', en: 'PERSONALITY' },
+  maturity: { vn: 'SỐ TRƯỞNG THÀNH', en: 'MATURITY' },
+  maturitynumber: { vn: 'SỐ TRƯỞNG THÀNH', en: 'MATURITY' },
+  personalyear: { vn: 'NĂM CÁ NHÂN', en: 'PERSONAL YEAR' },
+  attitude: { vn: 'SỐ THÁI ĐỘ', en: 'ATTITUDE' },
+  birthday: { vn: 'SỐ NGÀY SINH', en: 'BIRTHDAY' },
 };
 
 const ALLOWED_CORE_KEYS = new Set([
@@ -40,15 +38,6 @@ const ALLOWED_CORE_KEYS = new Set([
   'personality', 'personalitynumber', 'maturity', 'maturitynumber',
   'personalyear'
 ]);
-
-const CANONICAL_LABELS: Record<string, string> = {
-  lifepath: 'SỐ ĐƯỜNG ĐỜI (LIFE PATH)',
-  destiny: 'SỐ SỨ MỆNH (DESTINY)',
-  soul: 'SỐ LINH HỒN (SOUL URGE)',
-  personality: 'SỐ TÍNH CÁCH (PERSONALITY)',
-  maturity: 'SỐ TRƯỞNG THÀNH (MATURITY)',
-  personalyear: 'NĂM CÁ NHÂN (PERSONAL YEAR)',
-};
 
 function normalizeKey(key: string): string {
   return key
@@ -68,6 +57,14 @@ function getSimplifiedKey(rawKey: string): string {
   if (norm.startsWith('maturity')) return 'maturity';
   if (norm.startsWith('personalyear')) return 'personalyear';
   return norm;
+}
+
+function getNumberLabel(key: string): { vn: string; en: string } {
+  const simplified = getSimplifiedKey(key);
+  if (NUMBER_LABELS[simplified]) return NUMBER_LABELS[simplified];
+  const norm = normalizeKey(key);
+  if (NUMBER_LABELS[norm]) return NUMBER_LABELS[norm];
+  return { vn: key.replace(/_/g, ' ').toUpperCase(), en: 'Core' };
 }
 
 export function NumerologyResultView({
@@ -124,20 +121,25 @@ export function NumerologyResultView({
 
         {/* Core Numbers Badges Grid */}
         {coreNumberFacts.length > 0 && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 pt-2">
-            {coreNumberFacts.map((fact, idx) => (
-              <div
-                key={idx}
-                className="border border-borderDark bg-surface p-4 text-center space-y-1 rounded-none hover:border-accentGold/40 transition-colors"
-              >
-                <span className="font-mono text-[10px] text-stone tracking-wider block truncate">
-                  {NUMBER_LABELS[fact.key] || CANONICAL_LABELS[getSimplifiedKey(fact.key)] || fact.key.toUpperCase()}
-                </span>
-                <span className="font-serif text-2xl sm:text-3xl text-accentGold font-normal block">
-                  {String(fact.value)}
-                </span>
-              </div>
-            ))}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 pt-2">
+            {coreNumberFacts.map((fact, idx) => {
+              const labelInfo = getNumberLabel(fact.key);
+              return (
+                <div
+                  key={idx}
+                  className="border border-borderDark bg-surface p-4 text-center space-y-1.5 rounded-none hover:border-accentGold/40 transition-colors flex flex-col justify-between"
+                >
+                  <div className="space-y-0.5 min-h-[34px] flex flex-col justify-center">
+                    <span className="font-mono text-[10px] text-accentGold tracking-wider block font-medium leading-tight">
+                      {labelInfo.vn} ({labelInfo.en})
+                    </span>
+                  </div>
+                  <span className="font-serif text-2xl sm:text-3xl text-parchment font-normal block pt-1">
+                    {String(fact.value)}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         )}
       </header>
@@ -270,21 +272,13 @@ export function NumerologyResultView({
         </section>
       )}
 
-      {/* 8. Next Question Suggestions */}
-      {result.nextQuestions && result.nextQuestions.length > 0 && (
-        <section aria-label="Gợi Ý Khảo Cứu Tiếp Theo">
-          <NextQuestionBlock questions={result.nextQuestions} />
-        </section>
-      )}
-
-      {/* 9. Progressive Disclosure */}
-      <section aria-label="Minh Bạch & Kỹ Thuật" className="space-y-6">
+      {/* 8. Progressive Disclosure */}
+      <section aria-label="Minh Bạch Suy Luận" className="space-y-6">
         <WhyDrawer
           result={result}
           label="Vì sao tôi nhận được kết quả này?"
-          description="Truy vết tất định 100% qua công thức số học Pythagoras và thư tịch chuẩn."
+          description="Truy vết logic tất định 100% qua công thức số học Pythagoras và thư tịch nguyên bản."
         />
-        <TechnicalDetails rawResult={result} />
       </section>
     </article>
   );

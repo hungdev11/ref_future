@@ -6,14 +6,26 @@ import { PatternStory } from '../primitives/PatternStory';
 import { TensionBlock } from '../primitives/TensionBlock';
 import { InsightBlock } from '../primitives/InsightBlock';
 import { ScenarioBlock } from '../primitives/ScenarioBlock';
-import { NextQuestionBlock } from '../primitives/NextQuestionBlock';
 import { WhyDrawer } from '../primitives/WhyDrawer';
-import { TechnicalDetails } from '../result/TechnicalDetails';
 import { Users, Heart, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 export interface CompatibilityResultViewProps {
   result: DeepMysticosResult;
   className?: string;
+}
+
+const DIMENSION_VN: Record<string, string> = {
+  overview: 'TỔNG QUAN',
+  emotional: 'CẢM XÚC & NỘI TÂM',
+  communication: 'GIAO TIẾP & TƯ DUY',
+  values: 'GIÁ TRỊ & ĐỊNH HƯỚNG',
+  lifestyle: 'LỐI SỐNG & SINH HOẠT',
+  career: 'CÔNG VIỆC & SỰ NGHIỆP',
+};
+
+function formatDimension(dim: string): string {
+  const lower = dim.toLowerCase().trim();
+  return DIMENSION_VN[lower] || dim.toUpperCase();
 }
 
 export function CompatibilityResultView({
@@ -35,6 +47,27 @@ export function CompatibilityResultView({
     new Set(interpretations.map((i) => i.dimension || 'Tương Tác Chung'))
   );
 
+  const relType = String(
+    (result.facts || []).find((f) => f.key.toLowerCase().includes('relationshiptype') || f.key === 'purpose')?.value ||
+    (result.inputSummary as any)?.relationshipType ||
+    'LOVE'
+  ).toUpperCase();
+
+  const PURPOSE_VN: Record<string, string> = {
+    LOVE: 'Tình Cảm & Hôn Nhân',
+    BUSINESS: 'Hợp Tác Kinh Doanh / Sự Nghiệp',
+    FRIENDSHIP: 'Bạn Bè & Đồng Hành Tri Kỷ',
+    FAMILY: 'Gia Đình & Thân Tộc',
+  };
+
+  const nameA = (result.inputSummary as any)?.personA?.name || 'Đối Tượng A';
+  const nameB = (result.inputSummary as any)?.personB?.name || 'Đối Tượng B';
+
+  const sunA = (result.facts || []).find((f) => f.key === 'personA.sunSign')?.value;
+  const sunB = (result.facts || []).find((f) => f.key === 'personB.sunSign')?.value;
+  const lpA = (result.facts || []).find((f) => f.key === 'personA.lifePath')?.value;
+  const lpB = (result.facts || []).find((f) => f.key === 'personB.lifePath')?.value;
+
   return (
     <article className={`max-w-3xl mx-auto space-y-10 ${className}`}>
       {/* 1. Header & Relationship Overview */}
@@ -48,12 +81,31 @@ export function CompatibilityResultView({
         </div>
 
         <div className="space-y-2">
+          <div className="inline-block border border-accentGold/60 bg-accentGold/10 px-3 py-1 text-xs font-mono text-accentGold uppercase tracking-wider">
+            MỤC ĐÍCH KHẢO LUẬN: {PURPOSE_VN[relType] || 'Tình Cảm & Hôn Nhân'}
+          </div>
           <h1 className="text-2xl sm:text-3xl font-serif text-parchment font-medium tracking-tight">
-            Tương Quan Hòa Hợp &amp; Động Lực Gắn Kết
+            Tương Quan Hòa Hợp: {nameA} ✕ {nameB}
           </h1>
           <p className="text-stone text-sm leading-relaxed">
-            Phân tích tương tác đa chiều giữa hai trường năng lượng: điểm hút tự nhiên, khác biệt bản năng và các kịch bản phối hợp thực tế.
+            Phân tích tương tác đa chiều giữa hai trường năng lượng: điểm hút tự nhiên, khác biệt bản năng và cơ chế phối hợp trong mục đích {PURPOSE_VN[relType] || 'chung'}.
           </p>
+        </div>
+
+        {/* Profile Comparison Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          <div className="border border-borderDark bg-surface p-4 space-y-1">
+            <span className="text-[10px] font-mono text-accentGold uppercase block">{nameA}</span>
+            <span className="font-serif text-base text-parchment block">
+              {sunA ? String(sunA) : 'Mặt Trời Khởi Sinh'} {lpA ? `• Đường Đời ${lpA}` : ''}
+            </span>
+          </div>
+          <div className="border border-borderDark bg-surface p-4 space-y-1">
+            <span className="text-[10px] font-mono text-stone uppercase block">{nameB}</span>
+            <span className="font-serif text-base text-parchment block">
+              {sunB ? String(sunB) : 'Mặt Trời Khởi Sinh'} {lpB ? `• Đường Đời ${lpB}` : ''}
+            </span>
+          </div>
         </div>
 
         {/* Dimension Pills */}
@@ -67,7 +119,7 @@ export function CompatibilityResultView({
               key={idx}
               className="border border-borderDark bg-surface px-3 py-1 text-xs font-mono text-parchment tracking-wide"
             >
-              {dim.toUpperCase()}
+              {formatDimension(dim)}
             </span>
           ))}
         </div>
@@ -185,21 +237,13 @@ export function CompatibilityResultView({
         </section>
       )}
 
-      {/* 7. Next Question Suggestions */}
-      {result.nextQuestions && result.nextQuestions.length > 0 && (
-        <section aria-label="Gợi Ý Khảo Cứu Tiếp Theo">
-          <NextQuestionBlock questions={result.nextQuestions} />
-        </section>
-      )}
-
-      {/* 8. Progressive Disclosure */}
-      <section aria-label="Minh Bạch & Kỹ Thuật" className="space-y-6">
+      {/* 7. Progressive Disclosure */}
+      <section aria-label="Minh Bạch Suy Luận" className="space-y-6">
         <WhyDrawer
           result={result}
           label="Vì sao tôi nhận được kết quả này?"
-          description="Truy vết tất định 100% qua mô hình đối chiếu chéo các hệ thống chiêm tinh và số học."
+          description="Truy vết logic tất định 100% qua mô hình đối chiếu chéo giữa hai trường năng lượng thực tế."
         />
-        <TechnicalDetails rawResult={result} />
       </section>
     </article>
   );
