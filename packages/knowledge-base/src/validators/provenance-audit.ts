@@ -49,6 +49,13 @@ export function runProvenanceAudit(): ProvenanceAuditReport {
     }
   }
 
+  for (const claim of claims) {
+    if (!sourceIds.has(claim.sourceId)) {
+      errors.push(`Claim ${claim.claimId} references missing source ${claim.sourceId}`);
+      missingSourcesCount++;
+    }
+  }
+
   const validRulesCount = rules.filter((r) =>
     r.claimIds && r.claimIds.length > 0 && r.claimIds.every((c) => claimIds.has(c)) &&
     r.sourceIds && r.sourceIds.length > 0 && r.sourceIds.every((s) => sourceIds.has(s))

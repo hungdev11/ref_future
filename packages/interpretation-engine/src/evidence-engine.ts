@@ -42,21 +42,10 @@ export class EvidenceEngine {
     let counter = 1;
 
     for (const rule of matchedRules) {
-      let kbRule =
-        store.getRule(rule.ruleCode) ||
-        store.getRule(`RUL_${rule.ruleCode.replace(/[-]/g, '_')}`);
-
+      let kbRule = store.getRule(rule.ruleCode) || store.getRule(`RUL_${rule.ruleCode.replace(/[-]/g, '_')}`);
       if (!kbRule && rule.action.targetInterpretationId) {
-        const targetId = rule.action.targetInterpretationId;
-        const targetClean = targetId.replace(/^INTERP_/, '');
-        kbRule =
-          store.getRule(targetId) ||
-          store.getRule(`RUL_${targetClean}`) ||
-          store.getAllRules().find((r) => r.ruleId.includes(targetClean)) ||
-          store.getAllRules().find((r) => {
-            const parts = targetClean.split('_').filter((p) => p.length > 2);
-            return parts.length > 0 && parts.every((p) => r.ruleId.includes(p));
-          });
+        const targetClean = rule.action.targetInterpretationId.replace(/^INTERP_/, '');
+        kbRule = store.getRule(`RUL_${targetClean}`);
       }
 
       const provenanceFootnote = kbRule

@@ -56,9 +56,13 @@ export class ProvenanceTracer {
       .join('; ');
 
     const locations = trace.claims
-      .map((c) => (c.location ? `${c.location.chapter || ''} ${c.location.page || ''}`.trim() : ''))
+      .map((c) => {
+        if (!c.location) return '';
+        const parts = [c.location.chapter, c.location.section, c.location.page].filter(Boolean);
+        return parts.join(', ');
+      })
       .filter(Boolean)
-      .join(', ');
+      .join('; ');
 
     return `Rule: ${trace.ruleId} [Level ${trace.evidenceLevel}] | Nguồn: ${sourceCitations}${locations ? ` | Vị trí: ${locations}` : ''}`;
   }
