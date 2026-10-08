@@ -129,4 +129,36 @@ describe('TuViResultView Dynamic Data', () => {
     expect(html).not.toContain('Tham Lang');
     expect(html).not.toContain('Thất Sát');
   });
+
+  it('renders Menh-Than interaction, Technical details and End state exploration', () => {
+    const mockResult: DeepMysticosResult = {
+      domain: 'tuvi',
+      primaryResult: 'Cốt cách vững vàng',
+      summary: 'Test',
+      confidenceScore: 0.9,
+      dataCompleteness: 'FULL',
+      facts: [
+        { key: 'menhBranch', value: 'NGO_HORSE' },
+        { key: 'menhStar', value: 'TU_VI' },
+        { key: 'thanBranch', value: 'THIN_DRAGON' },
+        { key: 'thanPalaceRole', value: 'PHUC_DUC' },
+      ],
+      interpretations: [],
+      metadata: { school: 'Tử Vi Đẩu Số Toàn Thư' },
+    } as any;
+
+    const { container } = render(<TuViResultView result={mockResult} />);
+    const html = container.innerHTML;
+    // Spec 24: Menh-Than interaction
+    expect(html).toContain('TƯƠNG TÁC MỆNH ↔ THÂN');
+    expect(html).toContain('ĐIỂM TƯƠNG ĐỒNG');
+    expect(html).toContain('ĐIỂM BỔ TRỢ HẬU THIÊN');
+    // Spec 34: Technical details
+    expect(html).toContain('CHI TIẾT KỸ THUẬT THIÊN BÀN');
+    // Spec 35: End state actions
+    expect(html).toContain('BẠN VỪA KHÁM PHÁ');
+    expect(html).toContain('Khám phá vận hiện tại →');
+    expect(html).toContain('Xem 12 cung chức →');
+    expect(html).toContain('Xem cơ sở luận giải ✦');
+  });
 });

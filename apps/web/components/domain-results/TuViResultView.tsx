@@ -7,7 +7,8 @@ import { InsightBlock } from '../primitives/InsightBlock';
 import { ScenarioBlock } from '../primitives/ScenarioBlock';
 import { WhyDrawer } from '../primitives/WhyDrawer';
 import { ResultFooter } from '../primitives/ResultFooter';
-import { ChevronDown, ChevronUp, Shield, CheckCircle2, AlertTriangle, Layers } from 'lucide-react';
+import { PalaceDetailSheet, type PalaceDetail } from '../primitives/PalaceDetailSheet';
+import { ChevronDown, ChevronUp, Shield, CheckCircle2, AlertTriangle, Layers, ExternalLink } from 'lucide-react';
 
 export interface TuViResultViewProps {
   result: DeepMysticosResult;
@@ -115,6 +116,30 @@ export function TuViResultView({
   className = '',
 }: TuViResultViewProps) {
   const [palacesOpen, setPalacesOpen] = useState(false);
+  const [selectedPalace, setSelectedPalace] = useState<PalaceDetail | null>(null);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [techOpen, setTechOpen] = useState(false);
+
+  const openPalaceDetail = (
+    id: string,
+    name: string,
+    role: string,
+    stars: string[],
+    branch?: string,
+    triad?: string[],
+    interp?: string
+  ) => {
+    setSelectedPalace({
+      id,
+      name,
+      role,
+      stars: stars.filter(Boolean),
+      branch,
+      triadOpposition: triad,
+      interpretation: interp,
+    });
+    setIsSheetOpen(true);
+  };
 
   if (!result) return null;
 
@@ -201,12 +226,32 @@ export function TuViResultView({
           </p>
         </div>
 
-        {/* Mệnh - Thân Core Display */}
+        {/* Mệnh - Thân Core Display (Clickable for Detail Sheet) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-          <div className="border border-borderDark bg-surface p-5 space-y-1.5">
-            <div className="flex items-center gap-2 text-xs font-mono text-accentGold uppercase tracking-wider">
-              <Shield className="w-4 h-4 text-accentGold shrink-0" />
-              <span>CUNG MỆNH (TIÊN THIÊN)</span>
+          <button
+            type="button"
+            onClick={() =>
+              openPalaceDetail(
+                'menh',
+                'Mệnh',
+                'Chủ về tính cách cốt tủy, tiềm năng căn bản và phong thái gốc rễ.',
+                [menhStarVn],
+                menhBranchVn,
+                [
+                  `Tài Bạch: ${taiBachStarVn}`,
+                  `Quan Lộc: ${quanLocStarVn}`,
+                  `Thiên Di: ${thienDiStarVn}`,
+                ]
+              )
+            }
+            className="border border-borderDark bg-surface p-5 space-y-1.5 text-left hover:border-accentGold transition-colors cursor-pointer group"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs font-mono text-accentGold uppercase tracking-wider">
+                <Shield className="w-4 h-4 text-accentGold shrink-0" />
+                <span>CUNG MỆNH (TIÊN THIÊN)</span>
+              </div>
+              <span className="text-[10px] font-mono text-stone group-hover:text-accentGold uppercase">[XEM CẤU TRÚC]</span>
             </div>
             <p className="text-parchment font-serif text-lg font-medium">
               Cung {menhBranchVn} ({menhStarVn} Tọa Thủ)
@@ -214,12 +259,27 @@ export function TuViResultView({
             <p className="text-xs font-sans text-stone">
               Chủ về tính cách cốt tủy, tiềm năng căn bản và phong thái gốc rễ.
             </p>
-          </div>
+          </button>
 
-          <div className="border border-borderDark bg-surface p-5 space-y-1.5">
-            <div className="flex items-center gap-2 text-xs font-mono text-stone uppercase tracking-wider">
-              <Shield className="w-4 h-4 text-stone shrink-0" />
-              <span>CUNG THÂN (HẬU THIÊN)</span>
+          <button
+            type="button"
+            onClick={() =>
+              openPalaceDetail(
+                'than',
+                'Thân',
+                'Chủ về hành động thực tế từ trung vận và khuynh hướng chuyển hóa đời sống.',
+                [thanRoleVn],
+                thanBranchVn
+              )
+            }
+            className="border border-borderDark bg-surface p-5 space-y-1.5 text-left hover:border-accentGold transition-colors cursor-pointer group"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs font-mono text-stone uppercase tracking-wider">
+                <Shield className="w-4 h-4 text-stone shrink-0" />
+                <span>CUNG THÂN (HẬU THIÊN)</span>
+              </div>
+              <span className="text-[10px] font-mono text-stone group-hover:text-accentGold uppercase">[XEM CẤU TRÚC]</span>
             </div>
             <p className="text-parchment font-serif text-lg font-medium">
               Cung {thanBranchVn} ({thanRoleVn})
@@ -227,7 +287,7 @@ export function TuViResultView({
             <p className="text-xs font-sans text-stone">
               Chủ về hành động thực tế từ trung vận và khuynh hướng chuyển hóa đời sống.
             </p>
-          </div>
+          </button>
         </div>
       </header>
 
@@ -237,6 +297,35 @@ export function TuViResultView({
           <PatternStory story={result.mainStory} />
         </section>
       )}
+
+      {/* 2.5. Mệnh ↔ Thân Interaction (Spec 24) */}
+      <section aria-label="Tương Tác Mệnh Thân" className="border border-borderDark bg-surface p-6 space-y-4">
+        <div className="flex items-center gap-2 text-xs font-mono text-stone tracking-widest uppercase border-b border-borderDark/60 pb-3">
+          <span className="text-accentGold">02b</span>
+          <span className="text-borderLight">/</span>
+          <span>TƯƠNG TÁC MỆNH ↔ THÂN (TIÊN THIÊN VÀ HẬU VẬN)</span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+          <div className="p-4 bg-background/50 border border-borderDark space-y-1">
+            <span className="text-[10px] font-mono text-accentGold uppercase tracking-wider block">ĐIỂM TƯƠNG ĐỒNG</span>
+            <p className="text-xs text-parchment leading-relaxed">
+              Cung Mệnh tại {menhBranchVn} và Cung Thân tại {thanBranchVn} tương tác liên hoàn qua ngũ hành bản mệnh.
+            </p>
+          </div>
+          <div className="p-4 bg-background/50 border border-borderDark space-y-1">
+            <span className="text-[10px] font-mono text-stone uppercase tracking-wider block">ĐIỂM BỔ TRỢ HẬU THIÊN</span>
+            <p className="text-xs text-parchment leading-relaxed">
+              Từ trung vận, vị trí {thanRoleVn} dần dẫn dắt hành động thực tiễn, chuyển hóa năng lượng khởi đầu.
+            </p>
+          </div>
+          <div className="p-4 bg-background/50 border border-borderDark space-y-1">
+            <span className="text-[10px] font-mono text-stone uppercase tracking-wider block">ĐIỂM CÂN BẰNG NĂNG LƯỢNG</span>
+            <p className="text-xs text-parchment leading-relaxed">
+              Duy trì sự nhất quán giữa lý tưởng khởi xướng ({menhStarVn}) và môi trường ứng tác thực tế.
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* 3. Tam Phương Tứ Chính & Tứ Hóa Kích Hoạt */}
       <section aria-label="Tam Phương Tứ Chính" className="border border-borderDark bg-surface p-6 sm:p-7 space-y-4">
@@ -258,26 +347,78 @@ export function TuViResultView({
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-2">
-          <div className="border border-borderDark bg-background/60 p-4 space-y-1 text-center">
+          <button
+            type="button"
+            onClick={() =>
+              openPalaceDetail(
+                'menh',
+                'Mệnh',
+                'Bản thể & Cốt cách tiên thiên.',
+                [menhStarVn],
+                menhBranchVn,
+                [`Tài Bạch: ${taiBachStarVn}`, `Quan Lộc: ${quanLocStarVn}`, `Thiên Di: ${thienDiStarVn}`]
+              )
+            }
+            className="border border-borderDark bg-background/60 p-4 space-y-1 text-center hover:border-accentGold transition-colors cursor-pointer"
+          >
             <span className="font-mono text-[10px] text-accentGold uppercase tracking-wider block">CUNG MỆNH (Cung {menhBranchVn})</span>
             <span className="font-serif text-base text-parchment font-medium block">{menhStarVn}</span>
             <span className="font-mono text-[10px] text-stone block">Bản thể &amp; Cốt cách</span>
-          </div>
-          <div className="border border-borderDark bg-background/60 p-4 space-y-1 text-center">
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              openPalaceDetail(
+                'tai_bach',
+                'Tài Bạch',
+                'Dòng tiền & Sinh kế thực tế.',
+                [taiBachStarVn],
+                undefined,
+                [`Mệnh: ${menhStarVn}`, `Quan Lộc: ${quanLocStarVn}`]
+              )
+            }
+            className="border border-borderDark bg-background/60 p-4 space-y-1 text-center hover:border-accentGold transition-colors cursor-pointer"
+          >
             <span className="font-mono text-[10px] text-stone uppercase tracking-wider block">CUNG TÀI BẠCH</span>
             <span className="font-serif text-base text-parchment font-medium block">{taiBachStarVn}</span>
             <span className="font-mono text-[10px] text-stone block">Dòng tiền &amp; Sinh kế</span>
-          </div>
-          <div className="border border-borderDark bg-background/60 p-4 space-y-1 text-center">
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              openPalaceDetail(
+                'quan_loc',
+                'Quan Lộc',
+                'Sự nghiệp, công danh và năng lực thực thi.',
+                [quanLocStarVn],
+                undefined,
+                [`Mệnh: ${menhStarVn}`, `Tài Bạch: ${taiBachStarVn}`]
+              )
+            }
+            className="border border-borderDark bg-background/60 p-4 space-y-1 text-center hover:border-accentGold transition-colors cursor-pointer"
+          >
             <span className="font-mono text-[10px] text-stone uppercase tracking-wider block">CUNG QUAN LỘC</span>
             <span className="font-serif text-base text-parchment font-medium block">{quanLocStarVn}</span>
             <span className="font-mono text-[10px] text-stone block">Sự nghiệp &amp; Công danh</span>
-          </div>
-          <div className="border border-borderDark bg-background/60 p-4 space-y-1 text-center">
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              openPalaceDetail(
+                'thien_di',
+                'Thiên Di',
+                'Môi trường đối ngoại, xuất hành và không gian xã hội.',
+                [thienDiStarVn],
+                undefined,
+                [`Đối xung Cung Mệnh (${menhStarVn})`]
+              )
+            }
+            className="border border-borderDark bg-background/60 p-4 space-y-1 text-center hover:border-accentGold transition-colors cursor-pointer"
+          >
             <span className="font-mono text-[10px] text-stone uppercase tracking-wider block">CUNG THIÊN DI</span>
             <span className="font-serif text-base text-parchment font-medium block">{thienDiStarVn}</span>
             <span className="font-mono text-[10px] text-stone block">Môi trường đối ngoại</span>
-          </div>
+          </button>
         </div>
       </section>
 
@@ -319,13 +460,25 @@ export function TuViResultView({
           {CURATED_PALACES.map((palace) => {
             const starVn = getStarFromFacts(palace.key);
             return (
-              <div key={palace.key} className="border border-borderDark bg-background/50 p-4 space-y-1">
+              <button
+                key={palace.key}
+                type="button"
+                onClick={() =>
+                  openPalaceDetail(
+                    palace.key,
+                    palace.label,
+                    palace.desc,
+                    [starVn || 'Vô Chính Diệu']
+                  )
+                }
+                className="border border-borderDark bg-background/50 p-4 space-y-1 text-left hover:border-accentGold transition-colors cursor-pointer"
+              >
                 <span className="font-mono text-[10px] text-accentGold uppercase tracking-wider block">{palace.label}</span>
                 <span className="font-serif text-sm text-parchment font-medium block">
                   {starVn || 'Vô Chính Diệu'}
                 </span>
                 <span className="font-mono text-[10px] text-stone block">{palace.desc}</span>
-              </div>
+              </button>
             );
           })}
         </div>
@@ -394,9 +547,21 @@ export function TuViResultView({
         {palacesOpen && (
           <div className="border-t border-borderDark p-5 sm:p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 animate-in fade-in duration-200">
             {TU_VI_12_PALACES.map((palace) => (
-              <div
+              <button
                 key={palace.id}
-                className="border border-borderDark bg-background/50 p-4 space-y-1 hover:border-accentGold/40 transition-colors"
+                type="button"
+                onClick={() =>
+                  openPalaceDetail(
+                    palace.id,
+                    palace.name,
+                    palace.label,
+                    [],
+                    undefined,
+                    undefined,
+                    `Tra cứu vị trí và sự tác động của cung ${palace.name} trên thiên bàn 12 cung chức.`
+                  )
+                }
+                className="border border-borderDark bg-background/50 p-4 space-y-1 text-left hover:border-accentGold transition-colors cursor-pointer"
               >
                 <span className="font-mono text-[10px] uppercase text-accentGold tracking-wider block">
                   {palace.name}
@@ -404,7 +569,7 @@ export function TuViResultView({
                 <p className="font-serif text-sm text-parchment font-medium">
                   {palace.label}
                 </p>
-              </div>
+              </button>
             ))}
           </div>
         )}
@@ -476,6 +641,97 @@ export function TuViResultView({
         />
       </section>
 
+      {/* 8.5. Technical Details (Screen 11 - Spec 34) */}
+      <section aria-label="Thông Số Kỹ Thuật" className="border border-borderDark bg-surface">
+        <button
+          type="button"
+          onClick={() => setTechOpen(!techOpen)}
+          aria-expanded={techOpen}
+          className="w-full p-5 sm:p-6 flex items-center justify-between text-left hover:bg-surfaceHover/50 transition-colors"
+        >
+          <div className="space-y-0.5">
+            <span className="font-mono text-xs text-stone tracking-widest uppercase block">
+              CHI TIẾT KỸ THUẬT THIÊN BÀN (SCREEN 11)
+            </span>
+            <h4 className="font-serif text-base text-parchment font-medium">
+              Thông Số Cổ Bản, Nạp Âm &amp; Quy Tắc An Sao
+            </h4>
+          </div>
+          <span className="text-xs font-mono text-stone uppercase">
+            {techOpen ? '[THU GỌN]' : '[MỞ RỘNG]'}
+          </span>
+        </button>
+
+        {techOpen && (
+          <div className="border-t border-borderDark p-5 text-xs font-mono space-y-3 bg-background/40">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-stone">
+              <div>
+                <span className="text-parchment block">Trường Phái:</span>
+                <span>{school}</span>
+              </div>
+              <div>
+                <span className="text-parchment block">Mô Hình:</span>
+                <span>Tất Định 100%</span>
+              </div>
+              <div>
+                <span className="text-parchment block">Độ Đầy Đủ:</span>
+                <span>{completenessLabel}</span>
+              </div>
+              <div>
+                <span className="text-parchment block">Quy Tắc:</span>
+                <span>{result.technical?.rulesMatchedCount || 12} quy tắc khớp</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+
+      {/* 8.7. End State Exploration & Actions (Spec 35) */}
+      <section aria-label="Điều Hướng Sau Khảo Cứu" className="p-6 border border-borderDark bg-surface/80 space-y-4">
+        <div className="space-y-1">
+          <span className="text-[10px] font-mono text-accentGold uppercase tracking-widest block">
+            BẠN VỪA KHÁM PHÁ
+          </span>
+          <p className="font-serif text-base text-parchment font-medium">
+            {result.mainStory?.headline || result.primaryResult || 'Lá Số Tử Vi Đẩu Số Toàn Thư'}
+          </p>
+        </div>
+
+        <div className="pt-2 flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.querySelector('[aria-label="Timeline Vận Trình"]');
+              el?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="px-4 py-2 border border-borderDark bg-background hover:border-accentGold text-parchment text-xs font-mono uppercase tracking-wider transition-colors"
+          >
+            Khám phá vận hiện tại →
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setPalacesOpen(true);
+              const el = document.querySelector('[aria-label="Khám Phá 12 Cung"]');
+              el?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="px-4 py-2 border border-borderDark bg-background hover:border-accentGold text-parchment text-xs font-mono uppercase tracking-wider transition-colors"
+          >
+            Xem 12 cung chức →
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.querySelector('[aria-label="Minh Bạch Suy Luận"]');
+              el?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="px-4 py-2 border border-accentGold/60 bg-accentGold/10 hover:bg-accentGold hover:text-background text-accentGold text-xs font-mono uppercase tracking-wider transition-colors"
+          >
+            Xem cơ sở luận giải ✦
+          </button>
+        </div>
+      </section>
+
       {/* 9. Result Footer */}
       <ResultFooter
         topic="Lá Số Tử Vi Đẩu Số"
@@ -484,6 +740,17 @@ export function TuViResultView({
           { label: 'Khảo Cứu Thần Số Học Pythagoras', href: '/numerology' },
           { label: 'Khảo Cứu Bói Bài Tarot 78 Lá', href: '/tarot' },
         ]}
+      />
+
+      {/* Interactive Palace Detail Sheet (Spec 26) */}
+      <PalaceDetailSheet
+        isOpen={isSheetOpen}
+        palace={selectedPalace}
+        onClose={() => setIsSheetOpen(false)}
+        onOpenWhy={() => {
+          const el = document.querySelector('[aria-label="Minh Bạch Suy Luận"]');
+          el?.scrollIntoView({ behavior: 'smooth' });
+        }}
       />
     </article>
   );

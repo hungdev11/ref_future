@@ -8,4 +8,5 @@ export * from './WhyDrawer';
 export * from './ResultFooter';
 export * from './ContextualLoading';
 export * from './ConfirmationStep';
+export * from './PalaceDetailSheet';
 
