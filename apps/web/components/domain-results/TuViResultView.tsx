@@ -149,9 +149,9 @@ export function TuViResultView({
     const fact = (result.facts || []).find((f) => f.key === key);
     return fact ? formatTuViStar(fact.value) : '';
   };
-  const taiBachStarVn = getStarFromFacts('taiBachStar') || 'Chính tinh tọa thủ';
-  const quanLocStarVn = getStarFromFacts('quanLocStar') || 'Chính tinh tọa thủ';
-  const thienDiStarVn = getStarFromFacts('thienDiStar') || 'Chính tinh tọa thủ';
+  const taiBachStarVn = getStarFromFacts('taiBachStar') || 'Vô Chính Diệu';
+  const quanLocStarVn = getStarFromFacts('quanLocStar') || 'Vô Chính Diệu';
+  const thienDiStarVn = getStarFromFacts('thienDiStar') || 'Vô Chính Diệu';
 
   // Data completeness badge
   const completenessKey = String(result.dataCompleteness || '').toUpperCase();
@@ -322,7 +322,7 @@ export function TuViResultView({
               <div key={palace.key} className="border border-borderDark bg-background/50 p-4 space-y-1">
                 <span className="font-mono text-[10px] text-accentGold uppercase tracking-wider block">{palace.label}</span>
                 <span className="font-serif text-sm text-parchment font-medium block">
-                  {starVn || 'Chính tinh tọa thủ'}
+                  {starVn || 'Vô Chính Diệu'}
                 </span>
                 <span className="font-mono text-[10px] text-stone block">{palace.desc}</span>
               </div>

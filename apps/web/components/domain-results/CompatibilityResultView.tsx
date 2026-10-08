@@ -43,14 +43,6 @@ export function CompatibilityResultView({
   const continueItems = guidanceItems.flatMap((g) => g.whatToContinue || []);
   const adjustItems = guidanceItems.flatMap((g) => g.whatToAdjustOrStop || []);
 
-  const effectiveContinueItems = continueItems.length > 0
-    ? continueItems
-    : ['Duy trì sự minh bạch trong giao tiếp và tôn trọng ranh giới cá nhân.', 'Khai thác điểm mạnh tương hỗ trong các mục tiêu chung.'];
-
-  const effectiveAdjustItems = adjustItems.length > 0
-    ? adjustItems
-    : ['Tránh phản xạ quy chụp khi đối phương xử lý theo cách thức khác biệt.', 'Chú ý điều phối nhịp điệu sinh hoạt và không gian riêng tư.'];
-
   // Dimensions summary
   const dimensionSet = Array.from(
     new Set(interpretations.map((i) => i.dimension || 'Tương Tác Chung'))
@@ -211,48 +203,54 @@ export function CompatibilityResultView({
       )}
 
       {/* 6. Điều Giúp Hai Người Kết Nối & Điểm Cần Được Quản Lý (Spec 61-62) */}
-      <section aria-label="Nguyên Tắc Bồi Đắp Gắn Kết" className="space-y-4">
-        <div className="flex items-center gap-2 text-xs font-mono text-stone tracking-widest uppercase pb-1">
-          <span className="text-accentGold">06</span>
-          <span className="text-borderLight">/</span>
-          <span>ĐỘNG LỰC GẮN KẾT &amp; KHU VỰC CẦN QUẢN LÝ</span>
-        </div>
+      {(continueItems.length > 0 || adjustItems.length > 0) && (
+        <section aria-label="Nguyên Tắc Bồi Đắp Gắn Kết" className="space-y-4">
+          <div className="flex items-center gap-2 text-xs font-mono text-stone tracking-widest uppercase pb-1">
+            <span className="text-accentGold">06</span>
+            <span className="text-borderLight">/</span>
+            <span>ĐỘNG LỰC GẮN KẾT &amp; KHU VỰC CẦN QUẢN LÝ</span>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="border border-borderDark bg-surface p-6 space-y-3">
-              <div className="flex items-center gap-2 text-xs font-mono text-accentGold tracking-wider uppercase border-b border-borderDark/60 pb-2">
-                <CheckCircle2 className="w-4 h-4 text-accentGold shrink-0" />
-                <span>ĐIỀU GIÚP HAI NGƯỜI KẾT NỐI</span>
+            {continueItems.length > 0 && (
+              <div className="border border-borderDark bg-surface p-6 space-y-3">
+                <div className="flex items-center gap-2 text-xs font-mono text-accentGold tracking-wider uppercase border-b border-borderDark/60 pb-2">
+                  <CheckCircle2 className="w-4 h-4 text-accentGold shrink-0" />
+                  <span>ĐIỀU GIÚP HAI NGƯỜI KẾT NỐI</span>
+                </div>
+                <ul className="space-y-2 text-sm text-parchment/90 font-sans list-none">
+                  {continueItems.map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <span className="text-accentGold select-none pt-0.5">•</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <ul className="space-y-2 text-sm text-parchment/90 font-sans list-none">
-                {effectiveContinueItems.map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <span className="text-accentGold select-none pt-0.5">•</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            )}
 
-            <div className="border border-borderDark bg-surface p-6 space-y-3">
-              <div className="flex items-center gap-2 text-xs font-mono text-terracotta tracking-wider uppercase border-b border-borderDark/60 pb-2">
-                <AlertTriangle className="w-4 h-4 text-terracotta shrink-0" />
-                <span>ĐIỂM CẦN ĐƯỢC QUẢN LÝ</span>
+            {adjustItems.length > 0 && (
+              <div className="border border-borderDark bg-surface p-6 space-y-3">
+                <div className="flex items-center gap-2 text-xs font-mono text-terracotta tracking-wider uppercase border-b border-borderDark/60 pb-2">
+                  <AlertTriangle className="w-4 h-4 text-terracotta shrink-0" />
+                  <span>ĐIỂM CẦN ĐƯỢC QUẢN LÝ</span>
+                </div>
+                <p className="text-[11px] font-mono text-stone leading-relaxed pb-1">
+                  Đây là khu vực có khả năng tạo ma sát nếu hai người xử lý theo những phản xạ tự nhiên khác nhau.
+                </p>
+                <ul className="space-y-2 text-sm text-parchment/90 font-sans list-none">
+                  {adjustItems.map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <span className="text-terracotta select-none pt-0.5">•</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <p className="text-[11px] font-mono text-stone leading-relaxed pb-1">
-                Đây là khu vực có khả năng tạo ma sát nếu hai người xử lý theo những phản xạ tự nhiên khác nhau.
-              </p>
-              <ul className="space-y-2 text-sm text-parchment/90 font-sans list-none">
-                {effectiveAdjustItems.map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <span className="text-terracotta select-none pt-0.5">•</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            )}
           </div>
         </section>
+      )}
 
       {/* 7. Progressive Disclosure */}
       <section aria-label="Minh Bạch Suy Luận" className="space-y-6">

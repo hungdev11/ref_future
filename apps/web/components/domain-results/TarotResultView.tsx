@@ -87,8 +87,10 @@ export function TarotResultView({
 
   // Map relationships to interactions using clear card labels
   const cardInteractions = (result.relationships || []).map((r, idx) => {
-    const cardA = cardSequence[idx]?.name || 'Lá Bài Khởi Đầu';
-    const cardB = cardSequence[idx + 1]?.name || 'Lá Bài Chuyển Tiếp';
+    const nameFromSigA = formatInteractionName(r.sourceSignalId);
+    const nameFromSigB = formatInteractionName(r.targetSignalId);
+    const cardA = cardSequence[idx]?.name || (nameFromSigA !== r.sourceSignalId ? nameFromSigA : (cardSequence[0]?.name || 'Lá bài khởi điểm'));
+    const cardB = cardSequence[idx + 1]?.name || (nameFromSigB !== r.targetSignalId ? nameFromSigB : (cardSequence[1]?.name || 'Lá bài phối hợp'));
     return {
       source: cardA.split('(')[0]?.trim() || cardA,
       target: cardB.split('(')[0]?.trim() || cardB,
