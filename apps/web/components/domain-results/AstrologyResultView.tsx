@@ -167,7 +167,7 @@ export function AstrologyResultView({
       whyImportant: r.description,
       manifestation: `Tương tác ${ASPECT_TYPE_VN[r.type] || r.type} giữa ${title} kích hoạt dòng chảy năng lượng trong các tình huống thực tế.`,
       constructiveExpression:
-        r.type === 'reinforcement' || r.type === 'harmonious'
+        r.type === 'reinforcement' || r.type === 'complementarity'
           ? 'Dễ dàng chuyển hóa thành năng lực tự nhiên.'
           : undefined,
       tension:

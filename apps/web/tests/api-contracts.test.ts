@@ -46,6 +46,23 @@ describe('API Route Contracts', () => {
     expect(json.mysticosResult).toBeDefined();
   });
 
+  it('tarot draw API handles aliases like SPREAD_3_SITUATION and returns 200', async () => {
+    const req = new Request('http://localhost:3000/api/tarot/draw', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        question: 'Tôi nên chú ý điều gì?',
+        spreadCode: 'SPREAD_3_SITUATION',
+      }),
+    });
+
+    const response = await tarotDrawPost(req);
+    expect(response.status).toBe(200);
+    const json = await response.json();
+    expect(json.success).toBe(true);
+    expect(json.data.domain).toBe('tarot');
+  });
+
   it('astrology chart API returns canonical MysticosResult', async () => {
     const req = new Request('http://localhost:3000/api/astrology/chart', {
       method: 'POST',

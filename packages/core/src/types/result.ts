@@ -98,6 +98,10 @@ export interface MysticosResult {
   resultId: string;
   domain: 'tarot' | 'astrology' | 'tuvi' | 'numerology' | 'compatibility';
   inputSummary: Record<string, unknown>;
+  primaryResult?: string;
+  summary?: string;
+  confidenceScore?: number;
+  dataCompleteness?: 'FULL' | 'PARTIAL' | 'MINIMAL' | string;
   facts: Fact[];
   semantics: SemanticUnit[];
   signals: Signal[];

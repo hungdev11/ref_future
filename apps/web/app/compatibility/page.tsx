@@ -86,7 +86,7 @@ export default function CompatibilityPage() {
         throw new Error(data.error || 'Khảo cứu tương hợp thất bại.');
       }
 
-      const canonicalResult: MysticosResult = data.data || data.mysticosResult;
+      const canonicalResult = (data.data || data.mysticosResult) as DeepMysticosResult;
       setResult(canonicalResult);
 
       // Save to local history
@@ -95,8 +95,8 @@ export default function CompatibilityPage() {
         timestamp: Date.now(),
         domain: 'compatibility',
         title: `Tương Hợp: ${nameA} ✕ ${nameB}`,
-        mainTheme: canonicalResult.primaryResult || `Tương quan trong mục đích ${selectedRelType.label}`,
-        resultPayload: canonicalResult as DeepMysticosResult,
+        mainTheme: canonicalResult.mainStory?.headline || `Tương quan trong mục đích ${selectedRelType.label}`,
+        resultPayload: canonicalResult,
       });
 
       setStep('RESULT');

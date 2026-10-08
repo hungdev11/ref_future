@@ -16,7 +16,7 @@ import { saveHistoryItem } from '@/lib/history-storage';
 
 const SPREADS = [
   {
-    code: 'SPREAD_1_SINGLE',
+    code: 'SPREAD_1_DAILY',
     title: '1 Lá — Điểm Tựa Hôm Nay',
     desc: 'Dành cho câu hỏi nhanh, tìm kiếm một lời nhắc nhở hoặc góc nhìn cô đọng ngay lúc này.',
     positions: ['Thông Điệp Trọng Tâm'],
@@ -28,19 +28,19 @@ const SPREADS = [
     positions: ['Quá Khứ (Cội Nguồn)', 'Hiện Tại (Thực Trạng)', 'Xu Hướng (Tương Lai)'],
   },
   {
-    code: 'SPREAD_3_SITUATION',
+    code: 'SPREAD_3_SCA',
     title: '3 Lá — Tình Huống / Thách Thức / Hướng Đi',
     desc: 'Phân tích cụ thể một nút thắt: bạn đang đối mặt điều gì, trở ngại cốt lõi ở đâu và nên hành xử thế nào.',
     positions: ['Bối Cảnh Tình Huống', 'Thách Thức Cốt Lõi', 'Hướng Ứng Xử'],
   },
   {
-    code: 'SPREAD_5_DEEP',
+    code: 'SPREAD_5_SCCA_OUTCOME',
     title: '5 Lá — Phân Tích Đa Chiều',
     desc: 'Đào sâu 5 khía cạnh: gốc rễ, ảnh hưởng bên ngoài, nỗi sợ ngầm, năng lượng tiềm ẩn và kết quả.',
-    positions: ['Hiện Trạng', 'Trở Ngại', 'Tiềm Thức', 'Môi Trường Ngoài', 'Định Hướng'],
+    positions: ['Thực Trạng', 'Nguyên Nhân Gốc Rễ', 'Chướng Ngại Vật', 'Định Hướng Hành Động', 'Kết Quả Dự Phóng'],
   },
   {
-    code: 'SPREAD_10_CELTIC',
+    code: 'SPREAD_10_CELTIC_CROSS',
     title: '10 Lá — Celtic Cross Kinh Điển',
     desc: 'Bản đồ toàn cảnh theo chuẩn cổ điển Arthur Edward Waite: phân tích 10 bình diện phức tạp.',
     positions: ['Bản Thể', 'Thách Thức', 'Cội Rễ', 'Quá Khứ Gần', 'Mục Tiêu', 'Tương Lai Gần', 'Bản Thân', 'Môi Trường', 'Hy Vọng/Nỗi Sợ', 'Kết Quả'],
@@ -90,7 +90,7 @@ export default function TarotPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Rút bài thất bại');
 
-      const canonicalResult: MysticosResult = data.data || data.mysticosResult;
+      const canonicalResult = (data.data || data.mysticosResult) as DeepMysticosResult;
       setResult(canonicalResult);
 
       // Save to local history
@@ -99,8 +99,8 @@ export default function TarotPage() {
         timestamp: Date.now(),
         domain: 'tarot',
         title: question.trim() ? `Trải Bài: "${question.trim()}"` : `Trải Bài Tarot (${selectedSpread.title})`,
-        mainTheme: canonicalResult.primaryResult || 'Thông điệp trải bài Tarot',
-        resultPayload: canonicalResult as DeepMysticosResult,
+        mainTheme: canonicalResult.mainStory?.headline || 'Thông điệp trải bài Tarot',
+        resultPayload: canonicalResult,
       });
 
       setStep('RESULT');

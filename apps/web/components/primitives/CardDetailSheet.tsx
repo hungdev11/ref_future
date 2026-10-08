@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { X, ExternalLink, HelpCircle } from 'lucide-react';
-import { getTarotCardImage } from '../../lib/tarot-images';
+import { getTarotCardImageUrl } from '../../lib/tarot-images';
 
 export interface CardDetail {
   code: string;
@@ -33,7 +33,7 @@ export function CardDetailSheet({
 }: CardDetailSheetProps) {
   if (!isOpen || !card) return null;
 
-  const imageUrl = getTarotCardImage(card.code);
+  const imageUrl = getTarotCardImageUrl(card.code);
 
   return (
     <div

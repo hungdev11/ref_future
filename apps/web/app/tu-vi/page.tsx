@@ -73,7 +73,7 @@ export default function TuViPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Khởi tạo lá số thất bại');
 
-      const canonicalResult: MysticosResult = data.data || data.mysticosResult;
+      const canonicalResult = (data.data || data.mysticosResult) as DeepMysticosResult;
       setResult(canonicalResult);
       setRawPalaces(data.facts?.palaces || null);
 
@@ -83,8 +83,8 @@ export default function TuViPage() {
         timestamp: Date.now(),
         domain: 'tuvi',
         title: `Lá Số Tử Vi: ${fullName}`,
-        mainTheme: canonicalResult.primaryResult || 'Lá số Tử Vi Đẩu Số',
-        resultPayload: canonicalResult as DeepMysticosResult,
+        mainTheme: canonicalResult.mainStory?.headline || 'Lá số Tử Vi Đẩu Số',
+        resultPayload: canonicalResult,
       });
 
       setStep('RESULT');

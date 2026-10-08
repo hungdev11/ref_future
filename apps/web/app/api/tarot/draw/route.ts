@@ -10,12 +10,23 @@ export async function POST(request: Request) {
     const body = await request.json().catch(() => ({}));
     const engine = new RiderWaiteTarotEngine();
 
+    const SPREAD_ALIASES: Record<string, string> = {
+      SPREAD_1_SINGLE: 'SPREAD_1_DAILY',
+      SPREAD_1: 'SPREAD_1_DAILY',
+      SPREAD_3_SITUATION: 'SPREAD_3_SCA',
+      SPREAD_5_DEEP: 'SPREAD_5_SCCA_OUTCOME',
+      SPREAD_10_CELTIC: 'SPREAD_10_CELTIC_CROSS',
+      CELTIC_CROSS: 'SPREAD_10_CELTIC_CROSS',
+    };
+
+    const spreadCode = SPREAD_ALIASES[body.spreadCode] || body.spreadCode || 'SPREAD_3_PPF';
+
     // Use genuine CSPRNG randomness unless an explicit user seed is provided
     const seed = body.seed && body.seed.trim() !== '' && body.seed !== 'random'
       ? body.seed
       : crypto.randomBytes(32).toString('hex');
 
-    const inputData = { ...body, seed };
+    const inputData = { ...body, spreadCode, seed };
     const calcResult = await engine.calculate(inputData, TAROT_CONFIG_V1);
 
     const primaryDraw = calcResult.facts.draws[0];

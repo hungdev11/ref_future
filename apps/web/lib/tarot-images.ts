@@ -44,3 +44,5 @@ export function getTarotCardImageUrl(cardCode: string): string {
 
   return `${CDN_BASE}/Cover.jpg`;
 }
+
+export const getTarotCardImage = getTarotCardImageUrl;

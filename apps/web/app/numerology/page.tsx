@@ -48,7 +48,7 @@ export default function NumerologyPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Khảo cứu thất bại');
 
-      const canonicalResult: MysticosResult = data.data || data.mysticosResult;
+      const canonicalResult = (data.data || data.mysticosResult) as DeepMysticosResult;
       setResult(canonicalResult);
 
       // Save to local history
@@ -57,8 +57,8 @@ export default function NumerologyPage() {
         timestamp: Date.now(),
         domain: 'numerology',
         title: `Hồ Sơ Số Học: ${trimmedName}`,
-        mainTheme: canonicalResult.primaryResult || 'Chân dung năng lượng số học Pythagoras',
-        resultPayload: canonicalResult as DeepMysticosResult,
+        mainTheme: canonicalResult.mainStory?.headline || 'Chân dung năng lượng số học Pythagoras',
+        resultPayload: canonicalResult,
       });
 
       setStep('RESULT');

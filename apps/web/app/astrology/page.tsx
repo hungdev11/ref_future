@@ -84,7 +84,7 @@ export default function AstrologyPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Lỗi tính toán thiên văn');
 
-      const canonicalResult: MysticosResult = data.data || data.mysticosResult;
+      const canonicalResult = (data.data || data.mysticosResult) as DeepMysticosResult;
       setResult(canonicalResult);
 
       // Save to local history
@@ -93,8 +93,8 @@ export default function AstrologyPage() {
         timestamp: Date.now(),
         domain: 'astrology',
         title: `Bản Đồ Sao: ${fullName}`,
-        mainTheme: canonicalResult.primaryResult || 'Bản đồ sao cá nhân Natal Chart',
-        resultPayload: canonicalResult as DeepMysticosResult,
+        mainTheme: canonicalResult.mainStory?.headline || 'Bản đồ sao cá nhân Natal Chart',
+        resultPayload: canonicalResult,
       });
 
       setStep('RESULT');
