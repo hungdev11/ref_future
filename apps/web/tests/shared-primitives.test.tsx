@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { ResultFooter } from '../components/primitives/ResultFooter';
 import { ContextualLoading } from '../components/primitives/ContextualLoading';
 import { ConfirmationStep } from '../components/primitives/ConfirmationStep';
+import { ResultStickyNav } from '../components/primitives/ResultStickyNav';
 
 describe('Shared UX Primitives', () => {
   it('renders ResultFooter with topic and explore links', () => {
@@ -47,5 +48,19 @@ describe('Shared UX Primitives', () => {
     expect(html).toContain('Nguyễn Văn A');
     expect(html).toContain('12/03/1995');
     expect(html).toContain('Chỉnh sửa');
+  });
+
+  it('renders ResultStickyNav with desktop links, mobile options and actions (Spec 8, 11, 83)', () => {
+    const html = renderToStaticMarkup(
+      <ResultStickyNav domain="tuvi" />
+    );
+    expect(html).toContain('Thanh Điều Hướng Kết Quả');
+    expect(html).toContain('Tổng Quan');
+    expect(html).toContain('Chủ Đề');
+    expect(html).toContain('Chi Tiết');
+    expect(html).toContain('Cơ Sở');
+    expect(html).toContain('Đầu trang');
+    expect(html).toContain('Lưu');
+    expect(html).toContain('Chia sẻ');
   });
 });
