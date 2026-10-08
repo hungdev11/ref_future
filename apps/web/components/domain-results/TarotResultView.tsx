@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import type { DeepMysticosResult } from '@mystic/core';
 import { humanizeCardCode } from '@mystic/interpretation-engine';
 import { PatternStory } from '../primitives/PatternStory';
@@ -9,7 +9,8 @@ import { InsightBlock } from '../primitives/InsightBlock';
 import { ScenarioBlock } from '../primitives/ScenarioBlock';
 import { WhyDrawer } from '../primitives/WhyDrawer';
 import { ResultFooter } from '../primitives/ResultFooter';
-import { Compass, CheckCircle2, AlertTriangle, HelpCircle } from 'lucide-react';
+import { CardDetailSheet, type CardDetail } from '../primitives/CardDetailSheet';
+import { Compass, CheckCircle2, AlertTriangle, HelpCircle, ArrowRight, RotateCcw } from 'lucide-react';
 
 export interface TarotResultViewProps {
   result: DeepMysticosResult;
@@ -36,6 +37,10 @@ export function TarotResultView({
   result,
   className = '',
 }: TarotResultViewProps) {
+  const [selectedCard, setSelectedCard] = useState<CardDetail | null>(null);
+  const [isCardSheetOpen, setIsCardSheetOpen] = useState(false);
+  const [techOpen, setTechOpen] = useState(false);
+
   if (!result) return null;
 
   const question =
@@ -66,6 +71,41 @@ export function TarotResultView({
         (f.value === true || f.value === 'true')
     );
     return Boolean(revFact);
+  };
+
+  const interpretations = result.deepInterpretations || result.interpretations || [];
+
+  const openCardDetail = (idx: number) => {
+    const fact = cardFacts[idx];
+    if (!fact) return;
+    const cardCode = String(fact.value);
+    const humanized = humanizeCardCode(cardCode);
+    const rev = isCardReversed(idx, fact.key);
+    const role = SPREAD_ROLES[idx] || `Lá bài số ${idx + 1}`;
+    const interp = interpretations[idx];
+
+    const REVERSED_MODIFIERS: Record<number, string> = {
+      0: 'Năng lượng đang bị trì hoãn hoặc hướng vào chiều sâu nội tâm thay vì bộc lộ ra ngoài.',
+      1: 'Có sự ngăn trở hoặc biểu hiện thái quá cần được tiết chế lại để tìm điểm cân bằng.',
+      2: 'Bài học bóng tối (shadow) nhắc nhở bạn quan sát động cơ thực sự phía sau hành vi.',
+    };
+
+    setSelectedCard({
+      code: cardCode,
+      name: humanized.nameEn,
+      nameVn: humanized.title,
+      position: role,
+      isReversed: rev,
+      reversedModifier: rev
+        ? REVERSED_MODIFIERS[idx % 3] || 'Năng lượng chuyển vào nội tâm, yêu cầu quan sát kỹ lưỡng.'
+        : undefined,
+      role: interp?.statement || `Đóng vai trò then chốt trong việc định hình trạng thái tại vị trí ${role}.`,
+      questionContext: question || undefined,
+      semantics: (result.semantics || []).map((s) => s.concept).slice(0, 4),
+      manifestation: interp?.explanation,
+      tension: interp?.tension,
+    });
+    setIsCardSheetOpen(true);
   };
 
   const cardSequence =
@@ -104,8 +144,6 @@ export function TarotResultView({
   const guidanceItems = result.guidance || [];
   const continueItems = guidanceItems.flatMap((g) => g.whatToContinue || []);
   const adjustItems = guidanceItems.flatMap((g) => g.whatToAdjustOrStop || []);
-
-  const interpretations = result.deepInterpretations || result.interpretations || [];
 
   return (
     <article className={`max-w-3xl mx-auto space-y-10 ${className}`}>
@@ -165,15 +203,79 @@ export function TarotResultView({
 
       {/* 3. Cards in Context & Dynamic Interactions */}
       {(cardSequence.length > 0 || cardInteractions.length > 0) && (
-        <section aria-label="Tiến Trình & Tương Tác Các Lá Bài">
+        <section aria-label="Tiến Trình & Tương Tác Các Lá Bài" className="space-y-6">
           <CardInteractionBlock
             sequence={cardSequence}
             interactions={cardInteractions}
             title="Tiến Trình & Mối Tương Tác Giữa Các Lá Bài"
             subtitle="CHUỖI LIÊN KẾT ĐỘNG TRẢI BÀI"
           />
+
+          {/* Individual Cards Clickable Grid (Spec 58-60) */}
+          {cardFacts.length > 0 && (
+            <div className="space-y-3 pt-2">
+              <span className="font-mono text-[10px] text-stone uppercase tracking-wider block">
+                CHI TIẾT TỪNG LÁ BÀI (CLICK ĐỂ MỞ BẢNG KHẢO CỨU)
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {cardFacts.map((fact, idx) => {
+                  const rev = isCardReversed(idx, fact.key);
+                  const humanized = humanizeCardCode(String(fact.value));
+                  const role = SPREAD_ROLES[idx] || `Lá bài 0${idx + 1}`;
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => openCardDetail(idx)}
+                      className="border border-borderDark bg-surface p-4 text-left space-y-1.5 hover:border-accentGold transition-colors cursor-pointer group"
+                    >
+                      <div className="flex items-center justify-between text-xs font-mono">
+                        <span className="text-accentGold">{role}</span>
+                        <span className={`text-[10px] ${rev ? 'text-terracotta' : 'text-stone'}`}>
+                          {rev ? '[CHIỀU NGƯỢC]' : '[CHIỀU XUÔI]'}
+                        </span>
+                      </div>
+                      <span className="font-serif text-base text-parchment font-medium block group-hover:text-accentGold transition-colors">
+                        {humanized.title}
+                      </span>
+                      <span className="text-[10px] font-mono text-stone group-hover:text-accentGold block pt-1">
+                        Xem lá bài này trong câu hỏi →
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </section>
       )}
+
+      {/* 3.5. Story Progression (Spec 62) */}
+      <section aria-label="Mạch Truyện Trải Bài" className="border border-borderDark bg-surface p-6 space-y-4">
+        <div className="flex items-center gap-2 text-xs font-mono text-stone tracking-widest uppercase border-b border-borderDark/60 pb-3">
+          <span className="text-accentGold">03b</span>
+          <span className="text-borderLight">/</span>
+          <span>DIỄN TIẾN MẠCH TRUYỆN (STORY PROGRESSION)</span>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-center">
+          <div className="p-3 bg-background/50 border border-borderDark space-y-1">
+            <span className="text-[10px] font-mono text-stone uppercase block">1. KHỞI NGUYÊN (START)</span>
+            <p className="text-xs text-parchment font-medium">{cardSequence[0]?.name.split('(')[0] || 'Cội nguồn'}</p>
+          </div>
+          <div className="p-3 bg-background/50 border border-borderDark space-y-1">
+            <span className="text-[10px] font-mono text-stone uppercase block">2. DIỄN TIẾN (DEVELOPMENT)</span>
+            <p className="text-xs text-parchment font-medium">{cardSequence[1]?.name.split('(')[0] || 'Hiện tại'}</p>
+          </div>
+          <div className="p-3 bg-background/50 border border-borderDark space-y-1">
+            <span className="text-[10px] font-mono text-accentGold uppercase block">3. ĐIỂM NGHẼN (TENSION)</span>
+            <p className="text-xs text-parchment font-medium">Thử thách chuyển hóa</p>
+          </div>
+          <div className="p-3 bg-background/50 border border-borderDark space-y-1">
+            <span className="text-[10px] font-mono text-stone uppercase block">4. ĐỊNH HƯỚNG (DIRECTION)</span>
+            <p className="text-xs text-parchment font-medium">{cardSequence[2]?.name.split('(')[0] || 'Hướng đi'}</p>
+          </div>
+        </div>
+      </section>
 
       {/* 4. Deep Interpretations */}
       {interpretations.length > 0 && (
@@ -298,6 +400,80 @@ export function TarotResultView({
         />
       </section>
 
+      {/* 7.5. Technical Details (Spec 56 item 9) */}
+      <section aria-label="Thông Số Kỹ Thuật Trải Bài" className="border border-borderDark bg-surface">
+        <button
+          type="button"
+          onClick={() => setTechOpen(!techOpen)}
+          aria-expanded={techOpen}
+          className="w-full p-5 sm:p-6 flex items-center justify-between text-left hover:bg-surfaceHover/50 transition-colors"
+        >
+          <div className="space-y-0.5">
+            <span className="font-mono text-xs text-stone tracking-widest uppercase block">
+              CHI TIẾT KỸ THUẬT BIỂU TƯỢNG (TECHNICAL EVIDENCE)
+            </span>
+            <h4 className="font-serif text-base text-parchment font-medium">
+              Bộ Ẩn Chính/Phụ, Chiều Ngược &amp; Thư Tịch Đối Chiếu
+            </h4>
+          </div>
+          <span className="text-xs font-mono text-stone uppercase">
+            {techOpen ? '[THU GỌN]' : '[MỞ RỘNG]'}
+          </span>
+        </button>
+
+        {techOpen && (
+          <div className="border-t border-borderDark p-5 text-xs font-mono space-y-3 bg-background/40">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-stone">
+              <div>
+                <span className="text-parchment block">Bộ Bài:</span>
+                <span>{school} (78 Lá)</span>
+              </div>
+              <div>
+                <span className="text-parchment block">Mô Hình:</span>
+                <span>Deterministic Knowledge Graph</span>
+              </div>
+              <div>
+                <span className="text-parchment block">Số Lá Rút:</span>
+                <span>{cardFacts.length} lá bài</span>
+              </div>
+              <div>
+                <span className="text-parchment block">Quan Hệ:</span>
+                <span>{cardInteractions.length} tương tác động</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+
+      {/* 7.8. Rút Trải Bài Mới & Cảnh Báo (Spec 64) */}
+      <section aria-label="Rút Trải Bài Mới" className="border border-borderDark bg-surface/80 p-6 space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <span className="text-[10px] font-mono text-stone uppercase tracking-wider block">
+              HOÀN TẤT KHẢO CỨU
+            </span>
+            <h4 className="font-serif text-base text-parchment font-medium">
+              Bạn Muốn Đặt Một Câu Hỏi Hoặc Góc Nhìn Khác?
+            </h4>
+            <p className="text-xs text-stone max-w-xl leading-relaxed">
+              Một trải bài mới nên phục vụ một câu hỏi hoặc góc nhìn khác, thay vì lặp lại cùng một câu hỏi để tìm câu trả lời mong muốn.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              if (typeof window !== 'undefined') {
+                window.location.reload();
+              }
+            }}
+            className="px-5 py-2.5 bg-background border border-accentGold/60 hover:bg-accentGold hover:text-background text-accentGold text-xs font-mono uppercase tracking-wider transition-colors inline-flex items-center gap-2 shrink-0 cursor-pointer"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Rút trải mới</span>
+          </button>
+        </div>
+      </section>
+
       {/* 8. Result Footer */}
       <ResultFooter
         topic="Khảo Cứu Bói Bài Tarot 78 Lá"
@@ -306,6 +482,17 @@ export function TarotResultView({
           { label: 'Khảo Cứu Chiêm Tinh Bản Đồ Sao', href: '/astrology' },
           { label: 'Khảo Cứu Thần Số Học Pythagoras', href: '/numerology' },
         ]}
+      />
+
+      {/* Interactive Card Detail Sheet (Spec 59) */}
+      <CardDetailSheet
+        isOpen={isCardSheetOpen}
+        card={selectedCard}
+        onClose={() => setIsCardSheetOpen(false)}
+        onOpenWhy={() => {
+          const el = document.querySelector('[aria-label="Minh Bạch Suy Luận"]');
+          el?.scrollIntoView({ behavior: 'smooth' });
+        }}
       />
     </article>
   );

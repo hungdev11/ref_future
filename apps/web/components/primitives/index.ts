@@ -11,4 +11,5 @@ export * from './ConfirmationStep';
 export * from './PalaceDetailSheet';
 export * from './AspectDetailSheet';
 export * from './NumberDetailSheet';
+export * from './CardDetailSheet';
 
