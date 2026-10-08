@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import type { DeepMysticosResult } from '@mystic/core';
 import { PatternStory } from '../primitives/PatternStory';
 import { TensionBlock } from '../primitives/TensionBlock';
@@ -8,7 +8,7 @@ import { InsightBlock } from '../primitives/InsightBlock';
 import { ScenarioBlock } from '../primitives/ScenarioBlock';
 import { WhyDrawer } from '../primitives/WhyDrawer';
 import { ResultFooter } from '../primitives/ResultFooter';
-import { Users, Heart, CheckCircle2, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Users, Heart, CheckCircle2, AlertTriangle, ShieldCheck, ChevronDown, ChevronUp } from 'lucide-react';
 
 export interface CompatibilityResultViewProps {
   result: DeepMysticosResult;
@@ -33,6 +33,9 @@ export function CompatibilityResultView({
   result,
   className = '',
 }: CompatibilityResultViewProps) {
+  const [activeDimension, setActiveDimension] = useState<string>('ALL');
+  const [techOpen, setTechOpen] = useState(false);
+
   if (!result) return null;
 
   const school = result.metadata?.school || 'Multi-System Synthesis';
@@ -47,6 +50,16 @@ export function CompatibilityResultView({
   const dimensionSet = Array.from(
     new Set(interpretations.map((i) => i.dimension || 'Tương Tác Chung'))
   );
+
+  const filteredInterpretations = interpretations.filter((interp) => {
+    if (activeDimension === 'ALL') return true;
+    const dim = (interp.dimension || '').toLowerCase();
+    const target = activeDimension.toLowerCase();
+    return dim.includes(target) || target.includes(dim);
+  });
+
+  const displayInterpretations =
+    filteredInterpretations.length > 0 ? filteredInterpretations : interpretations;
 
   const relType = String(
     (result.facts || []).find((f) => f.key.toLowerCase().includes('relationshiptype') || f.key === 'purpose')?.value ||
@@ -120,19 +133,36 @@ export function CompatibilityResultView({
           </div>
         </div>
 
-        {/* Dimension Pills */}
+        {/* Dimension Interactive Selector (Spec 72) */}
         <div className="flex flex-wrap items-center gap-2 pt-1">
           <div className="flex items-center gap-1.5 text-xs font-mono text-stone mr-2">
             <Users className="w-3.5 h-3.5 text-accentGold" />
             <span>CHIỀU KÍCH:</span>
           </div>
+          <button
+            type="button"
+            onClick={() => setActiveDimension('ALL')}
+            className={`border px-3 py-1 text-xs font-mono tracking-wide transition-colors cursor-pointer ${
+              activeDimension === 'ALL'
+                ? 'border-accentGold bg-accentGold/10 text-accentGold font-bold'
+                : 'border-borderDark bg-surface text-stone hover:text-parchment'
+            }`}
+          >
+            TẤT CẢ
+          </button>
           {dimensionSet.map((dim, idx) => (
-            <span
+            <button
               key={idx}
-              className="border border-borderDark bg-surface px-3 py-1 text-xs font-mono text-parchment tracking-wide"
+              type="button"
+              onClick={() => setActiveDimension(dim)}
+              className={`border px-3 py-1 text-xs font-mono tracking-wide transition-colors cursor-pointer ${
+                activeDimension === dim
+                  ? 'border-accentGold bg-accentGold/10 text-accentGold font-bold'
+                  : 'border-borderDark bg-surface text-stone hover:text-parchment'
+              }`}
             >
               {formatDimension(dim)}
-            </span>
+            </button>
           ))}
         </div>
       </header>
@@ -165,17 +195,22 @@ export function CompatibilityResultView({
         </section>
       )}
 
-      {/* 4. Deep Interpretations Across Dimensions */}
+      {/* 4. Deep Interpretations Across Dimensions (Spec 72) */}
       {interpretations.length > 0 && (
         <section aria-label="Luận Giải Tương Hợp Chi Tiết" className="space-y-4">
-          <div className="flex items-center gap-2 text-xs font-mono text-stone tracking-widest uppercase pb-1">
-            <span className="text-accentGold">04</span>
-            <span className="text-borderLight">/</span>
-            <span>LUẬN GIẢI ĐA CHIỀU (EMOTIONAL, COMMUNICATION, VALUES)</span>
+          <div className="flex items-center justify-between border-b border-borderDark/60 pb-2 text-xs font-mono text-stone uppercase tracking-widest">
+            <div className="flex items-center gap-2">
+              <span className="text-accentGold">04</span>
+              <span className="text-borderLight">/</span>
+              <span>LUẬN GIẢI CHIỀU KÍCH: {activeDimension === 'ALL' ? 'TẤT CẢ' : formatDimension(activeDimension)}</span>
+            </div>
+            <span className="text-stone text-[11px] font-mono">
+              Hiển thị {displayInterpretations.length} nhận định
+            </span>
           </div>
 
           <div className="space-y-4">
-            {interpretations.map((interp, idx) => (
+            {displayInterpretations.map((interp, idx) => (
               <InsightBlock
                 key={interp.interpretationId || idx}
                 depth={('depth' in interp ? (interp as any).depth : 'DEPTH_3')}
@@ -259,6 +294,51 @@ export function CompatibilityResultView({
           label="Vì sao tôi nhận được kết quả này?"
           description="Truy vết logic tất định 100% qua mô hình đối chiếu chéo giữa hai trường năng lượng thực tế."
         />
+      </section>
+
+      {/* 7.5. Technical Details (Evidence - Spec 67 item 15) */}
+      <section aria-label="Thông Số Đối Chiếu Kỹ Thuật" className="border border-borderDark bg-surface">
+        <button
+          type="button"
+          onClick={() => setTechOpen(!techOpen)}
+          aria-expanded={techOpen}
+          className="w-full p-5 sm:p-6 flex items-center justify-between text-left hover:bg-surfaceHover/50 transition-colors"
+        >
+          <div className="space-y-0.5">
+            <span className="font-mono text-xs text-stone tracking-widest uppercase block">
+              CHI TIẾT KỸ THUẬT ĐỐI CHIẾU (CROSS-SYSTEM SYNTHESIS)
+            </span>
+            <h4 className="font-serif text-base text-parchment font-medium">
+              Đối Chiếu Chéo Chiêm Tinh &amp; Thần Số Học Giữa Hai Cá Thể
+            </h4>
+          </div>
+          <span className="text-xs font-mono text-stone uppercase">
+            {techOpen ? '[THU GỌN]' : '[MỞ RỘNG]'}
+          </span>
+        </button>
+
+        {techOpen && (
+          <div className="border-t border-borderDark p-5 text-xs font-mono space-y-3 bg-background/40">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-stone">
+              <div>
+                <span className="text-parchment block">Trường Phái:</span>
+                <span>{school}</span>
+              </div>
+              <div>
+                <span className="text-parchment block">Mục Đích:</span>
+                <span>{PURPOSE_VN[relType] || 'Tình Cảm'}</span>
+              </div>
+              <div>
+                <span className="text-parchment block">Số Chiều Kích:</span>
+                <span>{dimensionSet.length} chiều kích</span>
+              </div>
+              <div>
+                <span className="text-parchment block">Độ Tin Cậy:</span>
+                <span>{Math.round((result.confidenceScore || 0.85) * 100)}% Phù Hợp Ngữ Cảnh</span>
+              </div>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* 8. Result Footer */}

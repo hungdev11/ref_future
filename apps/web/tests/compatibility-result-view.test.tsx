@@ -62,4 +62,45 @@ describe('CompatibilityResultView Structure', () => {
     expect(html).not.toContain('ĐIỀU GIÚP HAI NGƯỜI KẾT NỐI');
     expect(html).not.toContain('ĐIỂM CẦN ĐƯỢC QUẢN LÝ');
   });
+
+  it('renders interactive dimension selector and technical details (Spec 72, Spec 67 item 15)', () => {
+    const mockResult: DeepMysticosResult = {
+      domain: 'compatibility',
+      primaryResult: 'Điểm kết nối vững chắc.',
+      summary: 'Tổng quan',
+      facts: [],
+      deepInterpretations: [
+        {
+          interpretationId: 'interp_1',
+          dimension: 'Giao Tiếp',
+          statementId: 's1',
+          headline: 'Tương hợp tư duy',
+          statement: 'Hai người trao đổi cởi mở.',
+          depth: 'DEPTH_3',
+          polarity: 'supportive',
+          strength: 0.9,
+          confidence: 0.9,
+          patternIds: [],
+          signalIds: [],
+          ruleIds: [],
+          evidenceIds: [],
+          explanation: '',
+          contextFitScore: 0.9,
+        },
+      ],
+      inputSummary: {
+        personA: { name: 'Người A' },
+        personB: { name: 'Người B' },
+      },
+      metadata: { school: 'Multi-System Synthesis' },
+    } as any;
+
+    const html = renderToStaticMarkup(<CompatibilityResultView result={mockResult} />);
+    // Spec 72: Dimension selector
+    expect(html).toContain('CHIỀU KÍCH:');
+    expect(html).toContain('TẤT CẢ');
+    expect(html).toContain('GIAO TIẾP');
+    // Spec 67 item 15: Technical details
+    expect(html).toContain('CHI TIẾT KỸ THUẬT ĐỐI CHIẾU (CROSS-SYSTEM SYNTHESIS)');
+  });
 });
