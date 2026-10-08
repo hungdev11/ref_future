@@ -1,13 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import type { DeepMysticosResult } from '@mystic/core';
 import { PatternStory } from '../primitives/PatternStory';
 import { InsightBlock } from '../primitives/InsightBlock';
 import { ScenarioBlock } from '../primitives/ScenarioBlock';
 import { WhyDrawer } from '../primitives/WhyDrawer';
 import { ResultFooter } from '../primitives/ResultFooter';
-import { Sun, Moon, Compass, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { AspectDetailSheet, type AspectDetail } from '../primitives/AspectDetailSheet';
+import { Sun, Moon, Compass, CheckCircle2, AlertTriangle, Sparkles, Filter, ChevronDown, ChevronUp } from 'lucide-react';
 
 export interface AstrologyResultViewProps {
   result: DeepMysticosResult;
@@ -98,6 +99,12 @@ export function AstrologyResultView({
   result,
   className = '',
 }: AstrologyResultViewProps) {
+  const [selectedLifeArea, setSelectedLifeArea] = useState<'ALL' | 'SELF' | 'LOVE' | 'CAREER' | 'SPIRIT'>('ALL');
+  const [showAllAspects, setShowAllAspects] = useState(false);
+  const [selectedAspect, setSelectedAspect] = useState<AspectDetail | null>(null);
+  const [isAspectSheetOpen, setIsAspectSheetOpen] = useState(false);
+  const [techOpen, setTechOpen] = useState(false);
+
   if (!result) return null;
 
   const school = result.metadata?.school || 'Modern Humanistic Astrology';
@@ -147,6 +154,60 @@ export function AstrologyResultView({
   const guidanceItems = result.guidance || [];
   const continueItems = guidanceItems.flatMap((g) => g.whatToContinue || []);
   const adjustItems = guidanceItems.flatMap((g) => g.whatToAdjustOrStop || []);
+
+  const openAspect = (r: (typeof aspectRelationships)[0]) => {
+    const title = formatAspectTitle(r.sourceSignalId);
+    const parts = title.split(' ✕ ');
+    setSelectedAspect({
+      title,
+      planetA: parts[0] || 'Hành Tinh 1',
+      planetB: parts[1] || 'Hành Tinh 2',
+      aspectType: ASPECT_TYPE_VN[r.type] || r.type,
+      orb: 'Dưới 3° (chặt chẽ)',
+      whyImportant: r.description,
+      manifestation: `Tương tác ${ASPECT_TYPE_VN[r.type] || r.type} giữa ${title} kích hoạt dòng chảy năng lượng trong các tình huống thực tế.`,
+      constructiveExpression:
+        r.type === 'reinforcement' || r.type === 'harmonious'
+          ? 'Dễ dàng chuyển hóa thành năng lực tự nhiên.'
+          : undefined,
+      tension:
+        r.type === 'contrast' || r.type === 'tension'
+          ? 'Cần nhận diện sớm để tránh mâu thuẫn nội tại.'
+          : undefined,
+    });
+    setIsAspectSheetOpen(true);
+  };
+
+  const LIFE_AREAS = [
+    { id: 'ALL', label: 'Tất Cả Lĩnh Vực' },
+    { id: 'SELF', label: 'Bản Thể & Bản Năng' },
+    { id: 'LOVE', label: 'Tình Cảm & Quan Hệ' },
+    { id: 'CAREER', label: 'Sự Nghiệp & Mục Tiêu' },
+    { id: 'SPIRIT', label: 'Tiềm Thức & Chiều Sâu' },
+  ] as const;
+
+  const filteredInterpretations = interpretations.filter((interp) => {
+    if (selectedLifeArea === 'ALL') return true;
+    const text = `${interp.headline} ${interp.statement} ${interp.dimension || ''}`.toLowerCase();
+    if (selectedLifeArea === 'LOVE') {
+      return text.includes('tình cảm') || text.includes('quan hệ') || text.includes('kết nối') || text.includes('cặp đôi') || text.includes('bạn đời');
+    }
+    if (selectedLifeArea === 'CAREER') {
+      return text.includes('sự nghiệp') || text.includes('công danh') || text.includes('mục tiêu') || text.includes('xã hội') || text.includes('thực thi');
+    }
+    if (selectedLifeArea === 'SELF') {
+      return text.includes('bản thể') || text.includes('nhân cách') || text.includes('ý chí') || text.includes('phong thái') || text.includes('cốt tủy');
+    }
+    if (selectedLifeArea === 'SPIRIT') {
+      return text.includes('tiềm thức') || text.includes('tâm lý') || text.includes('cảm xúc') || text.includes('chiều sâu') || text.includes('tâm linh');
+    }
+    return true;
+  });
+
+  const displayInterpretations =
+    filteredInterpretations.length > 0 ? filteredInterpretations : interpretations;
+
+  const visibleAspects = showAllAspects ? aspectRelationships : aspectRelationships.slice(0, 5);
 
   return (
     <article className={`max-w-3xl mx-auto space-y-10 ${className}`}>
@@ -263,6 +324,20 @@ export function AstrologyResultView({
         )}
       </header>
 
+      {/* 0. Chart Signature (Spec 45) */}
+      <section aria-label="Bản Đồ Sao Nổi Bật Ở Điều Gì" className="border border-borderDark bg-surface p-6 sm:p-7 space-y-3">
+        <div className="flex items-center gap-2 text-xs font-mono text-accentGold tracking-widest uppercase border-b border-borderDark/60 pb-2">
+          <span>✦</span>
+          <span>BẢN ĐỒ SAO NỔI BẬT Ở ĐIỀU GÌ? (CHART SIGNATURE)</span>
+        </div>
+        <h2 className="text-xl sm:text-2xl font-serif text-parchment font-medium">
+          {result.mainStory?.headline || result.primaryResult || 'Dấu Ấn Thiên Văn Nổi Bật'}
+        </h2>
+        <p className="text-sm font-sans text-stone leading-relaxed">
+          {result.mainStory?.narrative || result.summary || 'Trường năng lượng của bản đồ sao được định hình qua thế giằng co và hỗ trợ giữa các hành tinh chủ đạo.'}
+        </p>
+      </section>
+
       {/* 2. Big Three Dynamics & Main Story */}
       {result.mainStory && (
         <section aria-label="Cốt Truyện Năng Lượng Chiêm Tinh">
@@ -270,23 +345,36 @@ export function AstrologyResultView({
         </section>
       )}
 
-      {/* 3. Key Ranked Aspects & Energy Interplay */}
+      {/* 3. Key Ranked Aspects & Energy Interplay (Spec 47-48) */}
       {aspectRelationships.length > 0 && (
         <section aria-label="Góc Hợp & Tương Quan Chiếu Mệnh" className="space-y-4">
-          <div className="flex items-center gap-2 text-xs font-mono text-stone tracking-widest uppercase pb-1">
-            <span className="text-accentGold">03</span>
-            <span className="text-borderLight">/</span>
-            <span>CÁC GÓC HỢP TRỌNG YẾU &amp; ĐỘNG LỰC HÀNH TINH</span>
+          <div className="flex items-center justify-between border-b border-borderDark/60 pb-2 text-xs font-mono text-stone uppercase tracking-widest">
+            <div className="flex items-center gap-2">
+              <span className="text-accentGold">03</span>
+              <span className="text-borderLight">/</span>
+              <span>CÁC GÓC HỢP TRỌNG YẾU (TOP ASPECTS)</span>
+            </div>
+            {aspectRelationships.length > 5 && (
+              <button
+                type="button"
+                onClick={() => setShowAllAspects(!showAllAspects)}
+                className="text-accentGold hover:underline text-[11px] font-mono cursor-pointer"
+              >
+                {showAllAspects ? '[Thu gọn top 5]' : `[Xem toàn bộ ${aspectRelationships.length} góc hợp]`}
+              </button>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {aspectRelationships.map((r, idx) => (
-              <div
+            {visibleAspects.map((r, idx) => (
+              <button
                 key={idx}
-                className="border border-borderDark bg-surface p-5 space-y-2"
+                type="button"
+                onClick={() => openAspect(r)}
+                className="border border-borderDark bg-surface p-5 space-y-2 text-left hover:border-accentGold transition-colors cursor-pointer group"
               >
                 <div className="flex items-center justify-between text-xs font-mono border-b border-borderDark/60 pb-2">
-                  <span className="text-parchment font-medium">
+                  <span className="text-parchment font-medium group-hover:text-accentGold transition-colors">
                     {formatAspectTitle(r.sourceSignalId)}
                   </span>
                   <span className="text-accentGold uppercase">
@@ -296,23 +384,44 @@ export function AstrologyResultView({
                 <p className="text-sm font-sans text-stone leading-relaxed">
                   {r.description}
                 </p>
-              </div>
+                <div className="pt-1 flex items-center justify-end text-[10px] font-mono text-stone group-hover:text-accentGold">
+                  <span>Xem chi tiết góc chiếu →</span>
+                </div>
+              </button>
             ))}
           </div>
         </section>
       )}
 
-      {/* 4. Deep Interpretations */}
+      {/* 4. Life Areas & Deep Interpretations (Spec 49) */}
       {interpretations.length > 0 && (
         <section aria-label="Luận Giải Chiêm Tinh Sâu Sắc" className="space-y-4">
           <div className="flex items-center gap-2 text-xs font-mono text-stone tracking-widest uppercase pb-1">
             <span className="text-accentGold">04</span>
             <span className="text-borderLight">/</span>
-            <span>LUẬN GIẢI ĐA TẦNG CHI TIẾT (DEEP INTERPRETATIONS)</span>
+            <span>VÙNG ĐỜI SỐNG KÍCH HOẠT &amp; LUẬN GIẢI CHI TIẾT</span>
+          </div>
+
+          {/* Life Area Filter Tabs */}
+          <div className="flex flex-wrap gap-2 pt-1 pb-2">
+            {LIFE_AREAS.map((area) => (
+              <button
+                key={area.id}
+                type="button"
+                onClick={() => setSelectedLifeArea(area.id)}
+                className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider border transition-colors cursor-pointer ${
+                  selectedLifeArea === area.id
+                    ? 'border-accentGold bg-accentGold/10 text-accentGold font-bold'
+                    : 'border-borderDark bg-surface text-stone hover:text-parchment'
+                }`}
+              >
+                {area.label}
+              </button>
+            ))}
           </div>
 
           <div className="space-y-4">
-            {interpretations.map((interp, idx) => (
+            {displayInterpretations.map((interp, idx) => (
               <InsightBlock
                 key={interp.interpretationId || idx}
                 depth={('depth' in interp ? (interp as any).depth : 'DEPTH_3')}
@@ -395,6 +504,51 @@ export function AstrologyResultView({
         />
       </section>
 
+      {/* 7.5. Technical Details / Chart Explorer (Spec 50) */}
+      <section aria-label="Bảng Thông Số Kỹ Thuật Chiêm Tinh" className="border border-borderDark bg-surface">
+        <button
+          type="button"
+          onClick={() => setTechOpen(!techOpen)}
+          aria-expanded={techOpen}
+          className="w-full p-5 sm:p-6 flex items-center justify-between text-left hover:bg-surfaceHover/50 transition-colors"
+        >
+          <div className="space-y-0.5">
+            <span className="font-mono text-xs text-stone tracking-widest uppercase block">
+              CHI TIẾT KỸ THUẬT THIÊN VĂN (CHART EXPLORER)
+            </span>
+            <h4 className="font-serif text-base text-parchment font-medium">
+              Tọa Độ Hành Tinh, Cung Đỉnh Cung Nhà &amp; Độ Lệch Orb
+            </h4>
+          </div>
+          <span className="text-xs font-mono text-stone uppercase">
+            {techOpen ? '[THU GỌN]' : '[MỞ RỘNG]'}
+          </span>
+        </button>
+
+        {techOpen && (
+          <div className="border-t border-borderDark p-5 text-xs font-mono space-y-3 bg-background/40">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-stone">
+              <div>
+                <span className="text-parchment block">Trường Phái:</span>
+                <span>{school}</span>
+              </div>
+              <div>
+                <span className="text-parchment block">Hệ Thống Nhà:</span>
+                <span>{String(houseSystem)}</span>
+              </div>
+              <div>
+                <span className="text-parchment block">Mặt Trời:</span>
+                <span>{formatZodiac(sunSign)} {sunHouse ? `(Nhà ${sunHouse})` : ''}</span>
+              </div>
+              <div>
+                <span className="text-parchment block">Mặt Trăng:</span>
+                <span>{formatZodiac(moonSign)} {moonHouse ? `(Nhà ${moonHouse})` : ''}</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+
       {/* 8. Result Footer */}
       <ResultFooter
         topic="Bản Đồ Sao Chiêm Tinh Học"
@@ -403,6 +557,17 @@ export function AstrologyResultView({
           { label: 'Khảo Cứu Thần Số Học Pythagoras', href: '/numerology' },
           { label: 'Khảo Cứu Bói Bài Tarot 78 Lá', href: '/tarot' },
         ]}
+      />
+
+      {/* Interactive Aspect Detail Sheet (Spec 48) */}
+      <AspectDetailSheet
+        isOpen={isAspectSheetOpen}
+        aspect={selectedAspect}
+        onClose={() => setIsAspectSheetOpen(false)}
+        onOpenWhy={() => {
+          const el = document.querySelector('[aria-label="Minh Bạch Suy Luận"]');
+          el?.scrollIntoView({ behavior: 'smooth' });
+        }}
       />
     </article>
   );
