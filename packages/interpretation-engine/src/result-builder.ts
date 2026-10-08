@@ -494,7 +494,7 @@ export class MysticosResultBuilder {
       if (resolvedContext && idx === 0) {
         manifestation = resolvedContext.manifestation;
       } else if (ruleNotes) {
-        manifestation = `${ruleNotes} Biểu hiện cụ thể qua ${
+        manifestation = `Biểu hiện cụ thể qua ${
           semTexts.join(', ') || 'các đặc tính chủ đạo'
         } trong đời sống và các mối quan hệ thực tế.`;
       } else if (semTexts.length > 0) {

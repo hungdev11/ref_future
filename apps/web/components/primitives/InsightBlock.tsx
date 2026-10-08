@@ -29,17 +29,52 @@ export function InsightBlock({
   const showExplanation = !isDepth1 && !isDepth2 && Boolean(explanation);
   const showDeepNuances = (depth === 'DEPTH_4' || depth === 'DEPTH_5');
 
+  // Deduplicate headline and statement
+  let displayTitle = headline ? headline.trim() : '';
+  let displayStatement = statement ? statement.trim() : '';
+
+  if (displayStatement && displayTitle === displayStatement) {
+    if (displayTitle.includes(': ')) {
+      const colonIdx = displayTitle.indexOf(': ');
+      displayStatement = displayTitle.slice(colonIdx + 2).trim();
+      displayTitle = displayTitle.slice(0, colonIdx).trim();
+    } else {
+      displayStatement = '';
+    }
+  } else if (displayTitle && displayStatement && displayStatement.startsWith(displayTitle)) {
+    const stripped = displayStatement.slice(displayTitle.length).replace(/^[:\s-]+/, '').trim();
+    if (stripped) {
+      displayStatement = stripped;
+    }
+  }
+
+  // Deduplicate explanation if it repeats headline or statement
+  let cleanExplanation = explanation ? explanation.trim() : '';
+  if (cleanExplanation) {
+    if (displayStatement && cleanExplanation.startsWith(displayStatement)) {
+      cleanExplanation = cleanExplanation.slice(displayStatement.length).replace(/^[:\s.-]+/, '').trim();
+    } else if (headline && cleanExplanation.startsWith(headline.trim())) {
+      cleanExplanation = cleanExplanation.slice(headline.trim().length).replace(/^[:\s.-]+/, '').trim();
+    }
+    // Capitalize first letter of clean explanation if needed
+    if (cleanExplanation.length > 0) {
+      cleanExplanation = cleanExplanation.charAt(0).toUpperCase() + cleanExplanation.slice(1);
+    }
+  }
+
   if (isDepth1) {
     return (
       <div
         className={`border border-borderDark bg-surface/60 px-4 py-3 flex flex-col sm:flex-row sm:items-baseline gap-2 ${className}`}
       >
         <span className="font-serif text-parchment font-medium text-sm tracking-tight shrink-0">
-          {headline}:
+          {displayTitle}{displayStatement ? ':' : ''}
         </span>
-        <span className="font-sans text-stone text-sm leading-relaxed">
-          {statement}
-        </span>
+        {displayStatement ? (
+          <span className="font-sans text-stone text-sm leading-relaxed">
+            {displayStatement}
+          </span>
+        ) : null}
       </div>
     );
   }
@@ -83,21 +118,23 @@ export function InsightBlock({
       {/* Main Core Assertion */}
       <div className="space-y-2">
         <h4 className="text-lg sm:text-xl font-serif text-parchment font-medium tracking-tight leading-snug">
-          {headline}
+          {displayTitle}
         </h4>
-        <p className="font-sans text-parchment/90 text-sm sm:text-base leading-relaxed">
-          {statement}
-        </p>
+        {displayStatement ? (
+          <p className="font-sans text-parchment/90 text-sm sm:text-base leading-relaxed">
+            {displayStatement}
+          </p>
+        ) : null}
       </div>
 
       {/* Depth 3+ Explanation */}
-      {showExplanation && (
+      {showExplanation && cleanExplanation && (
         <div className="border-t border-borderDark/50 pt-3 space-y-1">
           <span className="font-mono text-[10px] uppercase tracking-widest text-stone block">
             CƠ CHẾ TÁC ĐỘNG &amp; SUY LUẬN
           </span>
           <p className="font-sans text-stone text-sm leading-relaxed">
-            {explanation}
+            {cleanExplanation}
           </p>
         </div>
       )}

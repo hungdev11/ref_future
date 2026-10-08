@@ -61,6 +61,26 @@ describe('Editorial UI Primitives', () => {
     expect(lastMarkup).not.toContain('Giải thích dài không nên hiển thị.');
   });
 
+  it('deduplicates headline, statement, and explanation when they repeat identical text', () => {
+    const rawHeadline = 'Đường Đời 5: Thúc đẩy tiến trình phát triển qua trải nghiệm phong phú và khả năng thích nghi.';
+    const rawStatement = 'Đường Đời 5: Thúc đẩy tiến trình phát triển qua trải nghiệm phong phú và khả năng thích nghi.';
+    const rawExplanation = 'Đường Đời 5: Thúc đẩy tiến trình phát triển qua trải nghiệm phong phú và khả năng thích nghi. Biểu hiện cụ thể qua sự thích ứng linh hoạt và tự do khám phá trải nghiệm trong đời sống và các mối quan hệ thực tế.';
+
+    render(
+      <InsightBlock
+        depth="DEPTH_5"
+        headline={rawHeadline}
+        statement={rawStatement}
+        explanation={rawExplanation}
+      />
+    );
+    // Should split headline into title and statement, and clean explanation
+    expect(screen.getByText('Đường Đời 5')).toBeDefined();
+    const matches = lastMarkup.match(/Thúc đẩy tiến trình phát triển qua trải nghiệm phong phú và khả năng thích nghi/g);
+    expect(matches).toHaveLength(1);
+    expect(lastMarkup).toContain('Biểu hiện cụ thể qua sự thích ứng');
+  });
+
   it('renders PatternStory narrative arc with gold hairline accent callout', () => {
     render(
       <PatternStory
