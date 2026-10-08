@@ -7,7 +7,8 @@ import { TensionBlock } from '../primitives/TensionBlock';
 import { InsightBlock } from '../primitives/InsightBlock';
 import { ScenarioBlock } from '../primitives/ScenarioBlock';
 import { WhyDrawer } from '../primitives/WhyDrawer';
-import { Users, Heart, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { ResultFooter } from '../primitives/ResultFooter';
+import { Users, Heart, CheckCircle2, AlertTriangle, ShieldCheck } from 'lucide-react';
 
 export interface CompatibilityResultViewProps {
   result: DeepMysticosResult;
@@ -41,6 +42,14 @@ export function CompatibilityResultView({
   const guidanceItems = result.guidance || [];
   const continueItems = guidanceItems.flatMap((g) => g.whatToContinue || []);
   const adjustItems = guidanceItems.flatMap((g) => g.whatToAdjustOrStop || []);
+
+  const effectiveContinueItems = continueItems.length > 0
+    ? continueItems
+    : ['Duy trì sự minh bạch trong giao tiếp và tôn trọng ranh giới cá nhân.', 'Khai thác điểm mạnh tương hỗ trong các mục tiêu chung.'];
+
+  const effectiveAdjustItems = adjustItems.length > 0
+    ? adjustItems
+    : ['Tránh phản xạ quy chụp khi đối phương xử lý theo cách thức khác biệt.', 'Chú ý điều phối nhịp điệu sinh hoạt và không gian riêng tư.'];
 
   // Dimensions summary
   const dimensionSet = Array.from(
@@ -85,11 +94,22 @@ export function CompatibilityResultView({
             MỤC ĐÍCH KHẢO LUẬN: {PURPOSE_VN[relType] || 'Tình Cảm & Hôn Nhân'}
           </div>
           <h1 className="text-2xl sm:text-3xl font-serif text-parchment font-medium tracking-tight">
-            Tương Quan Hòa Hợp: {nameA} ✕ {nameB}
+            Mối Quan Hệ Này: {nameA} ✕ {nameB}
           </h1>
-          <p className="text-stone text-sm leading-relaxed">
-            Phân tích tương tác đa chiều giữa hai trường năng lượng: điểm hút tự nhiên, khác biệt bản năng và cơ chế phối hợp trong mục đích {PURPOSE_VN[relType] || 'chung'}.
-          </p>
+          {result.primaryResult ? (
+            <div className="border border-borderDark bg-surface p-4 border-l-2 border-l-accentGold">
+              <span className="font-mono text-[10px] text-accentGold uppercase tracking-wider block font-medium">
+                TỔNG QUAN TƯƠNG QUAN
+              </span>
+              <p className="font-serif text-base text-parchment leading-relaxed pt-0.5">
+                {result.primaryResult}
+              </p>
+            </div>
+          ) : (
+            <p className="text-stone text-sm leading-relaxed">
+              Phân tích tương tác đa chiều giữa hai trường năng lượng: điểm hút tự nhiên, khác biệt bản năng và cơ chế phối hợp trong mục đích {PURPOSE_VN[relType] || 'chung'}.
+            </p>
+          )}
         </div>
 
         {/* Profile Comparison Cards */}
@@ -190,52 +210,49 @@ export function CompatibilityResultView({
         </section>
       )}
 
-      {/* 6. Principles for Strengthening the Bond */}
-      {(continueItems.length > 0 || adjustItems.length > 0) && (
-        <section aria-label="Nguyên Tắc Bồi Đắp Gắn Kết" className="space-y-4">
-          <div className="flex items-center gap-2 text-xs font-mono text-stone tracking-widest uppercase pb-1">
-            <span className="text-accentGold">06</span>
-            <span className="text-borderLight">/</span>
-            <span>NGUYÊN TẮC BỒI ĐẮP MỐI QUAN HỆ BỀN CHẶT</span>
-          </div>
+      {/* 6. Điều Giúp Hai Người Kết Nối & Điểm Cần Được Quản Lý (Spec 61-62) */}
+      <section aria-label="Nguyên Tắc Bồi Đắp Gắn Kết" className="space-y-4">
+        <div className="flex items-center gap-2 text-xs font-mono text-stone tracking-widest uppercase pb-1">
+          <span className="text-accentGold">06</span>
+          <span className="text-borderLight">/</span>
+          <span>ĐỘNG LỰC GẮN KẾT &amp; KHU VỰC CẦN QUẢN LÝ</span>
+        </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {continueItems.length > 0 && (
-              <div className="border border-borderDark bg-surface p-6 space-y-3">
-                <div className="flex items-center gap-2 text-xs font-mono text-accentGold tracking-wider uppercase border-b border-borderDark/60 pb-2">
-                  <CheckCircle2 className="w-4 h-4 text-accentGold shrink-0" />
-                  <span>ĐIỂM TỰA GẮN KẾT CẦN DUY TRÌ</span>
-                </div>
-                <ul className="space-y-2 text-sm text-parchment/90 font-sans list-none">
-                  {continueItems.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <span className="text-accentGold select-none pt-0.5">•</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
+            <div className="border border-borderDark bg-surface p-6 space-y-3">
+              <div className="flex items-center gap-2 text-xs font-mono text-accentGold tracking-wider uppercase border-b border-borderDark/60 pb-2">
+                <CheckCircle2 className="w-4 h-4 text-accentGold shrink-0" />
+                <span>ĐIỀU GIÚP HAI NGƯỜI KẾT NỐI</span>
               </div>
-            )}
+              <ul className="space-y-2 text-sm text-parchment/90 font-sans list-none">
+                {effectiveContinueItems.map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-2">
+                    <span className="text-accentGold select-none pt-0.5">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-            {adjustItems.length > 0 && (
-              <div className="border border-borderDark bg-surface p-6 space-y-3">
-                <div className="flex items-center gap-2 text-xs font-mono text-terracotta tracking-wider uppercase border-b border-borderDark/60 pb-2">
-                  <AlertTriangle className="w-4 h-4 text-terracotta shrink-0" />
-                  <span>KHÁC BIỆT CẦN THẤU HIỂU &amp; HÓA GIẢI</span>
-                </div>
-                <ul className="space-y-2 text-sm text-parchment/90 font-sans list-none">
-                  {adjustItems.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <span className="text-terracotta select-none pt-0.5">•</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
+            <div className="border border-borderDark bg-surface p-6 space-y-3">
+              <div className="flex items-center gap-2 text-xs font-mono text-terracotta tracking-wider uppercase border-b border-borderDark/60 pb-2">
+                <AlertTriangle className="w-4 h-4 text-terracotta shrink-0" />
+                <span>ĐIỂM CẦN ĐƯỢC QUẢN LÝ</span>
               </div>
-            )}
+              <p className="text-[11px] font-mono text-stone leading-relaxed pb-1">
+                Đây là khu vực có khả năng tạo ma sát nếu hai người xử lý theo những phản xạ tự nhiên khác nhau.
+              </p>
+              <ul className="space-y-2 text-sm text-parchment/90 font-sans list-none">
+                {effectiveAdjustItems.map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-2">
+                    <span className="text-terracotta select-none pt-0.5">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </section>
-      )}
 
       {/* 7. Progressive Disclosure */}
       <section aria-label="Minh Bạch Suy Luận" className="space-y-6">
@@ -245,6 +262,16 @@ export function CompatibilityResultView({
           description="Truy vết logic tất định 100% qua mô hình đối chiếu chéo giữa hai trường năng lượng thực tế."
         />
       </section>
+
+      {/* 8. Result Footer */}
+      <ResultFooter
+        topic="Độ Tương Hợp Đa Hệ Thống"
+        exploreLinks={[
+          { label: 'Khảo Cứu Tử Vi Đẩu Số Cá Nhân', href: '/tu-vi' },
+          { label: 'Khảo Cứu Chiêm Tinh Bản Đồ Sao', href: '/astrology' },
+          { label: 'Khảo Cứu Thần Số Học Pythagoras', href: '/numerology' },
+        ]}
+      />
     </article>
   );
 }

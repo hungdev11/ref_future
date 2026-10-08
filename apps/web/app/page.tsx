@@ -1,124 +1,128 @@
 import React from 'react';
 import Link from 'next/link';
+import { ArrowRight, Compass, Shield, Sparkles, BookOpen } from 'lucide-react';
 
 export default function HomePage() {
   const portals = [
     {
       code: '01',
-      title: 'Chiêm Tinh Học Tây Phương',
-      subtitle: 'Bản Đồ Sao Cá Nhân (Natal Wheel)',
-      href: '/astrology',
-      description:
-        'Tính toán tọa độ 10 thiên thể và 12 cung địa bàn theo hệ tọa độ Hoàng Đạo. Phân tích chi tiết bộ ba Mặt Trời, Mặt Trăng, Cung Mọc và các góc hợp tương tác.',
-      badge: 'Bánh Xe Hoàng Đạo',
-      cta: 'Lập Bản Đồ Sao →',
+      title: 'Thần Số Học',
+      subtitle: 'Pythagoras Cổ Điển',
+      href: '/numerology',
+      description: 'Khám phá các mô hình nổi bật từ ngày sinh và tên.',
+      badge: 'Con Số Cốt Lõi',
+      cta: 'Khám phá Thần Số Học',
     },
     {
       code: '02',
-      title: 'Tử Vi Đẩu Số Phương Đông',
-      subtitle: 'Bản Đồ 12 Cung Chức & Thiên Bàn',
+      title: 'Tử Vi Đẩu Số',
+      subtitle: 'Toàn Thư Cổ Bản',
       href: '/tu-vi',
-      description:
-        'An sao lập lá số theo giờ sinh và lịch thiên văn Việt Nam. Giải nghĩa các chính tinh, phụ tinh và các cung chức trọng yếu trong đời sống.',
-      badge: 'Ma Trận 12 Cung',
-      cta: 'Lập Lá Số Tử Vi →',
+      description: 'Khảo sát cấu trúc lá số, các cung trọng yếu và vận trình theo thời gian.',
+      badge: '12 Cung Chức',
+      cta: 'Khảo sát Tử Vi',
     },
     {
       code: '03',
-      title: 'Thần Số Học Pythagoras',
-      subtitle: 'Con Số Chủ Đạo & Chu Kỳ Vận Số',
-      href: '/numerology',
-      description:
-        'Phân tích tần số dao động từ họ tên và ngày sinh theo trường phái Pythagoras cổ điển. Khám phá con số chủ đạo, sứ mệnh và 4 đỉnh cao cuộc đời.',
-      badge: 'Bản Đồ Kim Tự Tháp',
-      cta: 'Khảo Cứu Số Học →',
+      title: 'Chiêm Tinh',
+      subtitle: 'Bản Đồ Sao Thiên Văn',
+      href: '/astrology',
+      description: 'Khám phá cấu trúc bản đồ sao và những tương tác nổi bật giữa các yếu tố.',
+      badge: 'Bánh Xe Hoàng Đạo',
+      cta: 'Khám phá Chiêm Tinh',
     },
     {
       code: '04',
-      title: 'Bói Bài Tarot Cổ Điển',
-      subtitle: '78 Lá Rider-Waite & Trải Bài Trực Giác',
+      title: 'Tarot',
+      subtitle: 'Rider-Waite 78 Lá',
       href: '/tarot',
-      description:
-        'Lật mở các thông điệp chỉ dẫn qua hình ảnh nguyên bản Rider-Waite-Smith 1909. Trải bài từ 1 đến 10 lá kèm lời khuyên hành động đời thường.',
-      badge: 'Trực Họa 78 Lá',
-      cta: 'Rút Bài Tarot →',
+      description: 'Đặt một câu hỏi và khám phá câu chuyện nổi lên từ trải bài.',
+      badge: 'Trực Họa Biểu Tượng',
+      cta: 'Trải Bài Tarot',
     },
     {
       code: '05',
-      title: 'Khảo Cứu Tương Hợp',
-      subtitle: 'Hòa Hợp Bản Mệnh Giữa Hai Người',
+      title: 'Độ Tương Hợp',
+      subtitle: 'Khảo Cứu Đa Chiều',
       href: '/compatibility',
-      description:
-        'Đối chiếu mức độ hòa hợp giữa hai người qua sự giao thoa nguyên tố Hoàng Đạo, cặp số chủ đạo và Can Chi. Không dùng điểm số cảm tính.',
+      description: 'Khảo sát cách hai người kết nối, hỗ trợ và tạo ra ma sát trong các lĩnh vực khác nhau.',
       badge: 'Đối Chiếu Cặp Đôi',
-      cta: 'Khảo Luận Tương Hợp →',
+      cta: 'Khảo sát Tương Hợp',
     },
   ];
 
   return (
     <div className="space-y-16 py-4">
-      {/* Editorial Hero Section */}
-      <section className="border-b border-borderDark pb-12 pt-4">
+      {/* Editorial Hero Section (Spec 05) */}
+      <section className="border-b border-borderDark pb-14 pt-4">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          <div className="lg:col-span-8 space-y-5">
+          <div className="lg:col-span-8 space-y-6">
             <div className="flex items-center gap-3 text-stone text-xs font-mono tracking-widest uppercase">
               <span className="text-accentGold">✦</span>
-              <span>Lưu Trữ Văn Khố Thiên Văn & Số Học Cổ Điển</span>
+              <span>MYSTICOS</span>
               <span className="text-borderLight">/</span>
-              <span>100% Miễn Phí</span>
+              <span>Khảo Cứu Vận Mệnh</span>
             </div>
 
             <h1 className="text-3xl sm:text-5xl font-serif text-parchment font-normal leading-[1.2] tracking-tight">
-              Khảo Cứu Vận Trình <br />
+              Khảo Cứu Vận Mệnh <br />
               <span className="italic text-accentGold font-normal">
-                Bằng Tri Thức Cổ Điển & Minh Bạch
+                Minh Bạch, Tất Định &amp; Thực Tiễn
               </span>
             </h1>
 
             <p className="text-sm sm:text-base text-stone max-w-2xl leading-relaxed">
-              Mỗi con người khi chào đời đều mang một tọa độ nhân sinh độc bản. Mysticos hệ thống hóa
-              các trường phái dự đoán kinh điển thành công cụ khảo cứu tất định, trực quan và dễ tiếp cận,
-              không dùng thuật ngữ phô trương hay phán đoán mê tín dị đoan.
+              Khám phá các mô hình và xu hướng trong ngày sinh, lá số, bản đồ sao và trải bài của bạn.
+              Không dùng thuật ngữ mê tín hay phán đoán định mệnh đóng khung.
             </p>
 
-            <div className="pt-2">
-              <Link
-                href="/astrology"
+            {/* CTAs (Spec 05) */}
+            <div className="pt-2 flex flex-wrap items-center gap-4">
+              <a
+                href="#modules"
                 className="px-6 py-3 bg-accentGold text-background text-xs font-mono font-bold tracking-widest uppercase hover:bg-parchment transition-colors border border-accentGold inline-flex items-center gap-2"
               >
-                Bắt Đầu Khảo Cứu Vận Trình →
-              </Link>
+                <span>Bắt đầu khám phá</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </a>
+
+              <a
+                href="#methodology"
+                className="px-6 py-3 bg-transparent text-parchment text-xs font-mono uppercase tracking-widest hover:border-accentGold transition-colors border border-borderDark inline-flex items-center gap-2"
+              >
+                <span>Tìm hiểu MYSTICOS</span>
+              </a>
             </div>
           </div>
 
           <div className="lg:col-span-4 border border-borderDark bg-surface p-5 space-y-4 text-xs font-mono">
             <div className="text-accentGold uppercase tracking-wider text-[11px] pb-2 border-b border-borderDark">
-              Nguyên Lý Thiết Kế
+              Nguyên Tắc Cốt Lõi
             </div>
             <ul className="space-y-3 text-stone text-[12px] leading-relaxed">
               <li className="flex items-start gap-2">
                 <span className="text-accentGold">01.</span>
-                <span><strong>Không Mê Tín Dị Đoan:</strong> Mọi diễn giải hướng tới thấu hiểu bản thân và hành xử thực tế.</span>
+                <span><strong>Không Phán Quyết Mê Tín:</strong> Mọi diễn giải hướng tới thấu hiểu bản thân và hành động thực tế.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-accentGold">02.</span>
-                <span><strong>Ngôn Từ Giản Dị:</strong> Diễn giải rõ ràng, dễ hiểu cho người chưa từng có kiến thức nền tảng.</span>
+                <span><strong>Ngôn Từ Giản Dị:</strong> Diễn giải rõ ràng, mạch lạc cho người chưa từng có kiến thức nền tảng.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-accentGold">03.</span>
-                <span><strong>Minh Bạch Nguồn Gốc:</strong> Mỗi kết quả đều truy nguyên được công thức và thư tịch chuẩn tắc.</span>
+                <span><strong>Truy Nguyên Thư Tịch:</strong> Mỗi kết quả đều truy vết được nguồn gốc quy tắc cổ điển chuẩn tắc.</span>
               </li>
             </ul>
           </div>
         </div>
       </section>
 
-      {/* 5 Portals Index */}
+      {/* 5 Modules Selection (Spec 06) */}
       <section className="space-y-6" id="modules">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-borderDark pb-3 gap-2">
           <div>
-            <h2 className="text-xl font-serif text-parchment">Các Bộ Môn Khảo Cứu</h2>
-            <p className="text-xs text-stone mt-0.5">Chọn một bộ môn để bắt đầu tra cứu</p>
+            <h2 className="text-xl font-serif text-parchment">5 Phương Pháp Khảo Cứu</h2>
+            <p className="text-xs text-stone mt-0.5">Chọn một phương pháp phù hợp với câu hỏi của bạn</p>
           </div>
           <span className="text-xs font-mono text-stone">Mục Lục 01 — 05</span>
         </div>
@@ -150,32 +154,73 @@ export default function HomePage() {
               </div>
             </Link>
           ))}
+
+          {/* Bonus Cross-System Card */}
+          <Link
+            href="/analysis"
+            className="p-6 bg-surface/50 border border-dashed border-borderDark hover:border-accentGold transition-colors flex flex-col justify-between space-y-4 group"
+          >
+            <div className="space-y-3">
+              <div className="flex items-center justify-between text-xs font-mono">
+                <span className="text-accentGold font-bold tracking-widest">06</span>
+                <span className="text-[10px] text-accentGold tracking-wider uppercase border border-accentGold/40 px-2 py-0.5">
+                  ĐA HỆ THỐNG
+                </span>
+              </div>
+              <h3 className="text-lg font-serif text-parchment group-hover:text-accentGold transition-colors">
+                Đối Chiếu Chéo
+              </h3>
+              <p className="text-xs text-stone font-medium">Khảo Luận Tổng Hợp</p>
+              <p className="text-xs text-stone/80 leading-relaxed">
+                Đối chiếu các chủ đề chung và sự khác biệt giữa các hệ quy chiếu khi bạn đã có kết quả.
+              </p>
+            </div>
+
+            <div className="pt-4 border-t border-borderDark flex items-center justify-between text-xs font-mono text-accentGold group-hover:translate-x-0.5 transition-transform">
+              <span>Xem Đối Chiếu Chéo</span>
+              <span>→</span>
+            </div>
+          </Link>
         </div>
       </section>
 
-      {/* Ephemeris Principles */}
-      <section className="border border-borderDark p-8 bg-surface space-y-4">
-        <div className="text-xs font-mono text-accentGold uppercase tracking-widest">
-          Quy Chuẩn Hoạt Động
+      {/* Trust & Methodology Pipeline (Spec 08) */}
+      <section id="methodology" className="border border-borderDark p-8 bg-surface space-y-6">
+        <div className="space-y-2">
+          <div className="text-xs font-mono text-accentGold uppercase tracking-widest">
+            PHƯƠNG PHÁP LUẬN TẤT ĐỊNH
+          </div>
+          <p className="font-serif text-lg text-parchment leading-relaxed max-w-3xl">
+            &ldquo;MYSTICOS không chỉ hiển thị ý nghĩa của từng yếu tố. Hệ thống phân tích mối liên hệ giữa các yếu tố và trình bày những pattern nổi bật trong ngữ cảnh cụ thể.&rdquo;
+          </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-stone">
-          <div className="space-y-1.5 border-l-2 border-borderLight pl-4">
-            <h4 className="text-parchment font-serif text-sm">Minh Bạch Tuyệt Đối</h4>
-            <p className="leading-relaxed">
-              Mọi thuật toán tính toán vị trí thiên thể, can chi và số học đều dựa trên công thức thiên văn và thư tịch cổ điển chuẩn mực.
-            </p>
+
+        {/* 5-step Pipeline Diagram */}
+        <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 pt-2">
+          <div className="p-3.5 bg-background border border-borderDark text-center space-y-1">
+            <span className="text-[10px] font-mono text-accentGold uppercase block">BƯỚC 01</span>
+            <span className="font-serif text-sm text-parchment block">Dữ Liệu</span>
+            <span className="font-mono text-[10px] text-stone block">Ngày giờ sinh, câu hỏi</span>
           </div>
-          <div className="space-y-1.5 border-l-2 border-borderLight pl-4">
-            <h4 className="text-parchment font-serif text-sm">Dễ Hiểu & Thực Tế</h4>
-            <p className="leading-relaxed">
-              Kết quả trả lời trực tiếp điều người dùng quan tâm, kèm gợi ý ứng biến cụ thể trong đời sống hàng ngày.
-            </p>
+          <div className="p-3.5 bg-background border border-borderDark text-center space-y-1">
+            <span className="text-[10px] font-mono text-accentGold uppercase block">BƯỚC 02</span>
+            <span className="font-serif text-sm text-parchment block">Tính Toán</span>
+            <span className="font-mono text-[10px] text-stone block">Thiên văn, Can Chi, số học</span>
           </div>
-          <div className="space-y-1.5 border-l-2 border-borderLight pl-4">
-            <h4 className="text-parchment font-serif text-sm">Hoàn Toàn Miễn Phí</h4>
-            <p className="leading-relaxed">
-              Không ẩn giấu nội dung hay yêu cầu trả phí. Toàn bộ luận giải từ cơ bản đến chuyên sâu đều được hiển thị đầy đủ và công khai.
-            </p>
+          <div className="p-3.5 bg-background border border-borderDark text-center space-y-1">
+            <span className="text-[10px] font-mono text-accentGold uppercase block">BƯỚC 03</span>
+            <span className="font-serif text-sm text-parchment block">Đối Chiếu Tri Thức</span>
+            <span className="font-mono text-[10px] text-stone block">Thư tịch cổ điển chuẩn tắc</span>
+          </div>
+          <div className="p-3.5 bg-background border border-borderDark text-center space-y-1">
+            <span className="text-[10px] font-mono text-accentGold uppercase block">BƯỚC 04</span>
+            <span className="font-serif text-sm text-parchment block">Phân Tích Pattern</span>
+            <span className="font-mono text-[10px] text-stone block">Tương tác, hỗ trợ &amp; ma sát</span>
+          </div>
+          <div className="p-3.5 bg-background border border-borderDark text-center space-y-1">
+            <span className="text-[10px] font-mono text-accentGold uppercase block">BƯỚC 05</span>
+            <span className="font-serif text-sm text-parchment block">Diễn Giải</span>
+            <span className="font-mono text-[10px] text-stone block">Hành động đời sống thực tế</span>
           </div>
         </div>
       </section>

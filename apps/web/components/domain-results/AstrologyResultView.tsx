@@ -6,6 +6,7 @@ import { PatternStory } from '../primitives/PatternStory';
 import { InsightBlock } from '../primitives/InsightBlock';
 import { ScenarioBlock } from '../primitives/ScenarioBlock';
 import { WhyDrawer } from '../primitives/WhyDrawer';
+import { ResultFooter } from '../primitives/ResultFooter';
 import { Sun, Moon, Compass, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 export interface AstrologyResultViewProps {
@@ -27,6 +28,32 @@ const ZODIAC_VN: Record<string, string> = {
   AQUARIUS: 'Bảo Bình (Aquarius)',
   PISCES: 'Song Ngư (Pisces)',
 };
+
+const HOUSE_THEMES: Record<number, { title: string; desc: string }> = {
+  1: { title: 'Bản Thể & Diện Mạo', desc: 'Định hình phong thái, ý chí khởi xướng và cách bạn chủ động tiếp cận cuộc đời.' },
+  2: { title: 'Tài Chính & Nguồn Lực', desc: 'Quản trị giá trị vật chất, năng lực sinh kế và cảm giác an toàn tài chính cá nhân.' },
+  3: { title: 'Giao Tiếp & Học Hỏi', desc: 'Tư duy logic, cách kết nối ý tưởng và tương tác với môi trường sống xung quanh.' },
+  4: { title: 'Cội Nguồn & Gia Đạo', desc: 'Nền tảng tâm lý nội tại, không gian gia đình và điểm tựa cảm xúc an trú.' },
+  5: { title: 'Sáng Tạo & Tự Biểu Đạt', desc: 'Khai mở niềm vui sống, năng lượng đam mê, dự án cá nhân và sự bộc lộ chân thật.' },
+  6: { title: 'Kỷ Luật & Sức Khỏe', desc: 'Thói quen thực tế mỗi ngày, tính trật tự trong công việc và việc chăm sóc thể trạng.' },
+  7: { title: 'Quan Hệ & Đối Tác', desc: 'Cam kết song phương, sự hợp tác công bằng và các bài học từ tấm gương người khác.' },
+  8: { title: 'Chiều Sâu & Chuyển Hóa', desc: 'Nội lực tái sinh sau khủng hoảng, nguồn lực chung và khả năng thấu suốt vô thức.' },
+  9: { title: 'Tri Thức & Thế Giới Quan', desc: 'Khát vọng mở rộng biên giới tri thức, triết lý nhân sinh và hành trình trải nghiệm lớn.' },
+  10: { title: 'Sự Nghiệp & Công Danh', desc: 'Khẳng định chỗ đứng xã hội, trách nhiệm dẫn dắt và mục tiêu cống hiến bền vững.' },
+  11: { title: 'Cộng Đồng & Mục Tiêu', desc: 'Tầm nhìn tương lai, gắn kết mạng lưới đồng chí hướng và lý tưởng xã hội chung.' },
+  12: { title: 'Tiềm Thức & Tâm Linh', desc: 'Vùng tĩnh lặng nội tâm, năng lực trực giác và sự buông bỏ để phục hồi sinh lực.' },
+};
+
+function getHouseDescription(houseNum: unknown): { title: string; desc: string } {
+  const num = Number(houseNum);
+  if (!num || !HOUSE_THEMES[num]) {
+    return {
+      title: 'Vùng Đời Sống Trọng Yếu',
+      desc: 'Lĩnh vực trọng tâm hội tụ năng lượng thiên thể và phản ánh bài học cá nhân.',
+    };
+  }
+  return HOUSE_THEMES[num];
+}
 
 const ASPECT_TYPE_VN: Record<string, string> = {
   contrast: 'ĐỐI LẬP (180°)',
@@ -189,20 +216,45 @@ export function AstrologyResultView({
                 <span className="text-stone text-[10px]">12 LÃNH ĐỊA CUỘC ĐỜI</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                <div className="border border-borderDark bg-background/50 p-3 space-y-1">
-                  <span className="font-mono text-[10px] text-accentGold uppercase block">
-                    Mặt Trời ngụ tại Nhà {String(sunHouse || 11)}
-                  </span>
-                  <p className="font-sans text-parchment/90 leading-relaxed text-xs">
-                    Vùng đời sống trọng tâm phát huy ý chí độc lập, cống hiến giá trị và hiện thực hóa mục tiêu xã hội.
+                {sunHouse ? (
+                  <div className="border border-borderDark bg-background/50 p-3 space-y-1">
+                    <span className="font-mono text-[10px] text-accentGold uppercase block">
+                      Mặt Trời ngụ tại Nhà {String(sunHouse)}: {getHouseDescription(sunHouse).title}
+                    </span>
+                    <p className="font-sans text-parchment/90 leading-relaxed text-xs">
+                      {getHouseDescription(sunHouse).desc}
+                    </p>
+                  </div>
+                ) : null}
+                {moonHouse ? (
+                  <div className="border border-borderDark bg-background/50 p-3 space-y-1">
+                    <span className="font-mono text-[10px] text-stone uppercase block">
+                      Mặt Trăng ngụ tại Nhà {String(moonHouse)}: {getHouseDescription(moonHouse).title}
+                    </span>
+                    <p className="font-sans text-parchment/90 leading-relaxed text-xs">
+                      {getHouseDescription(moonHouse).desc}
+                    </p>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+
+            {/* Big Three Dynamics Interplay */}
+            <div className="border border-borderDark bg-surface p-4 space-y-2">
+              <span className="font-mono text-[10px] text-accentGold uppercase tracking-wider block">
+                TƯƠNG TÁC BỘ BA NHÂN CÁCH (BIG THREE DYNAMICS)
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-stone">
+                <div className="space-y-1">
+                  <span className="text-parchment font-medium block">Mặt Trời ↔ Mặt Trăng</span>
+                  <p className="leading-relaxed text-[11px]">
+                    Sự dung hòa giữa ý chí thức tỉnh và nhu cầu an toàn cảm xúc thầm kín bên trong.
                   </p>
                 </div>
-                <div className="border border-borderDark bg-background/50 p-3 space-y-1">
-                  <span className="font-mono text-[10px] text-stone uppercase block">
-                    Mặt Trăng ngụ tại Nhà {String(moonHouse || 1)}
-                  </span>
-                  <p className="font-sans text-parchment/90 leading-relaxed text-xs">
-                    Vùng đời sống tìm kiếm sự an toàn tâm lý, tái tạo nội lực và phản xạ thấu cảm bản năng.
+                <div className="space-y-1">
+                  <span className="text-parchment font-medium block">Mặt Trời / Mặt Trăng ↔ Cung Mọc</span>
+                  <p className="leading-relaxed text-[11px]">
+                    Cầu nối giữa cốt tủy nội tâm và chiếc áo phong thái biểu hiện ra với thế giới bên ngoài.
                   </p>
                 </div>
               </div>
@@ -342,6 +394,16 @@ export function AstrologyResultView({
           description="Truy vết logic tất định 100% qua tọa độ thiên văn đã xác lập và thư tịch chiêm tinh học kinh điển."
         />
       </section>
+
+      {/* 8. Result Footer */}
+      <ResultFooter
+        topic="Bản Đồ Sao Chiêm Tinh Học"
+        exploreLinks={[
+          { label: 'Khảo Cứu Tử Vi Đẩu Số 12 Cung', href: '/tu-vi' },
+          { label: 'Khảo Cứu Thần Số Học Pythagoras', href: '/numerology' },
+          { label: 'Khảo Cứu Bói Bài Tarot 78 Lá', href: '/tarot' },
+        ]}
+      />
     </article>
   );
 }

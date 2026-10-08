@@ -2,65 +2,41 @@
 
 import React, { useState } from 'react';
 import {
+  Sparkles,
   AlertTriangle,
-  HelpCircle,
-  RefreshCw,
+  ArrowRight,
+  Hash,
   Compass,
-  CheckCircle2,
-  ChevronDown,
-  ChevronUp,
 } from 'lucide-react';
-import type { MysticosResult } from '@mystic/core';
+import type { MysticosResult, DeepMysticosResult } from '@mystic/core';
 import { DateInput } from '@/components/DateInput';
 import { MysticosResultViewer } from '@/components/MysticosResultViewer';
-
-const CORE_FACT_LABELS: Record<string, string> = {
-  life_path: 'Số Đường Đời (Life Path)',
-  destiny: 'Số Sứ Mệnh (Destiny)',
-  expression: 'Số Biểu Đạt (Expression)',
-  soul_urge: 'Số Linh Hồn (Soul Urge)',
-  personality: 'Số Tính Cách (Personality)',
-  maturity: 'Số Trưởng Thành (Maturity)',
-  birthday: 'Số Ngày Sinh (Birthday)',
-  current_year: 'Năm Hiện Tại',
-  personal_year: 'Năm Cá Nhân (Personal Year)',
-  karmic_debts: 'Nợ Nghiệp (Karmic Debts)',
-  master_numbers: 'Số Bậc Thầy (Master Numbers)',
-  attitude: 'Số Thái Độ (Attitude)',
-};
-
-function formatCoreFactValue(val: any): string {
-  if (Array.isArray(val)) {
-    return val.length > 0 ? val.join(', ') : 'Không có';
-  }
-  if (typeof val === 'object' && val !== null) {
-    return String(val.value ?? val.finalValue ?? JSON.stringify(val));
-  }
-  return String(val);
-}
+import { ConfirmationStep, ContextualLoading } from '@/components/primitives';
+import { saveHistoryItem } from '@/lib/history-storage';
 
 export default function NumerologyPage() {
+  const [step, setStep] = useState<'INTRO' | 'FORM' | 'CONFIRM' | 'LOADING' | 'RESULT'>('INTRO');
   const [fullName, setFullName] = useState('Nguyễn Văn Đức');
   const [birthDate, setBirthDate] = useState('1990-11-29');
 
-  const [loading, setLoading] = useState(false);
+  const [loadingStepIdx, setLoadingStepIdx] = useState(0);
   const [result, setResult] = useState<MysticosResult | null>(null);
-  const [rawCore, setRawCore] = useState<Record<string, any> | null>(null);
-  const [showCoreFacts, setShowCoreFacts] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Instant feedback calculations
   const trimmedName = fullName.trim();
-  const wordCount = trimmedName ? trimmedName.split(/\s+/).length : 0;
   const isNameValid = trimmedName.length >= 2;
   const isDateValid = Boolean(birthDate && /^\d{4}-\d{2}-\d{2}$/.test(birthDate));
 
-  const handleCalculate = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleCalculate = async () => {
     if (!isNameValid || !isDateValid) return;
 
-    setLoading(true);
+    setStep('LOADING');
     setError(null);
+    setLoadingStepIdx(0);
+
+    const timer1 = setTimeout(() => setLoadingStepIdx(1), 400);
+    const timer2 = setTimeout(() => setLoadingStepIdx(2), 800);
+    const timer3 = setTimeout(() => setLoadingStepIdx(3), 1200);
 
     try {
       const res = await fetch('/api/numerology/calculate', {
@@ -74,77 +50,121 @@ export default function NumerologyPage() {
 
       const canonicalResult: MysticosResult = data.data || data.mysticosResult;
       setResult(canonicalResult);
-      setRawCore(data.facts?.core || null);
+
+      // Save to local history
+      saveHistoryItem({
+        id: `numerology_${Date.now()}`,
+        timestamp: Date.now(),
+        domain: 'numerology',
+        title: `Hồ Sơ Số Học: ${trimmedName}`,
+        mainTheme: canonicalResult.primaryResult || 'Chân dung năng lượng số học Pythagoras',
+        resultPayload: canonicalResult as DeepMysticosResult,
+      });
+
+      setStep('RESULT');
     } catch (err: any) {
       setError(err.message);
+      setStep('CONFIRM');
     } finally {
-      setLoading(false);
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
     }
   };
 
   return (
-    <div className="space-y-8 py-2">
-      {/* Editorial Header */}
-      <div className="border-b border-borderDark pb-6 space-y-2">
-        <div className="flex items-center gap-2 text-stone text-xs font-mono tracking-widest uppercase">
-          <span className="text-accentGold">03</span>
-          <span>/</span>
-          <span>Thần Số Học Pythagoras Cổ Điển</span>
-        </div>
-        <h1 className="text-2xl sm:text-4xl font-serif text-parchment font-normal tracking-tight">
-          Hệ Thống Số Học & Chu Kỳ Tiến Hóa Bản Ngã
-        </h1>
-        <p className="text-xs sm:text-sm text-stone max-w-2xl leading-relaxed">
-          Giải mã tần số dao động của danh xưng và ngày sinh theo chuẩn Pythagoras.
-          Toàn bộ kết quả được xử lý qua 17 tầng mô hình tất định và đối chiếu thư tịch cổ S0/S1.
-        </p>
-      </div>
+    <div className="space-y-8 py-4">
+      {/* 1. INTRO LANDING (Spec 27) */}
+      {step === 'INTRO' && (
+        <div className="space-y-12 max-w-4xl mx-auto py-2">
+          <div className="border-b border-borderDark pb-8 space-y-4">
+            <div className="flex items-center gap-2 text-stone text-xs font-mono tracking-widest uppercase">
+              <span className="text-accentGold">01</span>
+              <span>/</span>
+              <span>Thần Số Học Pythagoras</span>
+            </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Step 1: Input Form */}
-        <div className="lg:col-span-4 p-5 bg-surface border border-borderDark space-y-5">
-          <div className="text-xs font-mono text-accentGold uppercase tracking-wider border-b border-borderDark pb-2 flex items-center gap-2">
-            <Compass className="w-4 h-4" />
-            <span>Thông Số Khảo Cứu</span>
+            <h1 className="text-3xl sm:text-5xl font-serif text-parchment font-normal tracking-tight leading-tight">
+              Thần Số Học Pythagoras
+            </h1>
+
+            <p className="text-sm sm:text-base text-stone max-w-2xl leading-relaxed">
+              Khám phá các mô hình nổi bật từ ngày sinh và tên khai sinh của bạn.
+              Không gán ghép mê tín dị đoan. Hệ thống quy đổi họ tên theo bảng chữ cái Latin Pythagoras chuẩn tắc và tính toán các chu kỳ đời người tất định.
+            </p>
+
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setStep('FORM')}
+                className="px-6 py-3 bg-accentGold text-background text-xs font-mono font-bold tracking-widest uppercase hover:bg-parchment transition-colors border border-accentGold inline-flex items-center gap-2"
+              >
+                <span>Bắt đầu phân tích</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
-          <form onSubmit={handleCalculate} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="p-6 border border-borderDark bg-surface space-y-2">
+              <span className="font-mono text-accentGold text-xs uppercase tracking-wider block">01. Con Số Cốt Lõi</span>
+              <p className="text-xs text-stone leading-relaxed">
+                Đường Đời (Life Path), Sứ Mệnh (Destiny), Linh Hồn (Soul Urge) và Tính Cách (Personality).
+              </p>
+            </div>
+            <div className="p-6 border border-borderDark bg-surface space-y-2">
+              <span className="font-mono text-accentGold text-xs uppercase tracking-wider block">02. Tương Tác Giằng Co</span>
+              <p className="text-xs text-stone leading-relaxed">
+                Phân tích sự củng cố hoặc mâu thuẫn nội tâm giữa mong muốn sâu kín bên trong và cách thể hiện ra ngoài.
+              </p>
+            </div>
+            <div className="p-6 border border-borderDark bg-surface space-y-2">
+              <span className="font-mono text-accentGold text-xs uppercase tracking-wider block">03. Năm Cá Nhân &amp; Chu Kỳ</span>
+              <p className="text-xs text-stone leading-relaxed">
+                Nhận diện năng lượng thời điểm hiện tại và định hướng hành vi tương ứng để phát huy tối đa tiềm năng.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 2. FORM INPUT (Spec 27) */}
+      {step === 'FORM' && (
+        <div className="max-w-xl mx-auto space-y-6">
+          <div className="border-b border-borderDark pb-4 space-y-1">
+            <div className="flex items-center gap-2 text-xs font-mono text-accentGold uppercase tracking-wider">
+              <span>BƯỚC 1 / 2: THÔNG TIN KHAI SINH</span>
+            </div>
+            <h2 className="text-2xl font-serif text-parchment font-medium">Họ Tên &amp; Ngày Sinh</h2>
+          </div>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (isNameValid && isDateValid) setStep('CONFIRM');
+            }}
+            className="space-y-4 bg-surface border border-borderDark p-6"
+          >
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-mono text-stone uppercase tracking-wider">
-                  Họ và Tên Đầy Đủ
-                </label>
-                {isNameValid && (
-                  <span className="text-[10px] font-mono text-accentGold flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3 text-olive" />
-                    <span>{wordCount} từ ({trimmedName.length} ký tự)</span>
-                  </span>
-                )}
-              </div>
+              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
+                Họ và tên đầy đủ theo giấy khai sinh
+              </label>
               <input
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                placeholder="VD: Nguyễn Văn Đức"
                 required
                 className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
               />
-              <span className="text-[10px] text-stone/60 block mt-1 font-mono">
-                Tự động chuẩn hóa dấu tiếng Việt sang bảng số Pythagoras (A-Z).
+              <span className="text-[10px] text-stone/70 block mt-1 font-mono">
+                Tên được quy đổi theo trường phái Pythagoras (1–9). Nên nhập họ tên đầy đủ tiếng Việt có dấu.
               </span>
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-mono text-stone uppercase tracking-wider">
-                  Ngày Sinh Dương Lịch
-                </label>
-                {isDateValid && (
-                  <span className="text-[10px] font-mono text-stone">
-                    Định dạng YYYY-MM-DD
-                  </span>
-                )}
-              </div>
+              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
+                Ngày sinh dương lịch
+              </label>
               <DateInput
                 value={birthDate}
                 onChange={setBirthDate}
@@ -152,121 +172,82 @@ export default function NumerologyPage() {
               />
             </div>
 
-            {/* Instant Input Feedback Preview */}
-            <div className="p-3 bg-background border border-borderDark space-y-2 text-xs font-mono">
-              <div className="text-[10px] text-stone uppercase tracking-wider flex items-center justify-between border-b border-borderDark pb-1.5">
-                <span>Trạng Thái Khảo Cứu:</span>
-                <span className={isNameValid && isDateValid ? 'text-olive' : 'text-stone/60'}>
-                  {isNameValid && isDateValid ? '● Đã Sẵn Sàng' : '○ Đang Chờ Dữ Liệu'}
-                </span>
-              </div>
-              <div className="space-y-1 text-[11px]">
-                <div className="text-stone truncate">
-                  Danh xưng: <strong className="text-parchment">{trimmedName || '—'}</strong>
-                </div>
-                <div className="text-stone">
-                  Ngày sinh: <strong className="text-parchment">{birthDate || '—'}</strong>
-                </div>
-              </div>
-            </div>
+            <div className="flex items-center justify-between pt-2">
+              <button
+                type="button"
+                onClick={() => setStep('INTRO')}
+                className="px-4 py-2 border border-borderDark text-stone text-xs font-mono uppercase tracking-wider hover:text-parchment"
+              >
+                ← Quay lại
+              </button>
 
-            <button
-              type="submit"
-              disabled={loading || !isNameValid || !isDateValid}
-              className="w-full py-2.5 bg-accentGold text-background text-xs font-mono font-bold tracking-widest uppercase hover:bg-parchment transition-colors border border-accentGold disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
-            >
-              {loading ? (
-                <>
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                  Đang Khảo Cứu Tần Số...
-                </>
-              ) : (
-                'Khảo Cứu Số Học →'
-              )}
-            </button>
+              <button
+                type="submit"
+                disabled={!isNameValid || !isDateValid}
+                className="px-5 py-2.5 bg-accentGold text-background font-mono text-xs font-bold uppercase tracking-widest border border-accentGold hover:bg-parchment transition-colors disabled:opacity-50"
+              >
+                Xác Nhận Dữ Liệu →
+              </button>
+            </div>
           </form>
+        </div>
+      )}
+
+      {/* 3. CONFIRMATION STEP */}
+      {step === 'CONFIRM' && (
+        <div className="space-y-4">
+          <ConfirmationStep
+            title="Xác Nhận Dữ Liệu Số Học"
+            subtitle="Kiểm tra lại thông tin họ tên và ngày sinh để hệ thống chuẩn hóa tần số dao động."
+            items={[
+              { label: 'Họ và tên khai sinh', value: trimmedName },
+              { label: 'Ngày sinh dương lịch', value: birthDate },
+              { label: 'Trường phái tính toán', value: 'Pythagorean Numerology' },
+            ]}
+            onConfirm={handleCalculate}
+            onEdit={() => setStep('FORM')}
+            confirmLabel="Bắt đầu phân tích →"
+          />
 
           {error && (
-            <div className="p-3 bg-background border border-cinnabar text-cinnabar text-xs flex items-start gap-2">
+            <div className="max-w-xl mx-auto p-3.5 bg-background border border-cinnabar text-cinnabar text-xs flex items-start gap-2">
               <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
+        </div>
+      )}
 
-          {/* Guide */}
-          <div className="p-3.5 bg-background border border-borderDark space-y-2 text-xs">
-            <div className="font-mono text-accentGold text-[11px] uppercase tracking-wider flex items-center gap-1.5">
-              <HelpCircle className="w-3.5 h-3.5" />
-              <span>Nguyên Lý Số Học Pythagoras</span>
-            </div>
-            <p className="text-stone text-[11px] leading-relaxed">
-              Mỗi con số biểu thị một mức độ rung động năng lượng tự nhiên.
-              Hệ thống Mysticos không phán đoán số phận tốt xấu, mà phân tích cấu trúc tiềm năng và thử thách để phát triển bản thân.
-            </p>
+      {/* 4. CONTEXTUAL LOADING */}
+      {step === 'LOADING' && (
+        <ContextualLoading
+          title="Đang Phân Tích Hồ Sơ Thần Số Học"
+          steps={[
+            'Đang chuẩn hóa họ tên và ngày sinh...',
+            'Đang tính toán các chỉ số cốt lõi (Đường Đời, Sứ Mệnh, Linh Hồn)...',
+            'Đang đối chiếu tương tác giằng co giữa các con số...',
+            'Đang xác lập chu kỳ và năm cá nhân...',
+          ]}
+          currentStepIndex={loadingStepIdx}
+        />
+      )}
+
+      {/* 5. RESULT VIEW */}
+      {step === 'RESULT' && result && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between border-b border-borderDark pb-3">
+            <button
+              type="button"
+              onClick={() => setStep('INTRO')}
+              className="text-xs font-mono text-stone hover:text-accentGold transition-colors flex items-center gap-1.5"
+            >
+              <span>← Khảo cứu hồ sơ khác</span>
+            </button>
           </div>
+
+          <MysticosResultViewer result={result} />
         </div>
-
-        {/* Step 2: Editorial Result View */}
-        <div className="lg:col-span-8 space-y-6">
-          {!result && !loading && (
-            <div className="p-16 border border-borderDark bg-surface text-center space-y-3">
-              <div className="w-10 h-10 border border-borderLight mx-auto flex items-center justify-center text-stone font-serif text-lg">
-                ✦
-              </div>
-              <h3 className="text-sm font-serif text-parchment">Biểu Đồ Đang Chờ Khảo Cứu</h3>
-              <p className="text-stone text-xs max-w-sm mx-auto leading-relaxed">
-                Nhập họ tên và ngày sinh bên trái để khởi tạo bản phân tích tần số số học chi tiết.
-              </p>
-            </div>
-          )}
-
-          {/* Clean Editorial Result Front-and-Center */}
-          {result && <MysticosResultViewer result={result} />}
-
-          {/* Optional Progressive Disclosure: Core Numbers Grid */}
-          {result && rawCore && (
-            <div className="border border-borderDark bg-surface p-4 space-y-3">
-              <button
-                type="button"
-                onClick={() => setShowCoreFacts(!showCoreFacts)}
-                className="w-full flex items-center justify-between text-xs font-mono text-stone hover:text-parchment transition-colors text-left"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-accentGold">✦</span>
-                  <span className="text-parchment font-medium uppercase tracking-wider">
-                    Dữ Kiện Tần Số Cốt Lõi (Core Frequency Numbers)
-                  </span>
-                </div>
-                <div className="flex items-center gap-1 text-accentGold text-xs font-mono">
-                  <span>{showCoreFacts ? 'Thu gọn' : 'Xem các chỉ số'}</span>
-                  {showCoreFacts ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                </div>
-              </button>
-
-              {showCoreFacts && (
-                <div className="pt-3 border-t border-borderDark space-y-3 animate-in fade-in duration-200">
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {Object.entries(rawCore).map(([k, v]: [string, any]) => {
-                      const label = CORE_FACT_LABELS[k.toLowerCase()] || k.replace(/_/g, ' ').toUpperCase();
-                      const displayVal = formatCoreFactValue(v);
-                      return (
-                        <div key={k} className="p-3 bg-background border border-borderDark space-y-1">
-                          <span className="text-[10px] font-mono text-stone block uppercase break-words leading-tight">
-                            {label}
-                          </span>
-                          <span className="text-lg font-serif text-accentGold font-bold block pt-0.5">
-                            {displayVal}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
+      )}
     </div>
   );
 }

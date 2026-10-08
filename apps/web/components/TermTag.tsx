@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useTerminology, TERMINOLOGY_CATALOG } from '@/lib/terminology-context';
+import { useTerminology, TERMINOLOGY_CATALOG } from '../lib/terminology-context';
 import { HelpCircle, BookOpen } from 'lucide-react';
 
 interface TermTagProps {

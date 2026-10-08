@@ -8,7 +8,8 @@ import { CardInteractionBlock } from '../primitives/CardInteractionBlock';
 import { InsightBlock } from '../primitives/InsightBlock';
 import { ScenarioBlock } from '../primitives/ScenarioBlock';
 import { WhyDrawer } from '../primitives/WhyDrawer';
-import { Compass, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { ResultFooter } from '../primitives/ResultFooter';
+import { Compass, CheckCircle2, AlertTriangle, HelpCircle } from 'lucide-react';
 
 export interface TarotResultViewProps {
   result: DeepMysticosResult;
@@ -58,13 +59,26 @@ export function TarotResultView({
 
   const SPREAD_ROLES = ['QUÁ KHỨ (CỘI NGUỒN)', 'HIỆN TẠI (ĐIỂM TỰA)', 'XU HƯỚNG TƯƠNG LAI', 'CĂN NGUYÊN', 'KẾT QUẢ'];
 
+  const isCardReversed = (idx: number, factKey: string) => {
+    const revFact = (result.facts || []).find(
+      (f) =>
+        (f.key === `draw_${idx}_reversed` || f.key === `${factKey}_reversed` || f.key.includes(`rev_${idx}`)) &&
+        (f.value === true || f.value === 'true')
+    );
+    return Boolean(revFact);
+  };
+
   const cardSequence =
     cardFacts.length > 0
-      ? cardFacts.map((f, idx) => ({
-          name: formatCard(f.value),
-          role: SPREAD_ROLES[idx] || `LÁ BÀI 0${idx + 1}`,
-          tag: 'LÁ BÀI',
-        }))
+      ? cardFacts.map((f, idx) => {
+          const rev = isCardReversed(idx, f.key);
+          const orientationLabel = rev ? ' [Ngược]' : ' [Xuôi]';
+          return {
+            name: `${formatCard(f.value)}${orientationLabel}`,
+            role: SPREAD_ROLES[idx] || `LÁ BÀI 0${idx + 1}`,
+            tag: rev ? 'CHIỀU NGƯỢC' : 'CHIỀU XUÔI',
+          };
+        })
       : (result.primaryPatterns || []).map((p, idx) => ({
           name: p.headline,
           role: `TRỌNG TÂM 0${idx + 1}`,
@@ -123,6 +137,18 @@ export function TarotResultView({
             </h1>
             <p className="text-stone text-sm leading-relaxed">
               Phân tích cấu trúc trải bài, tương quan giữa các lá và diễn biến hành động thực tiễn.
+            </p>
+          </div>
+        )}
+
+        {/* Thông Điệp Chính (Main Answer / Message, Spec 49) */}
+        {result.primaryResult && (
+          <div className="border border-borderDark bg-surface p-5 sm:p-6 space-y-1.5 border-l-2 border-l-accentGold">
+            <span className="font-mono text-[10px] text-accentGold uppercase tracking-wider block font-medium">
+              THÔNG ĐIỆP CHÍNH (CORE MESSAGE)
+            </span>
+            <p className="font-serif text-base sm:text-lg text-parchment leading-relaxed font-normal">
+              {result.primaryResult}
             </p>
           </div>
         )}
@@ -233,6 +259,34 @@ export function TarotResultView({
         </section>
       )}
 
+      {/* 6.5. Điều Đáng Suy Ngẫm (Reflection Questions, Spec 53) */}
+      <section aria-label="Điều Đáng Suy Ngẫm" className="border border-borderDark bg-surface p-6 space-y-4">
+        <div className="flex items-center gap-2 text-xs font-mono text-accentGold tracking-widest uppercase border-b border-borderDark/60 pb-3">
+          <HelpCircle className="w-4 h-4 text-accentGold" />
+          <span>ĐIỀU ĐÁNG SUY NGẪM (REFLECTION)</span>
+        </div>
+        <div className="space-y-3">
+          {(result.nextQuestions && result.nextQuestions.length > 0) ? (
+            result.nextQuestions.map((q, idx) => {
+              const qText = typeof q === 'string' ? q : (q as any)?.question || '';
+              return (
+                <div key={idx} className="border-l-2 border-borderLight pl-4 py-1">
+                  <p className="font-serif text-base text-parchment/95 italic">
+                    &ldquo;{qText}&rdquo;
+                  </p>
+                </div>
+              );
+            })
+          ) : (
+            <div className="border-l-2 border-borderLight pl-4 py-1">
+              <p className="font-serif text-base text-parchment/95 italic">
+                &ldquo;Bạn đang tiếp tục vì thực sự còn tiềm năng phát triển, hay chỉ vì quán tính của những nỗ lực đã đầu tư trước đây?&rdquo;
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* 7. Progressive Disclosure */}
       <section aria-label="Minh Bạch Suy Luận" className="space-y-6">
         <WhyDrawer
@@ -241,6 +295,16 @@ export function TarotResultView({
           description="Truy vết logic tất định 100% qua các lá bài thực tế và thư tịch kinh điển Rider-Waite 1911."
         />
       </section>
+
+      {/* 8. Result Footer */}
+      <ResultFooter
+        topic="Khảo Cứu Bói Bài Tarot 78 Lá"
+        exploreLinks={[
+          { label: 'Khảo Cứu Tử Vi Đẩu Số 12 Cung', href: '/tu-vi' },
+          { label: 'Khảo Cứu Chiêm Tinh Bản Đồ Sao', href: '/astrology' },
+          { label: 'Khảo Cứu Thần Số Học Pythagoras', href: '/numerology' },
+        ]}
+      />
     </article>
   );
 }

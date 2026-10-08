@@ -5,3 +5,7 @@ export * from './ScenarioBlock';
 export * from './TensionBlock';
 export * from './NextQuestionBlock';
 export * from './WhyDrawer';
+export * from './ResultFooter';
+export * from './ContextualLoading';
+export * from './ConfirmationStep';
+

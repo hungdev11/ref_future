@@ -6,6 +6,7 @@ import { PatternStory } from '../primitives/PatternStory';
 import { InsightBlock } from '../primitives/InsightBlock';
 import { ScenarioBlock } from '../primitives/ScenarioBlock';
 import { WhyDrawer } from '../primitives/WhyDrawer';
+import { ResultFooter } from '../primitives/ResultFooter';
 import { ChevronDown, ChevronUp, Shield, CheckCircle2, AlertTriangle, Layers } from 'lucide-react';
 
 export interface TuViResultViewProps {
@@ -97,6 +98,18 @@ function formatTuViKey(key: string): string {
   return key.replace(/_/g, ' ');
 }
 
+const DATA_COMPLETENESS_LABELS: Record<string, string> = {
+  FULL: 'Đầy đủ',
+  PARTIAL: 'Một phần',
+  MINIMAL: 'Tối thiểu',
+};
+
+const CAN_CHI_BRANCH_VN: Record<string, string> = {
+  TY_RAT: 'Tý', SUU_OX: 'Sửu', DAN_TIGER: 'Dần', MAO_CAT: 'Mão',
+  THIN_DRAGON: 'Thìn', TY_SNAKE: 'Tỵ', NGO_HORSE: 'Ngọ', MUI_GOAT: 'Mùi',
+  THAN_MONKEY: 'Thân', DAU_ROOSTER: 'Dậu', TUAT_DOG: 'Tuất', HOI_PIG: 'Hợi',
+};
+
 export function TuViResultView({
   result,
   className = '',
@@ -106,12 +119,6 @@ export function TuViResultView({
   if (!result) return null;
 
   const school = result.metadata?.school || 'Tử Vi Đẩu Số Toàn Thư';
-
-  const CAN_CHI_BRANCH_VN: Record<string, string> = {
-    TY_RAT: 'Tý', SUU_OX: 'Sửu', DAN_TIGER: 'Dần', MAO_CAT: 'Mão',
-    THIN_DRAGON: 'Thìn', TY_SNAKE: 'Tỵ', NGO_HORSE: 'Ngọ', MUI_GOAT: 'Mùi',
-    THAN_MONKEY: 'Thân', DAU_ROOSTER: 'Dậu', TUAT_DOG: 'Tuất', HOI_PIG: 'Hợi',
-  };
 
   // Extract Mệnh / Thân info from facts
   const menhBranchFact = (result.facts || []).find(
@@ -137,6 +144,32 @@ export function TuViResultView({
   const menhStarVn = menhStarFact ? formatTuViStar(menhStarFact.value) : 'Phá Quân';
   const thanRoleVn = thanPalaceRoleFact ? formatTuViPalace(thanPalaceRoleFact.value) : 'Thân Cư Phúc Đức';
 
+  // Extract Tam Phương stars dynamically from facts
+  const getStarFromFacts = (key: string): string => {
+    const fact = (result.facts || []).find((f) => f.key === key);
+    return fact ? formatTuViStar(fact.value) : '';
+  };
+  const taiBachStarVn = getStarFromFacts('taiBachStar') || 'Chính tinh tọa thủ';
+  const quanLocStarVn = getStarFromFacts('quanLocStar') || 'Chính tinh tọa thủ';
+  const thienDiStarVn = getStarFromFacts('thienDiStar') || 'Chính tinh tọa thủ';
+
+  // Data completeness badge
+  const completenessKey = String(result.dataCompleteness || '').toUpperCase();
+  const completenessLabel = DATA_COMPLETENESS_LABELS[completenessKey] || completenessKey;
+
+  // Curated palaces: Mệnh, Quan, Tài, Di, Phúc
+  const CURATED_PALACES = [
+    { key: 'menhStar', label: 'Cung Mệnh', desc: 'Bản thể & Cốt cách' },
+    { key: 'quanLocStar', label: 'Cung Quan Lộc', desc: 'Sự nghiệp & Công danh' },
+    { key: 'taiBachStar', label: 'Cung Tài Bạch', desc: 'Dòng tiền & Sinh kế' },
+    { key: 'thienDiStar', label: 'Cung Thiên Di', desc: 'Đối ngoại & Xã hội' },
+    { key: 'phucDucStar', label: 'Cung Phúc Đức', desc: 'Tâm tính & Phúc phần' },
+  ];
+
+  // Timeline: Đại hạn / Tiểu hạn from facts
+  const daiHanFact = (result.facts || []).find((f) => f.key === 'daiHan' || f.key.includes('daiHan'));
+  const tieuHanFact = (result.facts || []).find((f) => f.key === 'tieuHan' || f.key.includes('tieuHan'));
+
   const interpretations = result.deepInterpretations || result.interpretations || [];
   const guidanceItems = result.guidance || [];
   const continueItems = guidanceItems.flatMap((g) => g.whatToContinue || []);
@@ -152,6 +185,11 @@ export function TuViResultView({
           <span>Lá Số Tử Vi Đẩu Số</span>
           <span>/</span>
           <span className="text-stone">{school}</span>
+          {completenessLabel && (
+            <span className={`ml-auto px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider border ${completenessKey === 'FULL' ? 'border-accentGold/50 text-accentGold' : 'border-stone/50 text-stone'}`}>
+              Độ đầy đủ: {completenessLabel}
+            </span>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -226,18 +264,18 @@ export function TuViResultView({
             <span className="font-mono text-[10px] text-stone block">Bản thể &amp; Cốt cách</span>
           </div>
           <div className="border border-borderDark bg-background/60 p-4 space-y-1 text-center">
-            <span className="font-mono text-[10px] text-stone uppercase tracking-wider block">CUNG TÀI BẠCH (Cung Tuất)</span>
-            <span className="font-serif text-base text-parchment font-medium block">Tham Lang</span>
+            <span className="font-mono text-[10px] text-stone uppercase tracking-wider block">CUNG TÀI BẠCH</span>
+            <span className="font-serif text-base text-parchment font-medium block">{taiBachStarVn}</span>
             <span className="font-mono text-[10px] text-stone block">Dòng tiền &amp; Sinh kế</span>
           </div>
           <div className="border border-borderDark bg-background/60 p-4 space-y-1 text-center">
-            <span className="font-mono text-[10px] text-stone uppercase tracking-wider block">CUNG QUAN LỘC (Cung Dần)</span>
-            <span className="font-serif text-base text-parchment font-medium block">Thất Sát</span>
+            <span className="font-mono text-[10px] text-stone uppercase tracking-wider block">CUNG QUAN LỘC</span>
+            <span className="font-serif text-base text-parchment font-medium block">{quanLocStarVn}</span>
             <span className="font-mono text-[10px] text-stone block">Sự nghiệp &amp; Công danh</span>
           </div>
           <div className="border border-borderDark bg-background/60 p-4 space-y-1 text-center">
-            <span className="font-mono text-[10px] text-stone uppercase tracking-wider block">CUNG THIÊN DI (Cung Tý)</span>
-            <span className="font-serif text-base text-parchment font-medium block">Liêm Trinh, Thiên Tướng</span>
+            <span className="font-mono text-[10px] text-stone uppercase tracking-wider block">CUNG THIÊN DI</span>
+            <span className="font-serif text-base text-parchment font-medium block">{thienDiStarVn}</span>
             <span className="font-mono text-[10px] text-stone block">Môi trường đối ngoại</span>
           </div>
         </div>
@@ -266,6 +304,54 @@ export function TuViResultView({
                 dimension={interp.dimension}
               />
             ))}
+          </div>
+        </section>
+      )}
+
+      {/* 4.5. Các Cung Đáng Chú Ý (Curated Palaces) */}
+      <section aria-label="Các Cung Đáng Chú Ý" className="border border-borderDark bg-surface p-6 space-y-4">
+        <div className="flex items-center gap-2 text-xs font-mono text-stone tracking-widest uppercase border-b border-borderDark/60 pb-3">
+          <span className="text-accentGold">05</span>
+          <span className="text-borderLight">/</span>
+          <span>CÁC CUNG ĐÁNG CHÚ Ý</span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          {CURATED_PALACES.map((palace) => {
+            const starVn = getStarFromFacts(palace.key);
+            return (
+              <div key={palace.key} className="border border-borderDark bg-background/50 p-4 space-y-1">
+                <span className="font-mono text-[10px] text-accentGold uppercase tracking-wider block">{palace.label}</span>
+                <span className="font-serif text-sm text-parchment font-medium block">
+                  {starVn || 'Chính tinh tọa thủ'}
+                </span>
+                <span className="font-mono text-[10px] text-stone block">{palace.desc}</span>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* 4.7. Timeline Vận Trình (if available) */}
+      {(daiHanFact || tieuHanFact) && (
+        <section aria-label="Timeline Vận Trình" className="border border-borderDark bg-surface p-6 space-y-4">
+          <div className="flex items-center gap-2 text-xs font-mono text-stone tracking-widest uppercase border-b border-borderDark/60 pb-3">
+            <span className="text-accentGold">05b</span>
+            <span className="text-borderLight">/</span>
+            <span>TIMELINE VẬN TRÌNH</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {daiHanFact && (
+              <div className="border border-borderDark bg-background/50 p-4 space-y-1">
+                <span className="font-mono text-[10px] text-accentGold uppercase tracking-wider block">ĐẠI HẠN</span>
+                <span className="font-serif text-sm text-parchment font-medium block">{String(daiHanFact.value)}</span>
+              </div>
+            )}
+            {tieuHanFact && (
+              <div className="border border-borderDark bg-background/50 p-4 space-y-1">
+                <span className="font-mono text-[10px] text-stone uppercase tracking-wider block">TIỂU HẠN</span>
+                <span className="font-serif text-sm text-parchment font-medium block">{String(tieuHanFact.value)}</span>
+              </div>
+            )}
           </div>
         </section>
       )}
@@ -389,6 +475,16 @@ export function TuViResultView({
           description="Truy vết logic tất định 100% qua quy tắc an sao Tử Vi Đẩu Số Toàn Thư và các chứng cứ thư tịch cổ."
         />
       </section>
+
+      {/* 9. Result Footer */}
+      <ResultFooter
+        topic="Lá Số Tử Vi Đẩu Số"
+        exploreLinks={[
+          { label: 'Khảo Cứu Chiêm Tinh Bản Đồ Sao', href: '/astrology' },
+          { label: 'Khảo Cứu Thần Số Học Pythagoras', href: '/numerology' },
+          { label: 'Khảo Cứu Bói Bài Tarot 78 Lá', href: '/tarot' },
+        ]}
+      />
     </article>
   );
 }

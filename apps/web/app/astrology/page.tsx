@@ -4,13 +4,16 @@ import React, { useState } from 'react';
 import {
   Compass,
   AlertTriangle,
-  RefreshCw,
-  HelpCircle,
+  ArrowRight,
+  Sun,
+  Moon,
   Info,
 } from 'lucide-react';
-import type { MysticosResult } from '@mystic/core';
+import type { MysticosResult, DeepMysticosResult } from '@mystic/core';
 import { DateInput } from '@/components/DateInput';
 import { MysticosResultViewer } from '@/components/MysticosResultViewer';
+import { ConfirmationStep, ContextualLoading } from '@/components/primitives';
+import { saveHistoryItem } from '@/lib/history-storage';
 
 const VIETNAM_CITIES: { name: string; lat: number; lng: number }[] = [
   { name: 'Hà Nội', lat: 21.0285, lng: 105.8542 },
@@ -21,12 +24,14 @@ const VIETNAM_CITIES: { name: string; lat: number; lng: number }[] = [
   { name: 'Nha Trang', lat: 12.2388, lng: 109.1967 },
   { name: 'Huế', lat: 16.4637, lng: 107.5909 },
   { name: 'Đà Lạt', lat: 11.9404, lng: 108.4583 },
-  { name: 'Khác (Nhập tọa độ thủ công)', lat: 0, lng: 0 },
+  { name: 'Khác', lat: 0, lng: 0 },
 ];
 
 export default function AstrologyPage() {
+  const [step, setStep] = useState<'INTRO' | 'FORM' | 'CONFIRM' | 'LOADING' | 'RESULT'>('INTRO');
+  const [fullName, setFullName] = useState('Trần Hoàng Nam');
   const [birthDate, setBirthDate] = useState('1990-07-25');
-  const [birthTime, setBirthTime] = useState('08:30:00');
+  const [birthTime, setBirthTime] = useState('08:30');
   const [isTimeUnknown, setIsTimeUnknown] = useState(false);
   const [selectedCity, setSelectedCity] = useState('Hà Nội');
   const [latitude, setLatitude] = useState(21.0285);
@@ -34,9 +39,8 @@ export default function AstrologyPage() {
   const [timezoneOffset, setTimezoneOffset] = useState(420);
   const [houseSystem, setHouseSystem] = useState('PLACIDUS');
 
-  const [loading, setLoading] = useState(false);
+  const [loadingStepIdx, setLoadingStepIdx] = useState(0);
   const [result, setResult] = useState<MysticosResult | null>(null);
-  const [isDegraded, setIsDegraded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleCityChange = (cityName: string) => {
@@ -48,10 +52,14 @@ export default function AstrologyPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  const handleCalculate = async () => {
+    setStep('LOADING');
     setError(null);
+    setLoadingStepIdx(0);
+
+    const timer1 = setTimeout(() => setLoadingStepIdx(1), 400);
+    const timer2 = setTimeout(() => setLoadingStepIdx(2), 800);
+    const timer3 = setTimeout(() => setLoadingStepIdx(3), 1200);
 
     try {
       const payload: any = {
@@ -61,7 +69,7 @@ export default function AstrologyPage() {
       };
 
       if (!isTimeUnknown) {
-        payload.birthTime = birthTime;
+        payload.birthTime = `${birthTime}:00`;
         payload.latitude = Number(latitude);
         payload.longitude = Number(longitude);
         payload.houseSystem = houseSystem;
@@ -78,44 +86,117 @@ export default function AstrologyPage() {
 
       const canonicalResult: MysticosResult = data.data || data.mysticosResult;
       setResult(canonicalResult);
-      setIsDegraded(Boolean(data.isDegraded || isTimeUnknown));
+
+      // Save to local history
+      saveHistoryItem({
+        id: `astrology_${Date.now()}`,
+        timestamp: Date.now(),
+        domain: 'astrology',
+        title: `Bản Đồ Sao: ${fullName}`,
+        mainTheme: canonicalResult.primaryResult || 'Bản đồ sao cá nhân Natal Chart',
+        resultPayload: canonicalResult as DeepMysticosResult,
+      });
+
+      setStep('RESULT');
     } catch (err: any) {
       setError(err.message);
+      setStep('CONFIRM');
     } finally {
-      setLoading(false);
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
     }
   };
 
   return (
-    <div className="space-y-8 py-2">
-      {/* Editorial Header */}
-      <div className="border-b border-borderDark pb-6 space-y-2">
-        <div className="flex items-center gap-2 text-stone text-xs font-mono tracking-widest uppercase">
-          <span className="text-accentGold">01</span>
-          <span>/</span>
-          <span>Chiêm Tinh Học Tây Phương Cổ Điển</span>
-        </div>
-        <h1 className="text-2xl sm:text-4xl font-serif text-parchment font-normal tracking-tight">
-          Bản Đồ Sao Cá Nhân (Natal Chart)
-        </h1>
-        <p className="text-xs sm:text-sm text-stone max-w-2xl leading-relaxed">
-          Tính toán tọa độ hành tinh và cung nhà dựa trên Swiss Ephemeris. Luận giải tất định
-          theo chuẩn chiêm tinh cổ điển, tập trung vào bản chất hành vi và phát triển cá nhân.
-        </p>
-      </div>
+    <div className="space-y-8 py-4">
+      {/* 1. INTRO LANDING (Spec 35) */}
+      {step === 'INTRO' && (
+        <div className="space-y-12 max-w-4xl mx-auto py-2">
+          <div className="border-b border-borderDark pb-8 space-y-4">
+            <div className="flex items-center gap-2 text-stone text-xs font-mono tracking-widest uppercase">
+              <span className="text-accentGold">03</span>
+              <span>/</span>
+              <span>Chiêm Tinh Học Tây Phương</span>
+            </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Step 1: Input Form */}
-        <div className="lg:col-span-4 p-5 bg-surface border border-borderDark space-y-5">
-          <div className="text-xs font-mono text-accentGold uppercase tracking-wider border-b border-borderDark pb-2 flex items-center gap-2">
-            <Compass className="w-4 h-4" />
-            <span>Thông Số Ngày Giờ & Tọa Độ</span>
+            <h1 className="text-3xl sm:text-5xl font-serif text-parchment font-normal tracking-tight leading-tight">
+              Bản Đồ Sao Cá Nhân
+            </h1>
+
+            <p className="text-sm sm:text-base text-stone max-w-2xl leading-relaxed">
+              Khám phá cấu trúc bản đồ sao và những tương tác nổi bật trong lá số của bạn.
+              Định vị tọa độ 10 thiên thể và 12 cung nhà theo hệ tọa độ Hoàng Đạo chuẩn mực thiên văn học.
+            </p>
+
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setStep('FORM')}
+                className="px-6 py-3 bg-accentGold text-background text-xs font-mono font-bold tracking-widest uppercase hover:bg-parchment transition-colors border border-accentGold inline-flex items-center gap-2"
+              >
+                <span>Lập bản đồ sao</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="p-6 border border-borderDark bg-surface space-y-2">
+              <span className="font-mono text-accentGold text-xs uppercase tracking-wider block">01. Bộ Ba Nhân Cách</span>
+              <p className="text-xs text-stone leading-relaxed">
+                Mặt Trời (Ý chí &amp; Bản thể), Mặt Trăng (Nhu cầu cảm xúc) và Cung Mọc (Phong thái cửa ngõ).
+              </p>
+            </div>
+            <div className="p-6 border border-borderDark bg-surface space-y-2">
+              <span className="font-mono text-accentGold text-xs uppercase tracking-wider block">02. Góc Hợp Trọng Yếu</span>
+              <p className="text-xs text-stone leading-relaxed">
+                Các góc chiếu năng lượng mạnh nhất: Tam Hợp, Đối Lập, Vuông Góc và Trùng Tụ.
+              </p>
+            </div>
+            <div className="p-6 border border-borderDark bg-surface space-y-2">
+              <span className="font-mono text-accentGold text-xs uppercase tracking-wider block">03. 12 Cung Nhà</span>
+              <p className="text-xs text-stone leading-relaxed">
+                Vùng đời sống được kích hoạt nhiều nhất (tài chính, sự nghiệp, quan hệ hay nội tâm).
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 2. FORM INPUT */}
+      {step === 'FORM' && (
+        <div className="max-w-xl mx-auto space-y-6">
+          <div className="border-b border-borderDark pb-4 space-y-1">
+            <div className="flex items-center gap-2 text-xs font-mono text-accentGold uppercase tracking-wider">
+              <span>BƯỚC 1 / 2: THÔNG TIN SINH THẦN</span>
+            </div>
+            <h2 className="text-2xl font-serif text-parchment font-medium">Nhập Dữ Liệu Bản Đồ Sao</h2>
+          </div>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              setStep('CONFIRM');
+            }}
+            className="space-y-4 bg-surface border border-borderDark p-6"
+          >
             <div>
               <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
-                Ngày Sinh Dương Lịch <span className="text-stone/60 normal-case">(Ngày / Tháng / Năm)</span>
+                Họ và tên
+              </label>
+              <input
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                required
+                className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
+                Ngày sinh dương lịch
               </label>
               <DateInput
                 value={birthDate}
@@ -124,174 +205,130 @@ export default function AstrologyPage() {
               />
             </div>
 
-            <div className="space-y-2 pt-1">
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="unknownTime"
-                  checked={isTimeUnknown}
-                  onChange={(e) => setIsTimeUnknown(e.target.checked)}
-                  className="rounded-sm border-borderDark text-accentGold focus:ring-accentGold"
-                />
-                <label htmlFor="unknownTime" className="text-xs font-mono text-stone cursor-pointer select-none">
-                  Chưa rõ giờ sinh chính xác (xem tổng quan)
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-mono text-stone uppercase tracking-wider">
+                  Giờ sinh
+                </label>
+                <label className="flex items-center gap-1.5 text-xs font-mono text-stone cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={isTimeUnknown}
+                    onChange={(e) => setIsTimeUnknown(e.target.checked)}
+                    className="accent-accentGold"
+                  />
+                  <span>Không rõ giờ sinh</span>
                 </label>
               </div>
 
-              {isTimeUnknown && (
-                <div className="p-3 bg-background border border-accentGold/40 text-stone text-[11px] space-y-1">
-                  <div className="font-mono text-accentGold text-[10px] uppercase tracking-wider flex items-center gap-1.5">
-                    <Info className="w-3 h-3" />
-                    <span>Chế độ bảo toàn (Degraded Mode)</span>
-                  </div>
-                  <p className="leading-relaxed">
-                    Hệ thống sẽ tính tọa độ các hành tinh theo ngày sinh. Cung Mọc (Ascendant) và 12 cung địa bàn sẽ được ẩn để bảo đảm tính tất định, tránh phỏng đoán sai lệch.
-                  </p>
+              {!isTimeUnknown ? (
+                <input
+                  type="time"
+                  value={birthTime}
+                  onChange={(e) => setBirthTime(e.target.value)}
+                  required
+                  className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
+                />
+              ) : (
+                <div className="p-3 bg-background border border-accentGold/40 text-stone text-xs font-mono leading-relaxed">
+                  <span className="text-accentGold font-bold block mb-1">LƯU Ý GIỚI HẠN (SPEC 35):</span>
+                  Bạn vẫn có thể xem được vị trí Mặt Trời, Mặt Trăng và các hành tinh trên Hoàng Đạo, nhưng Cung Mọc (Ascendant) và 12 Cung Nhà sẽ không thể xác định.
                 </div>
               )}
             </div>
 
-            {!isTimeUnknown && (
-              <>
-                <div>
-                  <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
-                    Giờ Sinh
-                  </label>
-                  <input
-                    type="time"
-                    step="1"
-                    value={birthTime}
-                    onChange={(e) => setBirthTime(e.target.value)}
-                    required={!isTimeUnknown}
-                    className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
-                  />
-                </div>
+            <div>
+              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
+                Nơi sinh (Tỉnh / Thành phố)
+              </label>
+              <select
+                value={selectedCity}
+                onChange={(e) => handleCityChange(e.target.value)}
+                className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
+              >
+                {VIETNAM_CITIES.map((c) => (
+                  <option key={c.name} value={c.name}>{c.name}</option>
+                ))}
+              </select>
+            </div>
 
-                <div>
-                  <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
-                    Nơi Sinh (Thành phố)
-                  </label>
-                  <select
-                    value={selectedCity}
-                    onChange={(e) => handleCityChange(e.target.value)}
-                    className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
-                  >
-                    {VIETNAM_CITIES.map((city) => (
-                      <option key={city.name} value={city.name}>
-                        {city.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+            <div className="flex items-center justify-between pt-2">
+              <button
+                type="button"
+                onClick={() => setStep('INTRO')}
+                className="px-4 py-2 border border-borderDark text-stone text-xs font-mono uppercase tracking-wider hover:text-parchment"
+              >
+                ← Quay lại
+              </button>
 
-                {selectedCity === 'Khác (Nhập tọa độ thủ công)' && (
-                  <div className="grid grid-cols-2 gap-3 p-3 bg-background border border-borderDark">
-                    <div>
-                      <label className="block text-[10px] font-mono text-stone mb-1 uppercase">Vĩ Độ</label>
-                      <input
-                        type="number"
-                        step="any"
-                        value={latitude}
-                        onChange={(e) => setLatitude(Number(e.target.value))}
-                        className="w-full px-2 py-1 bg-surface border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-mono text-stone mb-1 uppercase">Kinh Độ</label>
-                      <input
-                        type="number"
-                        step="any"
-                        value={longitude}
-                        onChange={(e) => setLongitude(Number(e.target.value))}
-                        className="w-full px-2 py-1 bg-surface border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                <div>
-                  <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
-                    Hệ Thống Cung Nhà (House System)
-                  </label>
-                  <select
-                    value={houseSystem}
-                    onChange={(e) => setHouseSystem(e.target.value)}
-                    className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
-                  >
-                    <option value="PLACIDUS">Placidus (Tiêu chuẩn)</option>
-                    <option value="WHOLE_SIGN">Whole Sign (Mỗi cung một nhà)</option>
-                    <option value="KOCH">Koch</option>
-                    <option value="EQUAL">Equal House</option>
-                  </select>
-                </div>
-              </>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-2.5 bg-accentGold text-background text-xs font-mono font-bold tracking-widest uppercase hover:bg-parchment transition-colors border border-accentGold disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
-            >
-              {loading ? (
-                <>
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                  Đang tính toán thiên văn...
-                </>
-              ) : (
-                'Thiết Lập Bản Đồ Sao →'
-              )}
-            </button>
+              <button
+                type="submit"
+                className="px-5 py-2.5 bg-accentGold text-background font-mono text-xs font-bold uppercase tracking-widest border border-accentGold hover:bg-parchment transition-colors"
+              >
+                Xác Nhận Dữ Liệu →
+              </button>
+            </div>
           </form>
+        </div>
+      )}
+
+      {/* 3. CONFIRMATION STEP */}
+      {step === 'CONFIRM' && (
+        <div className="space-y-4">
+          <ConfirmationStep
+            title="Xác Nhận Dữ Liệu Bản Đồ Sao"
+            subtitle="Kiểm tra lại thông tin sinh thần để hệ thống tính toán tọa độ hành tinh chính xác."
+            items={[
+              { label: 'Họ và tên', value: fullName },
+              { label: 'Ngày sinh dương lịch', value: birthDate },
+              { label: 'Giờ sinh', value: isTimeUnknown ? 'Không rõ giờ sinh (Tính một phần)' : birthTime },
+              { label: 'Nơi sinh', value: selectedCity },
+              { label: 'Độ chính xác dữ liệu', value: isTimeUnknown ? 'Một phần (Không có Cung Mọc/Nhà)' : 'Đầy đủ (Định vị 12 Cung Nhà)' },
+            ]}
+            onConfirm={handleCalculate}
+            onEdit={() => setStep('FORM')}
+            confirmLabel="Lập bản đồ sao →"
+          />
 
           {error && (
-            <div className="p-3 bg-background border border-cinnabar text-cinnabar text-xs flex items-start gap-2">
+            <div className="max-w-xl mx-auto p-3.5 bg-background border border-cinnabar text-cinnabar text-xs flex items-start gap-2">
               <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
+        </div>
+      )}
 
-          {/* Guide Note */}
-          <div className="p-3.5 bg-background border border-borderDark space-y-2 text-xs">
-            <div className="font-mono text-accentGold text-[11px] uppercase tracking-wider flex items-center gap-1.5">
-              <HelpCircle className="w-3.5 h-3.5" />
-              <span>Chuẩn Xác & Minh Bạch</span>
-            </div>
-            <p className="text-stone text-[11px] leading-relaxed">
-              Mọi vị trí thiên thể đều được tính toán theo tọa độ thiên văn thực tế. Không suy diễn mập mờ, không gán ghép định kiến.
-            </p>
+      {/* 4. CONTEXTUAL LOADING */}
+      {step === 'LOADING' && (
+        <ContextualLoading
+          title="Đang Tính Toán Tọa Độ Bản Đồ Sao"
+          steps={[
+            'Đang tính toán tọa độ Mặt Trời, Mặt Trăng và các hành tinh...',
+            'Đang xác định các góc hợp tương tác (Aspects)...',
+            isTimeUnknown ? 'Bỏ qua Cung Mọc do thiếu giờ sinh...' : 'Đang thiết lập 12 cung nhà Placidus...',
+            'Đang tổng hợp cấu trúc năng lượng nổi bật...',
+          ]}
+          currentStepIndex={loadingStepIdx}
+        />
+      )}
+
+      {/* 5. RESULT VIEW */}
+      {step === 'RESULT' && result && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between border-b border-borderDark pb-3">
+            <button
+              type="button"
+              onClick={() => setStep('INTRO')}
+              className="text-xs font-mono text-stone hover:text-accentGold transition-colors flex items-center gap-1.5"
+            >
+              <span>← Lập bản đồ sao khác</span>
+            </button>
           </div>
+
+          <MysticosResultViewer result={result} />
         </div>
-
-        {/* Step 2: Editorial Result View */}
-        <div className="lg:col-span-8 space-y-6">
-          {!result && !loading && (
-            <div className="p-16 border border-borderDark bg-surface text-center space-y-3">
-              <div className="w-10 h-10 border border-borderLight mx-auto flex items-center justify-center text-stone font-serif text-lg">
-                ✦
-              </div>
-              <h3 className="text-sm font-serif text-parchment">Bản Đồ Sao Đang Chờ Khởi Tạo</h3>
-              <p className="text-stone text-xs max-w-sm mx-auto leading-relaxed">
-                Nhập thông tin ngày sinh và nơi sinh bên trái để khởi tạo bản đồ sao cá nhân chi tiết.
-              </p>
-            </div>
-          )}
-
-          {isDegraded && result && (
-            <div className="p-4 bg-surface border border-accentGold/60 text-stone text-xs space-y-1">
-              <div className="flex items-center gap-2 font-mono text-accentGold text-[11px] uppercase tracking-wider">
-                <Info className="w-3.5 h-3.5" />
-                <span>Chế độ bảo toàn khi thiếu giờ sinh (Degraded Mode)</span>
-              </div>
-              <p className="text-stone text-[11px] leading-relaxed">
-                Hệ thống chỉ phân tích vị trí các hành tinh theo ngày sinh. Cung Mọc và các cung nhà được ẩn để đảm bảo tính tất định trung thực.
-              </p>
-            </div>
-          )}
-
-          {/* Editorial Result Presentation */}
-          {result && <MysticosResultViewer result={result} />}
-        </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -10,10 +10,11 @@ export function Navbar() {
 
   const navLinks = [
     { href: '/numerology', label: 'Thần Số Học', code: '01' },
-    { href: '/tu-vi', label: 'Tử Vi Đẩu Số', code: '02' },
+    { href: '/tu-vi', label: 'Tử Vi', code: '02' },
     { href: '/astrology', label: 'Chiêm Tinh', code: '03' },
-    { href: '/tarot', label: 'Bói Bài Tarot', code: '04' },
-    { href: '/compatibility', label: 'Độ Tương Hợp', code: '05' },
+    { href: '/tarot', label: 'Tarot', code: '04' },
+    { href: '/compatibility', label: 'Tương Hợp', code: '05' },
+    { href: '/history', label: 'Lịch Sử', code: '06' },
   ];
 
   return (

@@ -7,7 +7,8 @@ import { TensionBlock } from '../primitives/TensionBlock';
 import { InsightBlock } from '../primitives/InsightBlock';
 import { ScenarioBlock } from '../primitives/ScenarioBlock';
 import { WhyDrawer } from '../primitives/WhyDrawer';
-import { Sparkles, Calendar, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { ResultFooter } from '../primitives/ResultFooter';
+import { Sparkles, Calendar, CheckCircle2, AlertTriangle, Layers } from 'lucide-react';
 
 export interface NumerologyResultViewProps {
   result: DeepMysticosResult;
@@ -112,34 +113,51 @@ export function NumerologyResultView({
 
         <div className="space-y-2">
           <h1 className="text-2xl sm:text-3xl font-serif text-parchment font-medium tracking-tight">
-            Chân Dung Năng Lượng &amp; Các Con Số Chủ Đạo
+            Hồ Sơ Thần Số Học Pythagoras
           </h1>
           <p className="text-stone text-sm leading-relaxed">
-            Khảo cứu cấu trúc rung động số học Pythagoras: sự giao thoa giữa bài học đường đời, động lực nội tâm và chu kỳ thời gian.
+            Khảo cứu cấu trúc rung động số học: sự giao thoa giữa bài học đường đời, động lực nội tâm và chu kỳ thời gian.
           </p>
         </div>
 
-        {/* Core Numbers Badges Grid */}
+        {/* Điểm nổi bật nhất (Primary reading / Main theme) */}
+        {result.primaryResult && (
+          <div className="border border-borderDark bg-surface p-5 space-y-1.5 border-l-2 border-l-accentGold">
+            <span className="font-mono text-[10px] text-accentGold uppercase tracking-wider block font-medium">
+              ĐIỂM NỔI BẬT NHẤT (PRIMARY PROFILE READING)
+            </span>
+            <p className="font-serif text-base sm:text-lg text-parchment font-normal leading-relaxed">
+              {result.primaryResult}
+            </p>
+          </div>
+        )}
+
+        {/* Core Numbers Badges Grid (Evidence Layer) */}
         {coreNumberFacts.length > 0 && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 pt-2">
-            {coreNumberFacts.map((fact, idx) => {
-              const labelInfo = getNumberLabel(fact.key);
-              return (
-                <div
-                  key={idx}
-                  className="border border-borderDark bg-surface p-4 text-center space-y-1.5 rounded-none hover:border-accentGold/40 transition-colors flex flex-col justify-between"
-                >
-                  <div className="space-y-0.5 min-h-[34px] flex flex-col justify-center">
-                    <span className="font-mono text-[10px] text-accentGold tracking-wider block font-medium leading-tight">
-                      {labelInfo.vn} ({labelInfo.en})
+          <div className="space-y-2 pt-1">
+            <span className="font-mono text-[10px] text-stone uppercase tracking-wider block">
+              CƠ SỞ CHỈ SỐ CỐT LÕI (EVIDENCE LAYER)
+            </span>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+              {coreNumberFacts.map((fact, idx) => {
+                const labelInfo = getNumberLabel(fact.key);
+                return (
+                  <div
+                    key={idx}
+                    className="border border-borderDark bg-surface p-4 text-center space-y-1.5 rounded-none hover:border-accentGold/40 transition-colors flex flex-col justify-between"
+                  >
+                    <div className="space-y-0.5 min-h-[34px] flex flex-col justify-center">
+                      <span className="font-mono text-[10px] text-accentGold tracking-wider block font-medium leading-tight">
+                        {labelInfo.vn} ({labelInfo.en})
+                      </span>
+                    </div>
+                    <span className="font-serif text-2xl sm:text-3xl text-parchment font-normal block pt-1">
+                      {String(fact.value)}
                     </span>
                   </div>
-                  <span className="font-serif text-2xl sm:text-3xl text-parchment font-normal block pt-1">
-                    {String(fact.value)}
-                  </span>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         )}
       </header>
@@ -280,6 +298,16 @@ export function NumerologyResultView({
           description="Truy vết logic tất định 100% qua công thức số học Pythagoras và thư tịch nguyên bản."
         />
       </section>
+
+      {/* 9. Result Footer */}
+      <ResultFooter
+        topic="Thần Số Học Pythagoras"
+        exploreLinks={[
+          { label: 'Khảo Cứu Tử Vi Đẩu Số 12 Cung', href: '/tu-vi' },
+          { label: 'Khảo Cứu Chiêm Tinh Bản Đồ Sao', href: '/astrology' },
+          { label: 'Khảo Cứu Bói Bài Tarot 78 Lá', href: '/tarot' },
+        ]}
+      />
     </article>
   );
 }

@@ -1,23 +1,78 @@
 'use client';
 
 import React, { useState } from 'react';
-import { AlertCircle, RefreshCw, HelpCircle, Sparkles } from 'lucide-react';
-import type { MysticosResult } from '@mystic/core';
-import { getTarotCardImageUrl } from '../../lib/tarot-images';
+import {
+  Sparkles,
+  AlertCircle,
+  ArrowRight,
+  Compass,
+  CheckCircle2,
+  HelpCircle,
+} from 'lucide-react';
+import type { MysticosResult, DeepMysticosResult } from '@mystic/core';
 import { MysticosResultViewer } from '@/components/MysticosResultViewer';
+import { ConfirmationStep, ContextualLoading } from '@/components/primitives';
+import { saveHistoryItem } from '@/lib/history-storage';
+
+const SPREADS = [
+  {
+    code: 'SPREAD_1_SINGLE',
+    title: '1 Lá — Điểm Tựa Hôm Nay',
+    desc: 'Dành cho câu hỏi nhanh, tìm kiếm một lời nhắc nhở hoặc góc nhìn cô đọng ngay lúc này.',
+    positions: ['Thông Điệp Trọng Tâm'],
+  },
+  {
+    code: 'SPREAD_3_PPF',
+    title: '3 Lá — Quá Khứ / Hiện Tại / Xu Hướng',
+    desc: 'Khảo sát dòng chảy thời gian: nguồn gốc vấn đề, điểm tựa hiện thời và xu hướng tự nhiên mở ra.',
+    positions: ['Quá Khứ (Cội Nguồn)', 'Hiện Tại (Thực Trạng)', 'Xu Hướng (Tương Lai)'],
+  },
+  {
+    code: 'SPREAD_3_SITUATION',
+    title: '3 Lá — Tình Huống / Thách Thức / Hướng Đi',
+    desc: 'Phân tích cụ thể một nút thắt: bạn đang đối mặt điều gì, trở ngại cốt lõi ở đâu và nên hành xử thế nào.',
+    positions: ['Bối Cảnh Tình Huống', 'Thách Thức Cốt Lõi', 'Hướng Ứng Xử'],
+  },
+  {
+    code: 'SPREAD_5_DEEP',
+    title: '5 Lá — Phân Tích Đa Chiều',
+    desc: 'Đào sâu 5 khía cạnh: gốc rễ, ảnh hưởng bên ngoài, nỗi sợ ngầm, năng lượng tiềm ẩn và kết quả.',
+    positions: ['Hiện Trạng', 'Trở Ngại', 'Tiềm Thức', 'Môi Trường Ngoài', 'Định Hướng'],
+  },
+  {
+    code: 'SPREAD_10_CELTIC',
+    title: '10 Lá — Celtic Cross Kinh Điển',
+    desc: 'Bản đồ toàn cảnh theo chuẩn cổ điển Arthur Edward Waite: phân tích 10 bình diện phức tạp.',
+    positions: ['Bản Thể', 'Thách Thức', 'Cội Rễ', 'Quá Khứ Gần', 'Mục Tiêu', 'Tương Lai Gần', 'Bản Thân', 'Môi Trường', 'Hy Vọng/Nỗi Sợ', 'Kết Quả'],
+  },
+];
+
+const SUGGESTED_QUESTIONS = [
+  'Tôi nên chú ý điều gì trong công việc và dự án hiện tại?',
+  'Điều gì đang cản trở tôi đưa ra quyết định dứt khoát?',
+  'Tôi cần nhìn lại và chuyển hóa điều gì trong mối quan hệ này?',
+  'Làm thế nào để tôi cân bằng giữa trách nhiệm và sự tự do cá nhân?',
+];
 
 export default function TarotPage() {
+  const [step, setStep] = useState<'INTRO' | 'QUESTION' | 'SPREAD' | 'CONFIRM' | 'LOADING' | 'RESULT'>('INTRO');
   const [question, setQuestion] = useState('');
-  const [spreadCode, setSpreadCode] = useState('SPREAD_3_PPF');
-  const [loading, setLoading] = useState(false);
+  const [selectedSpreadCode, setSelectedSpreadCode] = useState('SPREAD_3_PPF');
+
+  const [loadingStepIdx, setLoadingStepIdx] = useState(0);
   const [result, setResult] = useState<MysticosResult | null>(null);
-  const [rawDraws, setRawDraws] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const handleDraw = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  const selectedSpread = SPREADS.find((s) => s.code === selectedSpreadCode) || SPREADS[1];
+
+  const handleDraw = async () => {
+    setStep('LOADING');
     setError(null);
+    setLoadingStepIdx(0);
+
+    const timer1 = setTimeout(() => setLoadingStepIdx(1), 400);
+    const timer2 = setTimeout(() => setLoadingStepIdx(2), 800);
+    const timer3 = setTimeout(() => setLoadingStepIdx(3), 1200);
 
     const activeSeed = `seed_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
@@ -27,7 +82,7 @@ export default function TarotPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           question: question.trim() || undefined,
-          spreadCode,
+          spreadCode: selectedSpreadCode,
           seed: activeSeed,
         }),
       });
@@ -37,180 +92,289 @@ export default function TarotPage() {
 
       const canonicalResult: MysticosResult = data.data || data.mysticosResult;
       setResult(canonicalResult);
-      setRawDraws(data.facts?.draws || []);
+
+      // Save to local history
+      saveHistoryItem({
+        id: `tarot_${Date.now()}`,
+        timestamp: Date.now(),
+        domain: 'tarot',
+        title: question.trim() ? `Trải Bài: "${question.trim()}"` : `Trải Bài Tarot (${selectedSpread.title})`,
+        mainTheme: canonicalResult.primaryResult || 'Thông điệp trải bài Tarot',
+        resultPayload: canonicalResult as DeepMysticosResult,
+      });
+
+      setStep('RESULT');
     } catch (err: any) {
       setError(err.message);
+      setStep('CONFIRM');
     } finally {
-      setLoading(false);
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
     }
   };
 
   return (
-    <div className="space-y-8 py-2">
-      {/* Editorial Header */}
-      <div className="border-b border-borderDark pb-6 space-y-2">
-        <div className="flex items-center gap-2 text-stone text-xs font-mono tracking-widest uppercase">
-          <span className="text-accentGold">04</span>
-          <span>/</span>
-          <span>Bói Bài Tarot Cổ Điển</span>
-        </div>
-        <h1 className="text-2xl sm:text-4xl font-serif text-parchment font-normal tracking-tight">
-          Bàn Trải Bài Tarot Rider-Waite 78 Lá
-        </h1>
-        <p className="text-xs sm:text-sm text-stone max-w-2xl leading-relaxed">
-          Tĩnh tâm, tập trung vào điều bạn đang trăn trở và rút những lá bài chỉ đường.
-          Kết quả được suy diễn tất định theo chuẩn thư tịch Rider-Waite-Smith 1909.
-        </p>
-      </div>
+    <div className="space-y-8 py-4">
+      {/* 1. INTRO LANDING (Spec 44) */}
+      {step === 'INTRO' && (
+        <div className="space-y-12 max-w-4xl mx-auto py-2">
+          <div className="border-b border-borderDark pb-8 space-y-4">
+            <div className="flex items-center gap-2 text-stone text-xs font-mono tracking-widest uppercase">
+              <span className="text-accentGold">04</span>
+              <span>/</span>
+              <span>Tarot Rider-Waite Cổ Điển</span>
+            </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Step 1: Input Form */}
-        <div className="lg:col-span-4 p-5 bg-surface border border-borderDark space-y-5">
-          <div className="text-xs font-mono text-accentGold uppercase tracking-wider border-b border-borderDark pb-2 flex items-center gap-2">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Khởi Tạo Bàn Trải</span>
+            <h1 className="text-3xl sm:text-5xl font-serif text-parchment font-normal tracking-tight leading-tight">
+              Khảo Cứu Tarot 78 Lá
+            </h1>
+
+            <p className="text-sm sm:text-base text-stone max-w-2xl leading-relaxed">
+              Đặt một câu hỏi và khám phá câu chuyện nổi lên từ trải bài.
+              Không bói toán định mệnh hay hù dọa tâm lý. MYSTICOS phân tích tương tác biểu tượng để soi chiếu thực tại và gợi mở hướng hành động thực tiễn.
+            </p>
+
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setStep('QUESTION')}
+                className="px-6 py-3 bg-accentGold text-background text-xs font-mono font-bold tracking-widest uppercase hover:bg-parchment transition-colors border border-accentGold inline-flex items-center gap-2"
+              >
+                <span>Đặt câu hỏi &amp; Trải bài</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
-          <form onSubmit={handleDraw} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="p-6 border border-borderDark bg-surface space-y-2">
+              <span className="font-mono text-accentGold text-xs uppercase tracking-wider block">01. Trọng Tâm Rõ Ràng</span>
+              <p className="text-xs text-stone leading-relaxed">
+                Tập trung vào điều bạn đang trăn trở. Câu hỏi càng cụ thể và hướng tới hành động, câu chuyện từ trải bài càng sáng tỏ.
+              </p>
+            </div>
+            <div className="p-6 border border-borderDark bg-surface space-y-2">
+              <span className="font-mono text-accentGold text-xs uppercase tracking-wider block">02. Chuẩn Thư Tịch 1909</span>
+              <p className="text-xs text-stone leading-relaxed">
+                Nguyên bản 78 hình vẽ Rider-Waite-Smith. Phân tích tương quan giữa các lá (hỗ trợ, đối lập, chuyển tiếp) thay vì đọc nghĩa rời rạc.
+              </p>
+            </div>
+            <div className="p-6 border border-borderDark bg-surface space-y-2">
+              <span className="font-mono text-accentGold text-xs uppercase tracking-wider block">03. Câu Hỏi Phản Tư</span>
+              <p className="text-xs text-stone leading-relaxed">
+                Mỗi kết quả đều kèm câu hỏi suy ngẫm sâu sắc và định hướng hành vi: việc nên duy trì vs điều cần tiết chế.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 2. QUESTION INPUT (Spec 44-45) */}
+      {step === 'QUESTION' && (
+        <div className="max-w-2xl mx-auto space-y-6">
+          <div className="border-b border-borderDark pb-4 space-y-1">
+            <div className="flex items-center gap-2 text-xs font-mono text-accentGold uppercase tracking-wider">
+              <span>BƯỚC 1 / 3: ĐẶT CÂU HỎI</span>
+            </div>
+            <h2 className="text-2xl font-serif text-parchment font-medium">
+              Bạn Đang Muốn Tìm Hiểu Điều Gì?
+            </h2>
+            <p className="text-xs text-stone">
+              Viết câu hỏi của bạn một cách chân thật, hoặc chọn một câu hỏi gợi ý bên dưới.
+            </p>
+          </div>
+
+          <div className="space-y-4 bg-surface border border-borderDark p-6">
             <div>
-              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
-                Điều Bạn Đang Trăn Trở <span className="text-stone/60 normal-case">(Tùy chọn)</span>
-              </label>
-              <input
-                type="text"
+              <textarea
+                rows={4}
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
-                placeholder="VD: Định hướng công việc và tài chính sắp tới..."
-                className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono placeholder:text-stone/40 focus:outline-none focus:border-accentGold"
+                placeholder="Ví dụ: Tôi nên chú ý điều gì trong công việc hiện tại..."
+                className="w-full p-4 bg-background border border-borderDark text-parchment text-sm font-sans focus:outline-none focus:border-accentGold leading-relaxed"
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-mono text-stone mb-1 uppercase tracking-wider">
-                Phương Thức Trải Bài
-              </label>
-              <select
-                value={spreadCode}
-                onChange={(e) => setSpreadCode(e.target.value)}
-                className="w-full px-3 py-2 bg-background border border-borderDark text-parchment text-xs font-mono focus:outline-none focus:border-accentGold"
-              >
-                <option value="SPREAD_1_DAILY">1 Lá: Định Hướng Ngày</option>
-                <option value="SPREAD_3_PPF">3 Lá: Quá Khứ – Hiện Tại – Tương Lai</option>
-                <option value="SPREAD_3_SCA">3 Lá: Hoàn Cảnh – Thách Thức – Lời Khuyên</option>
-                <option value="SPREAD_5_SCCA_OUTCOME">5 Lá: Đa Chiều (Hoàn Cảnh - Thách Thức - Căn Nguyên - Lời Khuyên - Kết Quả)</option>
-                <option value="SPREAD_10_CELTIC_CROSS">10 Lá: Thập Tự Celtic (Chuyên Sâu)</option>
-              </select>
+            {/* Suggested Questions (Spec 45) */}
+            <div className="space-y-2 pt-1">
+              <span className="text-[11px] font-mono text-stone uppercase tracking-wider block">
+                GỢI Ý CÂU HỎI THỰC TIỄN (KHÔNG ĐỊNH MỆNH FATALISTIC):
+              </span>
+              <div className="space-y-1.5">
+                {SUGGESTED_QUESTIONS.map((q, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setQuestion(q)}
+                    className="w-full text-left p-2.5 bg-background/50 border border-borderDark hover:border-accentGold text-xs text-stone hover:text-parchment transition-colors font-sans"
+                  >
+                    &ldquo;{q}&rdquo;
+                  </button>
+                ))}
+              </div>
             </div>
 
+            <div className="flex items-center justify-between pt-3 border-t border-borderDark/60">
+              <button
+                type="button"
+                onClick={() => setStep('INTRO')}
+                className="px-4 py-2 border border-borderDark text-stone text-xs font-mono uppercase tracking-wider hover:text-parchment"
+              >
+                ← Quay lại
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setStep('SPREAD')}
+                className="px-5 py-2.5 bg-accentGold text-background font-mono text-xs font-bold uppercase tracking-widest border border-accentGold hover:bg-parchment transition-colors"
+              >
+                Chọn Kiểu Trải Bài →
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 3. SPREAD SELECTION (Spec 46) */}
+      {step === 'SPREAD' && (
+        <div className="max-w-2xl mx-auto space-y-6">
+          <div className="border-b border-borderDark pb-4 space-y-1">
+            <div className="flex items-center gap-2 text-xs font-mono text-accentGold uppercase tracking-wider">
+              <span>BƯỚC 2 / 3: CHỌN KIỂU TRẢI</span>
+            </div>
+            <h2 className="text-2xl font-serif text-parchment font-medium">
+              Chọn Kiểu Trải Bài
+            </h2>
+            <p className="text-xs text-stone">
+              Mỗi kiểu trải bài phục vụ một nhu cầu phân tích với độ sâu và góc nhìn khác nhau.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            {SPREADS.map((s) => (
+              <div
+                key={s.code}
+                onClick={() => setSelectedSpreadCode(s.code)}
+                className={`p-5 border cursor-pointer transition-all space-y-2 ${
+                  selectedSpreadCode === s.code
+                    ? 'border-accentGold bg-surface shadow-sm'
+                    : 'border-borderDark bg-surface/50 hover:border-borderLight'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <h3 className="font-serif text-base text-parchment font-medium">
+                    {s.title}
+                  </h3>
+                  <div className={`w-3.5 h-3.5 border flex items-center justify-center ${selectedSpreadCode === s.code ? 'border-accentGold bg-accentGold' : 'border-borderDark'}`}>
+                    {selectedSpreadCode === s.code && <div className="w-1.5 h-1.5 bg-background" />}
+                  </div>
+                </div>
+                <p className="text-xs text-stone leading-relaxed">{s.desc}</p>
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {s.positions.map((pos, pIdx) => (
+                    <span key={pIdx} className="px-2 py-0.5 bg-background border border-borderDark text-[10px] font-mono text-stone">
+                      #{pIdx + 1}: {pos}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex items-center justify-between pt-2">
             <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-2.5 bg-accentGold text-background text-xs font-mono font-bold tracking-widest uppercase hover:bg-parchment transition-colors border border-accentGold disabled:opacity-50 mt-2 flex items-center justify-center gap-2"
+              type="button"
+              onClick={() => setStep('QUESTION')}
+              className="px-4 py-2 border border-borderDark text-stone text-xs font-mono uppercase tracking-wider hover:text-parchment"
             >
-              {loading ? (
-                <>
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                  Đang Xáo & Rút Bài...
-                </>
-              ) : (
-                'Xáo & Rút Bài Ngay →'
-              )}
+              ← Quay lại câu hỏi
             </button>
-          </form>
+
+            <button
+              type="button"
+              onClick={() => setStep('CONFIRM')}
+              className="px-5 py-2.5 bg-accentGold text-background font-mono text-xs font-bold uppercase tracking-widest border border-accentGold hover:bg-parchment transition-colors"
+            >
+              Xác Nhận &amp; Rút Bài →
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 4. CONFIRM & DRAW (Spec 47) */}
+      {step === 'CONFIRM' && (
+        <div className="space-y-4">
+          <ConfirmationStep
+            title="Sẵn Sàng Rút Bài"
+            subtitle="Tĩnh tâm, tập trung ý niệm vào câu hỏi trước khi hệ thống tráo và rút bài."
+            items={[
+              { label: 'Câu hỏi của bạn', value: question.trim() ? `"${question.trim()}"` : 'Trải bài tổng quan không đặt câu hỏi' },
+              { label: 'Kiểu trải bài', value: selectedSpread.title },
+              { label: 'Số lượng lá bài', value: `${selectedSpread.positions.length} lá bài Rider-Waite` },
+            ]}
+            onConfirm={handleDraw}
+            onEdit={() => setStep('QUESTION')}
+            confirmLabel="Rút bài ngay →"
+          />
+
+          {/* Hiển thị trước các vị trí lá bài (Spec 47) */}
+          <div className="max-w-xl mx-auto border border-borderDark bg-surface p-5 space-y-3">
+            <span className="font-mono text-[11px] text-accentGold uppercase tracking-wider block">
+              SƠ ĐỒ CÁC VỊ TRÍ SẮP RÚT:
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              {selectedSpread.positions.map((p, idx) => (
+                <div key={idx} className="p-2.5 bg-background border border-borderDark flex items-center gap-2">
+                  <span className="text-accentGold font-mono font-bold">0{idx + 1}.</span>
+                  <span className="text-parchment">{p}</span>
+                </div>
+              ))}
+            </div>
+          </div>
 
           {error && (
-            <div className="p-3 bg-background border border-cinnabar text-cinnabar text-xs flex items-start gap-2">
+            <div className="max-w-xl mx-auto p-3.5 bg-background border border-cinnabar text-cinnabar text-xs flex items-start gap-2">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
+        </div>
+      )}
 
-          {/* Quick guide */}
-          <div className="p-3.5 bg-background border border-borderDark space-y-2 text-xs">
-            <div className="font-mono text-accentGold text-[11px] uppercase tracking-wider flex items-center gap-1.5">
-              <HelpCircle className="w-3.5 h-3.5" />
-              <span>Nguyên Lý Khảo Luận</span>
-            </div>
-            <p className="text-stone text-[11px] leading-relaxed">
-              Mỗi vị trí trong trải bài đều mang vai trò ngữ cảnh riêng biệt.
-              Hệ thống phân tích sự tương tác giữa các lá bài để đưa ra định hướng và hành động thực tế.
-            </p>
+      {/* 5. CONTEXTUAL LOADING */}
+      {step === 'LOADING' && (
+        <ContextualLoading
+          title="Đang Trộn &amp; Trải Bài Tarot"
+          steps={[
+            'Đang trộn 78 lá bài Rider-Waite-Smith...',
+            `Đang rút ${selectedSpread.positions.length} lá bài theo sơ đồ...`,
+            'Đang đối chiếu ý nghĩa hình tượng và chiều xuôi/ngược...',
+            'Đang phân tích tương tác và tổng hợp câu chuyện...',
+          ]}
+          currentStepIndex={loadingStepIdx}
+        />
+      )}
+
+      {/* 6. RESULT VIEW */}
+      {step === 'RESULT' && result && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between border-b border-borderDark pb-3">
+            <button
+              type="button"
+              onClick={() => {
+                setQuestion('');
+                setStep('INTRO');
+              }}
+              className="text-xs font-mono text-stone hover:text-accentGold transition-colors flex items-center gap-1.5"
+            >
+              <span>← Đặt câu hỏi khác</span>
+            </button>
           </div>
+
+          <MysticosResultViewer result={result} />
         </div>
-
-        {/* Step 2: Editorial Result View */}
-        <div className="lg:col-span-8 space-y-6">
-          {!result && !loading && (
-            <div className="p-16 border border-borderDark bg-surface text-center space-y-3">
-              <div className="w-10 h-10 border border-borderLight mx-auto flex items-center justify-center text-stone font-serif text-lg">
-                ✦
-              </div>
-              <h3 className="text-sm font-serif text-parchment">Bàn Trải Bài Đang Chờ</h3>
-              <p className="text-stone text-xs max-w-sm mx-auto leading-relaxed">
-                Nhập câu hỏi và chọn kiểu trải bài ở bên trái, sau đó bấm Xáo & Rút Bài để nhận thông điệp chỉ dẫn.
-              </p>
-            </div>
-          )}
-
-          {/* Visual Cards Board */}
-          {rawDraws.length > 0 && (
-            <div className="space-y-4">
-              <div className="p-3 bg-surface border border-borderDark flex items-center justify-between text-xs font-mono">
-                <span className="text-stone">
-                  Bàn trải quan sát: <strong className="text-parchment">{rawDraws.length} lá bài</strong>
-                </span>
-                <span className="text-[11px] text-accentGold">
-                  Trực quan hóa Rider-Waite 1909
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-                {rawDraws.map((draw: any, idx: number) => {
-                  const imageUrl = getTarotCardImageUrl(draw.card?.cardCode || draw.cardCode || '');
-                  const isRev = Boolean(draw.isReversed);
-                  const cardName = draw.card?.name || draw.cardCode || `Lá #${idx + 1}`;
-                  const posName = draw.positionName || `Vị trí ${draw.positionIndex ?? idx + 1}`;
-
-                  return (
-                    <div
-                      key={idx}
-                      className="bg-surface border border-borderDark p-3 flex flex-col items-center justify-between text-center space-y-2"
-                    >
-                      <div className="text-[10px] font-mono text-stone truncate w-full">
-                        {posName}
-                      </div>
-
-                      <div className="relative w-20 aspect-[2/3.4] overflow-hidden border border-borderDark bg-black shadow">
-                        <img
-                          src={imageUrl}
-                          alt={cardName}
-                          className={`w-full h-full object-cover ${isRev ? 'rotate-180' : ''}`}
-                        />
-                      </div>
-
-                      <div className="space-y-0.5">
-                        <div className="font-serif text-xs text-parchment font-medium truncate max-w-[100px]">
-                          {cardName}
-                        </div>
-                        <span
-                          className={`text-[9px] px-1 py-0.2 border block font-mono ${
-                            isRev ? 'border-cinnabar text-cinnabar' : 'border-borderLight text-stone'
-                          }`}
-                        >
-                          {isRev ? 'Ngược' : 'Xuôi'}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Editorial Result Presentation */}
-          {result && <MysticosResultViewer result={result} />}
-        </div>
-      </div>
+      )}
     </div>
   );
 }
