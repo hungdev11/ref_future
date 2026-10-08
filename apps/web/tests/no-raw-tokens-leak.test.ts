@@ -199,5 +199,10 @@ describe('Zero Technical Leaks Verification Across All 5 Domains', () => {
     expect(tarotHtml).not.toMatch(/SIG_CTX_POSITIONINDEX_1/);
     expect(tarotHtml).not.toMatch(/SCEN_[A-Z0-9_]+/);
     expect(tarotHtml).not.toContain('Chi Tiết Kỹ Thuật');
+    expect(tarotHtml).not.toContain('(MAIN STORY ARC)');
+    expect(tarotHtml).not.toContain('(CENTRAL TENSION)');
+    expect(tarotHtml).not.toContain('(TENSIONS)');
+    expect(tarotHtml).not.toContain('(TRIGGER)');
+    expect(tarotHtml).not.toContain('(DYNAMIC)');
   });
 });

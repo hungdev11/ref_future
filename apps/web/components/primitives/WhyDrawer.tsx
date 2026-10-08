@@ -16,8 +16,8 @@ export interface WhyDrawerProps {
 export function WhyDrawer({
   result,
   defaultOpen = false,
-  label = 'Minh Bạch Suy Diễn & Thư Tịch Gốc (Why Panel)',
-  description = '100% Deterministic Provenance Trace & S0/S1 Citations',
+  label = 'Minh Bạch Suy Diễn & Thư Tịch Gốc',
+  description = 'Minh bạch chuỗi suy luận đối chiếu thư tịch cổ điển và quy tắc tất định',
   className = '',
 }: WhyDrawerProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
@@ -38,7 +38,7 @@ export function WhyDrawer({
             <div className="flex items-center gap-2 text-xs font-mono text-stone tracking-widest uppercase">
               <span className="text-accentGold">TẦNG MINH BẠCH</span>
               <span className="text-borderLight">/</span>
-              <span>AUDIT TRAIL</span>
+              <span>MINH BẠCH LẬP LUẬN</span>
             </div>
             <h4 className="text-base sm:text-lg font-serif text-parchment font-medium tracking-tight">
               {label}

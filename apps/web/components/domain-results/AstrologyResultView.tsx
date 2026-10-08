@@ -224,7 +224,7 @@ export function AstrologyResultView({
           <div className="flex items-center gap-2 text-xs font-mono text-stone tracking-widest uppercase pb-1">
             <span className="text-accentGold">03</span>
             <span className="text-borderLight">/</span>
-            <span>CÁC GÓC HỢP TRỌNG YẾU (RANKED ASPECTS &amp; DYNAMICS)</span>
+            <span>CÁC GÓC HỢP TRỌNG YẾU &amp; ĐỘNG LỰC HÀNH TINH</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -282,7 +282,7 @@ export function AstrologyResultView({
         <section aria-label="Hệ Quả Thực Tiễn">
           <ScenarioBlock
             scenarios={result.scenarios}
-            title="HỆ QUẢ ĐỜI THƯỜNG &amp; KHUNG THỜI GIAN KÍCH HOẠT"
+            title="HỆ QUẢ ĐỜI THƯỜNG & KHUNG THỜI GIAN KÍCH HOẠT"
           />
         </section>
       )}

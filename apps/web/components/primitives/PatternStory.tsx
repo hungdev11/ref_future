@@ -36,7 +36,7 @@ export function PatternStory({
         <div className="flex items-center gap-2 text-accentGold tracking-widest uppercase">
           <span>02</span>
           <span className="text-borderLight">/</span>
-          <span>CỐT TRUYỆN DIỄN TIẾN TRỌNG TÂM (MAIN STORY ARC)</span>
+          <span>CỐT TRUYỆN DIỄN TIẾN TRỌNG TÂM</span>
         </div>
         {activeEntity && !activeEntity.startsWith('CONTEXTUAL_') && !activeEntity.startsWith('PAT_') ? (
           <span className="text-stone tracking-wide">
@@ -63,7 +63,7 @@ export function PatternStory({
       {activeTension && (
         <div className="border border-borderDark bg-background/60 p-4 space-y-1.5">
           <span className="font-mono text-[10px] uppercase tracking-widest text-accentGold block">
-            ĐIỂM NGHẼN GIẰNG CO TRỌNG TÂM (CENTRAL TENSION)
+            ĐIỂM NGHẼN GIẰNG CO TRỌNG TÂM
           </span>
           <p className="font-sans text-parchment/90 text-xs sm:text-sm leading-relaxed">
             {activeTension}

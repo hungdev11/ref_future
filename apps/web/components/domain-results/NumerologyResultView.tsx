@@ -157,7 +157,7 @@ export function NumerologyResultView({
           <div className="flex items-center gap-2 text-xs font-mono text-stone tracking-widest uppercase pb-1">
             <span className="text-accentGold">02</span>
             <span className="text-borderLight">/</span>
-            <span>TƯƠNG TÁC SỐ HỌC &amp; SỰ GIẰNG CO NỘI TÂM (TENSIONS)</span>
+            <span>TƯƠNG TÁC SỐ HỌC &amp; SỰ GIẰNG CO NỘI TÂM</span>
           </div>
 
           <div className="space-y-4">
@@ -165,7 +165,7 @@ export function NumerologyResultView({
               <TensionBlock
                 key={idx}
                 tension={item}
-                title={`Xung Lực &amp; Điểm Cân Bằng Giữa Các Con Số #${idx + 1}`}
+                title={`Xung Lực & Điểm Cân Bằng Giữa Các Con Số #${idx + 1}`}
               />
             ))}
           </div>
@@ -220,7 +220,7 @@ export function NumerologyResultView({
         <section aria-label="Kịch Bản Thực Tiễn">
           <ScenarioBlock
             scenarios={result.scenarios}
-            title="ỨNG DỤNG THỰC TIỄN &amp; KỊCH BẢN ĐỜI THƯỜNG"
+            title="ỨNG DỤNG THỰC TIỄN & KỊCH BẢN ĐỜI THƯỜNG"
           />
         </section>
       )}

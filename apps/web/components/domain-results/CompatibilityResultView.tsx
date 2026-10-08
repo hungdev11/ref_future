@@ -138,7 +138,7 @@ export function CompatibilityResultView({
           <div className="flex items-center gap-2 text-xs font-mono text-stone tracking-widest uppercase pb-1">
             <span className="text-accentGold">03</span>
             <span className="text-borderLight">/</span>
-            <span>ĐIỂM TƯƠNG HỖ TỰ NHIÊN VS MA SÁT BẢN NĂNG (TENSIONS)</span>
+            <span>ĐIỂM TƯƠNG HỖ TỰ NHIÊN &amp; ĐIỂM CÂN BẰNG</span>
           </div>
 
           <div className="space-y-4">

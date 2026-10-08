@@ -17,6 +17,32 @@ export interface TensionBlockProps {
   className?: string;
 }
 
+function formatTrait(trait: string): string {
+  if (!trait) return '';
+  if (trait.startsWith('SIG_') || trait.startsWith('PAT_') || trait.includes('_')) {
+    const clean = trait.replace(/^SIG_CTX_|^SIG_|^PAT_/i, '').replace(/_/g, ' ').trim();
+    const TRAIT_MAP: Record<string, string> = {
+      'REASSESSMENT FATIGUE': 'Áp Lực Đánh Giá Lại',
+      'RESISTING COLLAPSE': 'Kháng Cự Biến Động Đổ Vỡ',
+      'LEAP OF FAITH': 'Bước Nhảy Liều Lĩnh',
+      'ANALYTICAL RIGOR': 'Kỷ Luật Phân Tích',
+      'INTUITIVE LEAP': 'Trực Giác Bộc Phát',
+      'DISCIPLINED ACTION': 'Hành Động Kỷ Luật',
+      'FREEDOM SPONTANEITY': 'Tự Do Phóng Khoáng',
+      'STABILITY SECURITY': 'Ổn Định An Toàn',
+    };
+    if (TRAIT_MAP[clean.toUpperCase()]) {
+      return TRAIT_MAP[clean.toUpperCase()];
+    }
+    return clean
+      .toLowerCase()
+      .split(' ')
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ');
+  }
+  return trait;
+}
+
 export function TensionBlock({
   tension,
   traitA,
@@ -62,7 +88,7 @@ export function TensionBlock({
             CỰC TÍNH A
           </span>
           <p className="font-serif text-parchment text-base font-medium">
-            {activeTraitA}
+            {formatTrait(activeTraitA)}
           </p>
         </div>
 
@@ -71,7 +97,7 @@ export function TensionBlock({
             CỰC TÍNH B
           </span>
           <p className="font-serif text-parchment text-base font-medium">
-            {activeTraitB}
+            {formatTrait(activeTraitB)}
           </p>
         </div>
       </div>

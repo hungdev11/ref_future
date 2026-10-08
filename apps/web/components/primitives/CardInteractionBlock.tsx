@@ -28,7 +28,22 @@ const INTERACTION_TYPE_VN: Record<string, string> = {
   contrast: 'TƯƠNG PHẢN',
   amplification: 'KHUẾCH ĐẠI',
   harmonious: 'HÒA HỢP',
+  progression: 'CHUYỂN TIẾP',
+  catalyst: 'CHÂM NGÒI',
+  resolution: 'HÓA GIẢI',
 };
+
+function formatEntityLabel(name: string): string {
+  if (!name) return '';
+  if (name.includes('MAJOR_') || name.includes('MINOR_')) {
+    return name
+      .replace(/^MAJOR_\d*_/i, '')
+      .replace(/^MINOR_/i, '')
+      .replace(/_/g, ' ')
+      .trim();
+  }
+  return name;
+}
 
 export function CardInteractionBlock({
   sequence = [],
@@ -108,9 +123,9 @@ export function CardInteractionBlock({
               >
                 <div className="flex items-center justify-between text-xs font-mono border-b border-borderDark/40 pb-2">
                   <div className="flex items-center gap-1.5 text-parchment">
-                    <span>{inter.source}</span>
+                    <span>{formatEntityLabel(inter.source)}</span>
                     <span className="text-accentGold">➔</span>
-                    <span>{inter.target}</span>
+                    <span>{formatEntityLabel(inter.target)}</span>
                   </div>
                   {inter.type && (
                     <span className="text-[10px] uppercase tracking-wider text-accentGold">

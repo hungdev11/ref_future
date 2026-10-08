@@ -53,7 +53,7 @@ export function ScenarioBlock({
           <div className="space-y-3 pt-1">
             <div className="space-y-1">
               <span className="font-mono text-[10px] uppercase tracking-widest text-stone block">
-                BỐI CẢNH KÍCH HOẠT (TRIGGER)
+                BỐI CẢNH KÍCH HOẠT
               </span>
               <p className="font-sans text-parchment/90 text-sm leading-relaxed">
                 {item.trigger}
@@ -62,7 +62,7 @@ export function ScenarioBlock({
 
             <div className="space-y-1">
               <span className="font-mono text-[10px] uppercase tracking-widest text-stone block">
-                DIỄN BIẾN TÂM LÝ &amp; PHẢN ỨNG TỰ NHIÊN (DYNAMIC)
+                DIỄN BIẾN TÂM LÝ &amp; PHẢN ỨNG TỰ NHIÊN
               </span>
               <p className="font-sans text-parchment/90 text-sm leading-relaxed">
                 {item.likelyDynamic}
@@ -72,7 +72,7 @@ export function ScenarioBlock({
             {item.tension && (
               <div className="space-y-1">
                 <span className="font-mono text-[10px] uppercase tracking-widest text-terracotta block">
-                  ĐIỂM NGHẼN CẦN LƯU TÂM (TENSION)
+                  ĐIỂM NGHẼN CẦN LƯU TÂM
                 </span>
                 <p className="font-sans text-parchment/90 text-sm leading-relaxed">
                   {item.tension}
